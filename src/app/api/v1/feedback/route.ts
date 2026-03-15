@@ -4,24 +4,30 @@ import { submitFeedbackSchema } from "@/lib/validators/feedback";
 import { ok, created, badRequest, serverError, tooManyRequests } from "@/lib/api/response";
 import { generateTrackingId } from "@/lib/tracking";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { withCors, corsPreflightResponse } from "@/lib/api/cors";
+
+export async function OPTIONS(req: NextRequest) {
+  return corsPreflightResponse(req.headers.get("origin"));
+}
 
 export async function POST(req: NextRequest) {
+  const origin = req.headers.get("origin");
   try {
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "anonymous";
     const allowed = await checkRateLimit(ip);
     if (!allowed) {
-      return tooManyRequests();
+      return withCors(tooManyRequests(), origin);
     }
 
     const body = await req.json().catch(() => null);
     if (!body) {
-      return badRequest("Invalid JSON body");
+      return withCors(badRequest("Invalid JSON body"), origin);
     }
 
     const parsed = submitFeedbackSchema.safeParse(body);
     if (!parsed.success) {
       const message = parsed.error.issues.map((i) => i.message).join(", ");
-      return badRequest(message);
+      return withCors(badRequest(message), origin);
     }
 
     const { type, title, description, nickname, email } = parsed.data;
@@ -63,11 +69,11 @@ export async function POST(req: NextRequest) {
 
     if (!feedback) {
       console.error("[Feedback] Failed after 3 trackingId attempts:", lastError);
-      return serverError("Failed to generate unique tracking ID. Please try again.");
+      return withCors(serverError("Failed to generate unique tracking ID. Please try again."), origin);
     }
 
-    return created(feedback);
+    return withCors(created(feedback), origin);
   } catch (err) {
-    return serverError(err);
+    return withCors(serverError(err), origin);
   }
 }
