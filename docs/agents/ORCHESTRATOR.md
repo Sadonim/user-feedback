@@ -6,7 +6,7 @@
 ## 파이프라인 구조
 
 ```
-ARCHITECT → CRITIC → (ARCHITECT 수정) → SECURITY → IMPL
+ARCHITECT → CRITIC → (ARCHITECT 수정) → SECURITY → BACKEND (BE)
                                                         ↓
                                           DESIGNER (FE)
                                           TESTER (테스트)
@@ -40,6 +40,7 @@ ARCHITECT → CRITIC → (ARCHITECT 수정) → SECURITY → IMPL
 ### Phase 4단계: 구현
 ```
 [병렬 실행]
+[BACKEND 터미널]  > docs/handoffs/design_[feature].md 읽고 API/서비스 레이어 구현해줘
 [TESTER 터미널]   > [feature] 테스트 먼저 작성해줘 (TDD RED phase)
 [DESIGNER 터미널] > docs/handoffs/design_[feature].md 기반으로 FE 구현해줘 (있는 경우)
 ```
@@ -71,6 +72,7 @@ READY_FOR_CRITIC
     → REVIEWED (CRITIC 완료)
     → REVISED (ARCHITECT 수정 완료)
     → READY_FOR_IMPL (구현 준비)
+    → BACKEND_DONE (BACKEND API/서비스 구현 완료)
     → DESIGN_DONE (DESIGNER 완료)
     → SECURITY_REVIEWED (SECURITY 완료)
     → REFACTORED (REFACTOR 완료)
@@ -108,6 +110,10 @@ claude --system-prompt "$(cat docs/agents/SECURITY.md)"
 # 터미널 7 — RUNNER
 cd ~/Desktop/Dev_claude/user-feedback
 claude --system-prompt "$(cat docs/agents/RUNNER.md)"
+
+# 터미널 8 — BACKEND
+cd ~/Desktop/Dev_claude/user-feedback
+claude --system-prompt "$(cat docs/agents/BACKEND.md)"
 ```
 
 ## 현재 Phase 상태

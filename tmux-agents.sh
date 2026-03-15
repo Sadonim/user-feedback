@@ -35,6 +35,10 @@ tmux send-keys -t $SESSION:REFACTOR "cd $PROJECT && claude --system-prompt \"\$(
 tmux new-window -t $SESSION -n "RUNNER"
 tmux send-keys -t $SESSION:RUNNER "cd $PROJECT && claude --system-prompt \"\$(cat docs/agents/RUNNER.md)\"" Enter
 
+# BACKEND
+tmux new-window -t $SESSION -n "BACKEND"
+tmux send-keys -t $SESSION:BACKEND "cd $PROJECT && claude --system-prompt \"\$(cat docs/agents/BACKEND.md)\"" Enter
+
 # ARCHITECT 창으로 포커스
 tmux select-window -t $SESSION:ARCHITECT
 tmux attach-session -t $SESSION
