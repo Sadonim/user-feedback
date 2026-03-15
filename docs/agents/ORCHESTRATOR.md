@@ -82,31 +82,31 @@ READY_FOR_CRITIC
 
 ```bash
 # 터미널 1 — ARCHITECT
-cd C:\Users\PC\Desktop\Dev_Claude\user-feedback
+cd ~/Desktop/Dev_claude/user-feedback
 claude --system-prompt "$(cat docs/agents/ARCHITECT.md)"
 
 # 터미널 2 — CRITIC
-cd C:\Users\PC\Desktop\Dev_Claude\user-feedback
+cd ~/Desktop/Dev_claude/user-feedback
 claude --system-prompt "$(cat docs/agents/CRITIC.md)"
 
 # 터미널 3 — DESIGNER
-cd C:\Users\PC\Desktop\Dev_Claude\user-feedback
+cd ~/Desktop/Dev_claude/user-feedback
 claude --system-prompt "$(cat docs/agents/DESIGNER.md)"
 
 # 터미널 4 — REFACTOR
-cd C:\Users\PC\Desktop\Dev_Claude\user-feedback
+cd ~/Desktop/Dev_claude/user-feedback
 claude --system-prompt "$(cat docs/agents/REFACTOR.md)"
 
 # 터미널 5 — TESTER
-cd C:\Users\PC\Desktop\Dev_Claude\user-feedback
+cd ~/Desktop/Dev_claude/user-feedback
 claude --system-prompt "$(cat docs/agents/TESTER.md)"
 
 # 터미널 6 — SECURITY
-cd C:\Users\PC\Desktop\Dev_Claude\user-feedback
+cd ~/Desktop/Dev_claude/user-feedback
 claude --system-prompt "$(cat docs/agents/SECURITY.md)"
 
 # 터미널 7 — RUNNER
-cd C:\Users\PC\Desktop\Dev_Claude\user-feedback
+cd ~/Desktop/Dev_claude/user-feedback
 claude --system-prompt "$(cat docs/agents/RUNNER.md)"
 ```
 

@@ -18,4 +18,7 @@ READY_FOR_CRITIC → REVIEWED → REVISED → READY_FOR_IMPL → DESIGN_DONE →
 
 ## 현재 진행 중인 Feature
 
-(없음 — Phase 1 시작 전)
+| Feature | 설계 | 리뷰 | 상태 |
+|---------|------|------|------|
+| Phase 1 Foundation | `design_phase1_foundation.md` | `critique_phase1_foundation.md` | REVIEWED |
+| Phase 2 Admin Dashboard | `design_phase2_admin.md` | — | READY_FOR_CRITIC |

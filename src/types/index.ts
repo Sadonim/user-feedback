@@ -1,6 +1,6 @@
-import type { FeedbackType, TicketStatus, Priority } from "@prisma/client";
+import type { FeedbackType, TicketStatus, Priority, UserRole } from "@prisma/client";
 
-export type { FeedbackType, TicketStatus, Priority };
+export type { FeedbackType, TicketStatus, Priority, UserRole };
 
 export interface ApiResponse<T = unknown> {
   success: boolean;
@@ -13,6 +13,24 @@ export interface ApiMeta {
   total: number;
   page: number;
   limit: number;
+  hasNextPage: boolean;
+}
+
+export interface TicketStats {
+  total: number;
+  byStatus: Record<TicketStatus, number>;
+  byType: Record<FeedbackType, number>;
+  recent: {
+    today: number;
+    thisWeek: number;
+  };
+}
+
+export interface AdminSessionUser {
+  id: string;
+  email: string;
+  username: string;
+  role: UserRole;
 }
 
 export interface FeedbackSummary {

@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/server/db/prisma";
 import { submitFeedbackSchema } from "@/lib/validators/feedback";
-import { ok, created, badRequest, serverError, tooManyRequests } from "@/lib/api/response";
+import { created, badRequest, serverError, tooManyRequests } from "@/lib/api/response";
 import { generateTrackingId } from "@/lib/tracking";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { withCors, corsPreflightResponse } from "@/lib/api/cors";
