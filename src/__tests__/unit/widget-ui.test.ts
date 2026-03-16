@@ -29,7 +29,7 @@
  */
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { INITIAL_STATE, transitions } from '@/widget/state';
+import { INITIAL_STATE } from '@/widget/state';
 import type { WidgetState, FormData } from '@/widget/state';
 import type { WidgetConfig } from '@/widget/config';
 

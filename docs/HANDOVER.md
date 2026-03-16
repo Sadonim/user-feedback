@@ -86,7 +86,7 @@ for AGENT in "${AGENTS[@]}"; do
   tmux new-window -t "$SESSION" -n "$AGENT" -d
   tmux send-keys -t "$SESSION:$AGENT" "cd $PROJECT && claude --system-prompt \"\$(cat docs/agents/${AGENT}.md)\"" Enter
 done
-cd ~/claude-tmux-grid && bash auto-layout.sh -s "$SESSION" -w overview "${AGENTS[@]}"
+cd ~/.claude/claude-tmux-grid && bash auto-layout.sh -s "$SESSION" -w overview "${AGENTS[@]}"
 ```
 
 ## 환경

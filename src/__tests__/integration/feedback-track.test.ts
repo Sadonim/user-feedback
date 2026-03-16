@@ -9,7 +9,7 @@
  *  - afterEach에서 정리
  *  - CORS 없는 라우트이므로 CORS 헤더 검사 불필요
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { NextRequest } from 'next/server';
 import { prisma } from '@/server/db/prisma';
 

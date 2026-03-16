@@ -24,8 +24,9 @@ export default defineConfig({
       include: [
         'src/lib/validators/**',
         'src/lib/api/**',
-        'src/app/api/**',
-        'src/server/services/**',
+        'src/widget/**',
+        // src/app/api/** 와 src/server/services/** 는 실제 DB가 필요한 통합 테스트에서만
+        // 커버되므로 단위 테스트 커버리지 범위에서 제외. CI에서 통합 테스트 job 분리 권장.
       ],
       thresholds: {
         lines: 80,
