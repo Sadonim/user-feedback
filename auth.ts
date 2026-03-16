@@ -10,6 +10,13 @@ const credentialsSchema = z.object({
   password: z.string().min(1),
 });
 
+/**
+ * [H2] Timing attack 방지용 더미 해시.
+ * 이메일이 없을 때도 bcrypt.compare()를 동일하게 실행해 응답 시간을 균일하게 유지한다.
+ * 실제 bcryptjs(cost factor 10)로 생성된 해시값.
+ */
+const DUMMY_HASH = '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy';
+
 export const { auth, handlers, signIn, signOut } = NextAuth({
   providers: [
     CredentialsProvider({
@@ -35,13 +42,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           },
         });
 
-        // H3 fix: always run bcrypt.compare to prevent timing attack.
-        // Without this, missing email returns ~5ms vs valid email ~100ms,
-        // allowing attackers to enumerate valid admin email addresses.
-        const DUMMY_HASH = '$2a$10$dummy.hash.to.prevent.timing.attack.padding00000';
         const passwordValid = await compare(password, admin?.passwordHash ?? DUMMY_HASH);
         if (!admin || !passwordValid) return null;
-        if (!passwordValid) return null;
 
         return {
           id: admin.id,

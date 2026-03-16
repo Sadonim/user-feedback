@@ -1,18 +1,17 @@
 import type { Metadata } from 'next';
 import { LoginForm } from '@/components/auth/LoginForm';
+import { sanitizeCallbackUrl as _sanitize } from '@/lib/auth/sanitize-callback-url';
 
 export const metadata: Metadata = {
   title: 'Admin Login',
 };
 
-// C1 fix: validate callbackUrl server-side — only relative paths allowed.
-// Prevents open redirect: https://evil.com or //evil.com → /admin/dashboard
-// (?!\/) — 두 번째 문자가 / 이면 거부 (프로토콜 상대 URL //evil.com 차단)
-const SAFE_CALLBACK_RE = /^\/(?!\/)[a-zA-Z0-9\-_/?=&%#]*$/;
-
+/**
+ * [H1] named re-export — 기존 테스트가 이 모듈에서 import하므로 유지.
+ * 실제 구현은 src/lib/auth/sanitize-callback-url.ts 에 있다.
+ */
 export function sanitizeCallbackUrl(raw: string | undefined): string {
-  if (raw && SAFE_CALLBACK_RE.test(raw)) return raw;
-  return '/admin/dashboard';
+  return _sanitize(raw);
 }
 
 interface Props {

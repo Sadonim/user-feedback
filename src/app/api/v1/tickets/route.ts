@@ -23,12 +23,20 @@ export async function GET(req: NextRequest) {
     ...(priority && { priority }),
   };
 
+  // [H4] 동적 sort 필드에 명시적 맵핑을 적용한다.
+  // Zod가 이미 enum 검증을 하지만, Prisma orderBy에 전달하기 전
+  // 허용된 컬럼만 선택하여 TypeScript 타입 안전성을 보장한다.
+  const SORT_FIELDS = {
+    createdAt: "createdAt",
+    updatedAt: "updatedAt",
+  } as const satisfies Record<typeof sort, string>;
+
   try {
     const [total, items] = await prisma.$transaction([
       prisma.feedback.count({ where }),
       prisma.feedback.findMany({
         where,
-        orderBy: { [sort]: order },
+        orderBy: { [SORT_FIELDS[sort]]: order },
         skip: (page - 1) * limit,
         take: limit,
         select: {

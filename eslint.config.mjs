@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generated files — do not lint
+    "public/widget.js",
+    "coverage/**",
   ]),
 ]);
 
