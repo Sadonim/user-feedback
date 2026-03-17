@@ -8,16 +8,19 @@
 - ✅ Phase 3 — Embeddable Widget 전체 완료
   - 빌드 성공, 테스트 434/434 통과
   - widget.js 번들: 26.6kB (gzip 6.8kB)
-- ✅ Phase 4 — Notifications & Rate Limiting **전체 완료 + git push**
+- ✅ Phase 4 — Notifications & Rate Limiting 전체 완료 + git push (cc51204)
   - 523/523 테스트 통과
   - 이메일 서비스 (Resend adapter), 관리자 알림, Rate Limiting (Upstash) 구현 완료
-  - 테스트 수정: rate-limit mock (화살표 함수 → 일반 함수, slidingWindow static mock 추가)
-  - 테스트 수정: feedback-submit IP 추출 방향 (첫 번째 → 마지막, Vercel platform-appended)
-  - 테스트 수정: feedback-track stale DB 레코드 cleanup 추가
+- ✅ Phase 4-5 — 접근성 감사 (WCAG 2.1 AA) 전체 완료 + git push (c64a045)
+  - 635/635 테스트 통과, lint 0 errors
+  - ARIA, 키보드 내비게이션, skip-to-content, 위젯 접근성, jest-axe 테스트 8개 파일
 
 ### 미완료
-- 🔲 Phase 4 — 접근성 감사 (WCAG 2.1 AA) — 4-5 미착수
-- 🔲 Phase 5 — Advanced Features
+- 🔲 Phase 5-1 — 우선순위 (Priority enum: LOW/MEDIUM/HIGH/CRITICAL)
+- 🔲 Phase 5-2 — 담당자 배정 (Assignee)
+- 🔲 Phase 5-3 — SSE 실시간 업데이트
+- 🔲 Phase 5-4 — 분석 대시보드 (Analytics)
+- 🔲 Phase 5-5 — lol-community 통합 (별도 논의 예정)
 
 ---
 
@@ -84,36 +87,40 @@ UPSTASH_REDIS_REST_TOKEN=
 ## 다음 세션 시작 방법
 
 ```
-user-feedback Phase 4 마무리 + Phase 5 시작해줘.
-docs/HANDOVER.md 참고.
-먼저 npm test 전체 통과 확인 후 git push, 그 다음 Phase 4-5 (접근성 감사) 처리,
-이후 Phase 5로 넘어가.
+user-feedback Phase 5 시작해줘.
+docs/HANDOVER.md 와 docs/DEVELOPMENT_PLAN.md 참고.
+tmux uf-agents 세션 재개하고 ARCHITECT → CRITIC → 병렬 구현 파이프라인으로 진행.
 ```
 
 ### 다음 세션 즉시 할 일
-1. `npm test` 전체 통과 확인 (ticket-notifications, feedback-admin-notification, rate-limit 포함)
-2. `npm run build` 확인
-3. `git add -A && git commit && git push` (master)
-4. Phase 4-5 접근성 감사 (WCAG 2.1 AA)
-5. Phase 5 착수
+1. tmux 세션 재개 (아래 참고)
+2. ARCHITECT에게 Phase 5 설계 지시 (5-1~5-4 한 번에)
+   - 5-1: Priority enum + DB 마이그레이션
+   - 5-2: Assignee (FK to User)
+   - 5-3: SSE `/api/v1/tickets/stream`
+   - 5-4: Analytics `/admin/analytics` + `/api/v1/tickets/analytics`
+3. CRITIC 검토 → 병렬 구현 (BACKEND + DESIGNER + TESTER) → SECURITY → REFACTOR → RUNNER
+4. Phase 5-5 (lol-community 통합)은 사용자와 별도 논의 후 진행
+
+### 주의사항
+- Prisma 마이그레이션 필요: Priority, assigneeId 필드 추가
+- SSE는 Vercel serverless와 호환 필요 — Edge Runtime 또는 streaming response 확인
+- analytics 차트: recharts (이미 shadcn 에코시스템)
 
 ---
 
 ## tmux 세션 재개
 ```bash
+# 세션 살아있으면:
 tmux attach -t uf-agents
 
-# 세션 죽었으면:
-PROJECT="/Users/sadonim/Desktop/Dev_claude/user-feedback"
-SESSION="uf-agents"
-AGENTS=(ARCHITECT CRITIC DESIGNER TESTER SECURITY REFACTOR RUNNER BACKEND)
-tmux new-session -d -s "$SESSION"
-for AGENT in "${AGENTS[@]}"; do
-  tmux new-window -t "$SESSION" -n "$AGENT" -d
-  tmux send-keys -t "$SESSION:$AGENT" "cd $PROJECT && claude --system-prompt \"\$(cat docs/agents/${AGENT}.md)\"" Enter
-done
-cd ~/.claude/claude-tmux-grid && bash auto-layout.sh -s "$SESSION" -w overview "${AGENTS[@]}"
+# 세션 죽었으면 — setup_tmux.sh로 재시작:
+bash ~/.claude/orchestration/scripts/setup_tmux.sh \
+  ~/Desktop/Dev_claude/user-feedback uf-agents \
+  ARCHITECT CRITIC DESIGNER TESTER SECURITY REFACTOR RUNNER BACKEND
 ```
+
+> `claude-tmux-grid`는 `~/.claude/claude-tmux-grid/`에 이미 설치됨
 
 ## 환경
 - 프로젝트: `~/Desktop/Dev_claude/user-feedback`
