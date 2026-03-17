@@ -357,7 +357,7 @@ describe('POST /api/v1/feedback — Rate Limit', () => {
     if (body.data?.trackingId) createdTrackingIds.push(body.data.trackingId);
   });
 
-  it('콤마로 구분된 IP 목록에서 첫 번째 IP를 추출해야 한다', async () => {
+  it('콤마로 구분된 IP 목록에서 마지막 IP를 추출해야 한다 (Vercel platform-appended)', async () => {
     const mock = await getRateLimitMock();
     mock.mockResolvedValue(true);
     const { POST } = await importHandlers();
@@ -371,7 +371,8 @@ describe('POST /api/v1/feedback — Rate Limit', () => {
       body: JSON.stringify(validBody()),
     });
     await POST(req);
-    expect(mock).toHaveBeenCalledWith('10.0.0.1');
+    // Route uses .at(-1) — last entry is platform-appended on Vercel (not client-controlled)
+    expect(mock).toHaveBeenCalledWith('10.0.0.3');
     const body = await (await POST(req)).json();
     if (body.data?.trackingId) createdTrackingIds.push(body.data.trackingId);
   });

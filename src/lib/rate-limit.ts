@@ -1,45 +1,35 @@
-/**
- * Simple in-memory rate limiter for development / single-instance use.
- * Phase 4: Replace with Upstash Redis for production multi-instance support.
- *
- * Limit: 5 submissions per IP per 10 minutes.
- */
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 
-const WINDOW_MS = 10 * 60 * 1000; // 10 minutes
-const MAX_REQUESTS = 5;
+// Lazily initialized — avoids crashing at module load when env vars are absent
+let ratelimit: Ratelimit | null = null;
 
-interface RateLimitEntry {
-  count: number;
-  resetAt: number;
-}
-
-const store = new Map<string, RateLimitEntry>();
-
-// Cleanup stale entries every 15 minutes to prevent memory leaks
-if (typeof setInterval !== "undefined") {
-  setInterval(() => {
-    const now = Date.now();
-    for (const [key, entry] of store.entries()) {
-      if (entry.resetAt < now) {
-        store.delete(key);
-      }
-    }
-  }, 15 * 60 * 1000);
+function getRatelimit(): Ratelimit | null {
+  if (ratelimit) return ratelimit;
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) {
+    console.warn('[RateLimit] UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN not set — rate limiting disabled');
+    return null;
+  }
+  ratelimit = new Ratelimit({
+    redis: new Redis({ url, token }),
+    limiter: Ratelimit.slidingWindow(5, '10 m'),
+    analytics: false,
+    prefix: 'uf:rl',
+  });
+  return ratelimit;
 }
 
 export async function checkRateLimit(key: string): Promise<boolean> {
-  const now = Date.now();
-  const entry = store.get(key);
+  const rl = getRatelimit();
+  if (!rl) return true; // disabled in dev
 
-  if (!entry || entry.resetAt < now) {
-    store.set(key, { count: 1, resetAt: now + WINDOW_MS });
+  try {
+    const { success } = await rl.limit(key);
+    return success;
+  } catch (err) {
+    console.error('[RateLimit] Redis error — allowing request', err);
     return true;
   }
-
-  if (entry.count >= MAX_REQUESTS) {
-    return false;
-  }
-
-  store.set(key, { ...entry, count: entry.count + 1 });
-  return true;
 }

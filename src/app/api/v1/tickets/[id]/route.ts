@@ -3,6 +3,7 @@ import { prisma } from '@/server/db/prisma';
 import { updateTicketSchema } from '@/lib/validators/feedback';
 import { ok, badRequest, notFound, serverError } from '@/lib/api/response';
 import { requireAuth } from '@/lib/api/require-auth';
+import { emailService } from '@/server/services/email';
 
 const TICKET_DETAIL_SELECT = {
   id: true,
@@ -77,21 +78,25 @@ export async function PATCH(
     ...(priority !== undefined && { priority }),
   };
 
+  // Variables captured inside transaction for post-commit email use (C2 fix)
+  let capturedEmail: string | null = null;
+  let capturedTitle = '';
+  let capturedTrackingId = '';
+  let capturedFromStatus: import('@prisma/client').TicketStatus | null = null;
+  let capturedToStatus: import('@prisma/client').TicketStatus | null = null;
+  let didStatusChange = false;
+
   try {
-    // C3 fix: read prevStatus INSIDE the transaction so read+write are atomic,
-    // preventing TOCTOU race where concurrent PATCH could corrupt audit log.
     await prisma.$transaction(async (tx) => {
       const existing = await tx.feedback.findUnique({
         where: { id },
-        select: { status: true },
+        select: { status: true, email: true, title: true, trackingId: true },
       });
       if (!existing) throw new Error('NOT_FOUND');
 
       const prevStatus = existing.status;
       await tx.feedback.update({ where: { id }, data: updateData });
 
-      // H4 fix: create StatusHistory when status changes OR when note provided
-      // with priority-only update. Previously note was silently discarded.
       const statusChanged = status !== undefined && status !== prevStatus;
       const noteOnly = !statusChanged && note !== undefined;
 
@@ -106,14 +111,37 @@ export async function PATCH(
           },
         });
       }
+
+      // Capture for post-commit use (C2 fix: inside transaction, no race window)
+      capturedEmail = existing.email;
+      capturedTitle = existing.title;
+      capturedTrackingId = existing.trackingId;
+      capturedFromStatus = prevStatus;
+      capturedToStatus = statusChanged ? status! : null;
+      didStatusChange = statusChanged;
     });
 
-    // C2 fix: guard against ticket deleted between tx commit and this read.
     const updated = await prisma.feedback.findUnique({
       where: { id },
       select: TICKET_DETAIL_SELECT,
     });
     if (!updated) return notFound('Ticket');
+
+    // Send email notification AFTER response data is ready, BEFORE returning (C1 fix: await not void)
+    if (didStatusChange && capturedEmail && capturedToStatus) {
+      try {
+        await emailService.notifyStatusChanged({
+          to: capturedEmail,
+          trackingId: capturedTrackingId,
+          fromStatus: capturedFromStatus,
+          toStatus: capturedToStatus,
+          title: capturedTitle,
+          note: note ?? null,
+        });
+      } catch (e) {
+        console.error('[Email] notifyStatusChanged failed', e);
+      }
+    }
 
     return ok(updated);
   } catch (err) {

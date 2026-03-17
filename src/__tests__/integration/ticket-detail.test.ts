@@ -418,3 +418,24 @@ describe('DELETE /api/v1/tickets/:id', () => {
     expect(res2.status).toBe(404);
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+describe('PATCH /api/v1/tickets/:id — StatusHistory gap', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it('PATCH with same status and no note does not create a new StatusHistory entry', async () => {
+    await setAdminSession();
+    const ticket = await createTestFeedback({ status: 'OPEN' });
+    const { PATCH } = await importHandlers();
+
+    const beforeCount = await prisma.statusHistory.count({ where: { feedbackId: ticket.id } });
+
+    await PATCH(
+      makeRequest('PATCH', ticket.id, { status: 'OPEN' }),
+      makeParams(ticket.id),
+    );
+
+    const afterCount = await prisma.statusHistory.count({ where: { feedbackId: ticket.id } });
+    expect(afterCount).toBe(beforeCount);
+  });
+});

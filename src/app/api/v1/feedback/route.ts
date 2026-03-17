@@ -5,6 +5,7 @@ import { created, badRequest, serverError, tooManyRequests } from "@/lib/api/res
 import { generateTrackingId } from "@/lib/tracking";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { withPublicCors, publicCorsPreflightResponse } from "@/lib/api/cors";
+import { emailService, parseAdminEmails } from "@/server/services/email";
 
 export async function OPTIONS(req: NextRequest) {
   return publicCorsPreflightResponse(req.headers.get("origin"));
@@ -13,7 +14,10 @@ export async function OPTIONS(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const origin = req.headers.get("origin");
   try {
-    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "anonymous";
+    // Use last entry of X-Forwarded-For (platform-appended, not client-controlled on Vercel)
+    // Cap key length to prevent Redis key size abuse (H1 security fix)
+    const forwarded = req.headers.get("x-forwarded-for");
+    const ip = (forwarded?.split(",").at(-1)?.trim() ?? "anonymous").slice(0, 45);
     const allowed = await checkRateLimit(ip);
     if (!allowed) {
       return withPublicCors(tooManyRequests(), origin);
@@ -70,6 +74,19 @@ export async function POST(req: NextRequest) {
     if (!feedback) {
       console.error("[Feedback] Failed after 3 trackingId attempts:", lastError);
       return withPublicCors(serverError("Failed to generate unique tracking ID. Please try again."), origin);
+    }
+
+    // Admin notification — await with catch so email failure never breaks the API response (C1 fix)
+    try {
+      await emailService.notifyAdminNewFeedback({
+        adminEmails: parseAdminEmails(process.env.ADMIN_NOTIFICATION_EMAILS),
+        trackingId: feedback.trackingId,
+        type: feedback.type,
+        title: feedback.title,
+        nickname: parsed.data.nickname ?? null,
+      });
+    } catch (e) {
+      console.error('[Email] notifyAdminNewFeedback failed', e);
     }
 
     return withPublicCors(created(feedback), origin);

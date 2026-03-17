@@ -244,6 +244,8 @@ describe('GET /api/v1/feedback/[trackingId] — trackingIdSchema 유효 형식 �
   it('숫자 포함 trackingId도 유효해야 한다', async () => {
     // 직접 trackingId 생성 (숫자 포함)
     const trackingId = 'FB-a1b2c3d4';
+    // Clean up any leftover record from a previous failed run to avoid unique constraint error
+    await prisma.feedback.deleteMany({ where: { trackingId } });
     const fb = await prisma.feedback.create({
       data: {
         type: 'GENERAL',
