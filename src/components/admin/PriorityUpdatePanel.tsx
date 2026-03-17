@@ -43,9 +43,12 @@ export function PriorityUpdatePanel({ ticket, onUpdate }: PriorityUpdatePanelPro
 
   return (
     <div className="space-y-3 rounded-xl border p-4">
-      <h3 className="text-sm font-medium">Priority</h3>
+      {/* DTL-04: id on heading so select can reference it via aria-labelledby */}
+      <h3 id="priority-heading" className="text-sm font-medium">Priority</h3>
 
+      {/* DTL-04: aria-labelledby links the select to the "Priority" heading */}
       <select
+        aria-labelledby="priority-heading"
         value={priority}
         onChange={(e) => setPriority(e.target.value as Priority | '')}
         className="w-full rounded-lg border bg-background px-3 py-1.5 text-sm"

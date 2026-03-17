@@ -23,7 +23,7 @@ export default async function AdminLoginPage({ searchParams }: Props) {
   const safeCallbackUrl = sanitizeCallbackUrl(callbackUrl);
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-4">
+    <main id="main-content" className="flex min-h-screen items-center justify-center px-4">
       <LoginForm callbackUrl={safeCallbackUrl} />
     </main>
   );

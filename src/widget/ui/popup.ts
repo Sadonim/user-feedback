@@ -26,7 +26,8 @@ export function createPopup(
   el.className = 'wfb-popup';
   el.setAttribute('role', 'dialog');
   el.setAttribute('aria-modal', 'true');
-  el.setAttribute('aria-label', 'Submit Feedback');
+  /* WGT-05: aria-labelledby keeps accessible name in sync with visible title */
+  el.setAttribute('aria-labelledby', 'wfb-popup-title');
   el.style.display = 'none';
 
   const header = createPopupHeader(callbacks.onClose);
@@ -91,9 +92,15 @@ export function createPopup(
             )
           );
           break;
-        case 'success':
+        case 'success': {
           content.appendChild(renderSuccess(state, callbacks.onClose));
+          /* WGT-04 step 2: focus success title before setting trap so SR hears
+             "Feedback Submitted!" rather than the copy button text */
+          requestAnimationFrame(() => {
+            content.querySelector<HTMLElement>('.wfb-success-title')?.focus();
+          });
           break;
+        }
       }
 
       // [H2] 팝업 열릴 때 포커스 트랩 설정
@@ -120,6 +127,8 @@ function createPopupHeader(onClose: () => void): HTMLElement {
 
   const title = document.createElement('span');
   title.className = 'wfb-popup-title';
+  /* WGT-05: id referenced by aria-labelledby on the dialog element */
+  title.id = 'wfb-popup-title';
   title.textContent = 'Send Feedback'; // [C2] textContent 사용
 
   const closeBtn = document.createElement('button');

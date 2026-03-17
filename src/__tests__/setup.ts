@@ -3,9 +3,14 @@
  *
  * - .env.test → .env.local → .env 순서로 환경 변수 로드
  * - NextAuth가 AUTH_SECRET을 요구하므로 테스트용 기본값 설정
+ * - jest-axe toHaveNoViolations matcher 등록
  */
 import { config } from 'dotenv';
 import path from 'path';
+import { expect } from 'vitest';
+import { toHaveNoViolations } from 'jest-axe';
+
+expect.extend(toHaveNoViolations);
 
 const root = path.resolve(__dirname, '../../..');
 

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { TicketStatusBadge } from './TicketStatusBadge';
 import { TicketTypeBadge } from './TicketTypeBadge';
 import type { TicketListItem } from '@/types';
@@ -12,7 +12,10 @@ export function RecentTicketsTable({ tickets }: RecentTicketsTableProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recent Tickets</CardTitle>
+        {/* RST-01: h2 for proper heading hierarchy under Dashboard h1 */}
+        <h2 data-slot="card-title" className="text-base leading-snug font-medium">
+          Recent Tickets
+        </h2>
       </CardHeader>
       <CardContent>
         {tickets.length === 0 ? (
@@ -20,14 +23,17 @@ export function RecentTicketsTable({ tickets }: RecentTicketsTableProps) {
         ) : (
           <div className="space-y-2">
             {tickets.map((ticket) => (
+              /* RST-02: clean aria-label so SR reads just the title, not badge noise */
               <Link
                 key={ticket.id}
                 href={`/admin/tickets/${ticket.id}`}
+                aria-label={`View ticket: ${ticket.title}`}
                 className="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-muted"
               >
-                <TicketTypeBadge type={ticket.type} />
+                {/* RST-02: badges are visual sugar; aria-label on Link covers intent */}
+                <TicketTypeBadge type={ticket.type} aria-hidden />
                 <span className="flex-1 truncate text-sm">{ticket.title}</span>
-                <TicketStatusBadge status={ticket.status} />
+                <TicketStatusBadge status={ticket.status} aria-hidden />
               </Link>
             ))}
           </div>

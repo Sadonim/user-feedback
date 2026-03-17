@@ -47,11 +47,14 @@ export function StatusUpdatePanel({ ticket, onUpdate }: StatusUpdatePanelProps) 
   return (
     <div className="space-y-3 rounded-xl border p-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium">Status</h3>
+        {/* DTL-02: id on heading so select can reference it via aria-labelledby */}
+        <h3 id="status-heading" className="text-sm font-medium">Status</h3>
         <TicketStatusBadge status={ticket.status} />
       </div>
 
+      {/* DTL-02: aria-labelledby links the select to the "Status" heading */}
       <select
+        aria-labelledby="status-heading"
         value={selectedStatus}
         onChange={(e) => setSelectedStatus(e.target.value as TicketStatus)}
         className="w-full rounded-lg border bg-background px-3 py-1.5 text-sm"
@@ -64,7 +67,12 @@ export function StatusUpdatePanel({ ticket, onUpdate }: StatusUpdatePanelProps) 
         ))}
       </select>
 
+      {/* DTL-03: explicit label for the note textarea */}
+      <label htmlFor="status-note" className="sr-only">
+        Status update note
+      </label>
       <textarea
+        id="status-note"
         value={note}
         onChange={(e) => setNote(e.target.value)}
         placeholder="Add a note (optional)"

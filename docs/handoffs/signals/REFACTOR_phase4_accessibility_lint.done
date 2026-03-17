@@ -1,0 +1,23 @@
+AGENT: REFACTOR
+FEATURE: phase4_accessibility_lint
+DATE: 2026-03-17
+STATUS: DONE
+SUMMARY: 1 file fixed — eliminated react-hooks/set-state-in-effect lint error in LoginForm.tsx
+
+ISSUE:
+  LoginForm.tsx line 33: setShouldFocusError(false) called inside useEffect body
+  violated the react-hooks/set-state-in-effect rule.
+  The shouldFocusError boolean state was only ever used as a signal to trigger
+  the effect — a pattern that creates an extra render cycle and a lint violation.
+
+FIX:
+  Replaced shouldFocusError useState(false) with hasFocusedRef = useRef(false).
+  The effect now watches `error` directly (already in state) and uses the ref
+  as a guard to prevent re-focusing on re-renders while the same error persists:
+    - error transitions null → string: focus fires once, hasFocusedRef = true
+    - error persists across re-renders: guard blocks duplicate focus
+    - error transitions string → null (setError(null) on new attempt): ref resets
+  Removed setShouldFocusError(true) call from handleSubmit; setError() alone
+  is sufficient to trigger the effect.
+
+OUTPUT_FILE: src/components/auth/LoginForm.tsx

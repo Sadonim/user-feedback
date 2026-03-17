@@ -33,27 +33,28 @@ function makeOptions(origin: string) {
   });
 }
 
+vi.mock('@/lib/rate-limit', () => ({ checkRateLimit: vi.fn().mockResolvedValue(true) }));
+vi.mock('@/lib/tracking', () => ({ generateTrackingId: vi.fn().mockReturnValue('FB-cors1234') }));
+vi.mock('@/server/db/prisma', () => ({
+  prisma: {
+    feedback: {
+      create: vi.fn().mockResolvedValue({
+        id: 'test-id',
+        trackingId: 'FB-cors1234',
+        type: 'BUG',
+        status: 'OPEN',
+        title: 'CORS test',
+        createdAt: new Date().toISOString(),
+      }),
+    },
+  },
+}));
+
 // ─────────────────────────────────────────────────────────────────────────────
 describe('CORS_PUBLIC_OPEN=true — 공개 모드', () => {
   beforeEach(() => {
     vi.resetModules();
     process.env.CORS_PUBLIC_OPEN = 'true';
-    vi.mock('@/lib/rate-limit', () => ({ checkRateLimit: vi.fn().mockResolvedValue(true) }));
-    vi.mock('@/lib/tracking', () => ({ generateTrackingId: vi.fn().mockReturnValue('FB-cors1234') }));
-    vi.mock('@/server/db/prisma', () => ({
-      prisma: {
-        feedback: {
-          create: vi.fn().mockResolvedValue({
-            id: 'test-id',
-            trackingId: 'FB-cors1234',
-            type: 'BUG',
-            status: 'OPEN',
-            title: 'CORS test',
-            createdAt: new Date().toISOString(),
-          }),
-        },
-      },
-    }));
   });
 
   afterEach(() => {
@@ -89,22 +90,6 @@ describe('CORS_PUBLIC_OPEN=false (기본값) — allowlist 모드', () => {
     vi.resetModules();
     process.env.CORS_PUBLIC_OPEN = 'false';
     process.env.CORS_ALLOWED_ORIGINS = 'http://localhost:3000';
-    vi.mock('@/lib/rate-limit', () => ({ checkRateLimit: vi.fn().mockResolvedValue(true) }));
-    vi.mock('@/lib/tracking', () => ({ generateTrackingId: vi.fn().mockReturnValue('FB-cors1234') }));
-    vi.mock('@/server/db/prisma', () => ({
-      prisma: {
-        feedback: {
-          create: vi.fn().mockResolvedValue({
-            id: 'test-id',
-            trackingId: 'FB-cors1234',
-            type: 'BUG',
-            status: 'OPEN',
-            title: 'CORS test',
-            createdAt: new Date().toISOString(),
-          }),
-        },
-      },
-    }));
   });
 
   afterEach(() => {

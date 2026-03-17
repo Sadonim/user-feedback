@@ -54,10 +54,17 @@ const FORM_FIELDS: readonly FormField[] = [
 const SUBMIT_BTN_IDLE = 'Submit Feedback';
 const SUBMIT_BTN_LOADING = 'Submitting…';
 
-const TYPE_LABELS: Record<string, string> = {
-  BUG: '🐛 Bug Report',
-  FEATURE: '✨ Feature Request',
-  GENERAL: '💬 General',
+/* WGT-03: text-only labels for the type badge (emoji rendered separately) */
+const TYPE_TEXT: Record<string, string> = {
+  BUG: 'Bug Report',
+  FEATURE: 'Feature Request',
+  GENERAL: 'General',
+};
+
+const TYPE_EMOJI: Record<string, string> = {
+  BUG: '🐛',
+  FEATURE: '✨',
+  GENERAL: '💬',
 };
 
 export function renderForm(
@@ -73,15 +80,31 @@ export function renderForm(
   const header = document.createElement('div');
   header.className = 'wfb-form-header';
 
+  /* WGT-01: accessible back button — aria-label replaces raw arrow announcement */
   const backBtn = document.createElement('button');
   backBtn.className = 'wfb-back-btn';
   backBtn.setAttribute('data-wfb-back', '');
-  backBtn.textContent = '← Back';
+  backBtn.setAttribute('aria-label', 'Go back to type selection');
+  // Visible arrow text is decorative
+  const arrowSpan = document.createElement('span');
+  arrowSpan.setAttribute('aria-hidden', 'true');
+  arrowSpan.textContent = '← Back';
+  backBtn.appendChild(arrowSpan);
   backBtn.addEventListener('click', onBack);
 
+  /* WGT-03: type badge — emoji in aria-hidden span, text in separate span */
   const typeBadge = document.createElement('span');
   typeBadge.className = 'wfb-form-type-badge';
-  typeBadge.textContent = TYPE_LABELS[state.selectedType ?? ''] ?? '';
+  const selectedType = state.selectedType ?? '';
+  if (selectedType) {
+    const emojiSpan = document.createElement('span');
+    emojiSpan.setAttribute('aria-hidden', 'true');
+    emojiSpan.textContent = (TYPE_EMOJI[selectedType] ?? '') + ' ';
+    const textSpan = document.createElement('span');
+    textSpan.textContent = TYPE_TEXT[selectedType] ?? selectedType;
+    typeBadge.appendChild(emojiSpan);
+    typeBadge.appendChild(textSpan);
+  }
 
   header.append(backBtn, typeBadge);
   container.appendChild(header);
@@ -148,6 +171,8 @@ export function renderForm(
   const submitBtn = document.createElement('button');
   submitBtn.className = 'wfb-submit-btn';
   submitBtn.setAttribute('data-wfb-submit', '');
+  /* WGT-02: initial aria-busy state */
+  submitBtn.setAttribute('aria-busy', state.step === 'submitting' ? 'true' : 'false');
   submitBtn.disabled = state.step === 'submitting';
   submitBtn.textContent = state.step === 'submitting' ? SUBMIT_BTN_LOADING : SUBMIT_BTN_IDLE;
   submitBtn.addEventListener('click', onSubmit);
@@ -176,5 +201,7 @@ export function updateFormState(
   if (submitBtn) {
     submitBtn.disabled = state.step === 'submitting';
     submitBtn.textContent = state.step === 'submitting' ? SUBMIT_BTN_LOADING : SUBMIT_BTN_IDLE;
+    /* WGT-02: aria-busy reflects submitting state without relying on text change alone */
+    submitBtn.setAttribute('aria-busy', state.step === 'submitting' ? 'true' : 'false');
   }
 }

@@ -3,6 +3,8 @@ import type { FeedbackType } from '@/types';
 
 interface TicketTypeBadgeProps {
   type: FeedbackType;
+  /** Pass true when the badge is inside a link that already has a descriptive aria-label */
+  'aria-hidden'?: boolean;
 }
 
 const typeConfig: Record<FeedbackType, { label: string; className: string }> =
@@ -24,10 +26,11 @@ const typeConfig: Record<FeedbackType, { label: string; className: string }> =
     },
   };
 
-export function TicketTypeBadge({ type }: TicketTypeBadgeProps) {
+export function TicketTypeBadge({ type, 'aria-hidden': ariaHidden }: TicketTypeBadgeProps) {
   const { label, className } = typeConfig[type];
   return (
     <span
+      aria-hidden={ariaHidden}
       className={cn(
         'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
         className

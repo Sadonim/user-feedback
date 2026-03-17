@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function TrackPage() {
   return (
-    <main className="container mx-auto px-4 py-12">
+    <main id="main-content" className="container mx-auto px-4 py-12">
       <Suspense fallback={<div className="text-center text-muted-foreground">Loading...</div>}>
         <TrackingViewWrapper />
       </Suspense>

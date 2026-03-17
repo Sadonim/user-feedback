@@ -1,0 +1,46 @@
+AGENT: TESTER
+FEATURE: phase4_accessibility_lint
+DATE: 2026-03-17
+STATUS: DONE
+SUMMARY: Removed unused imports from 7 a11y test files; moved nested vi.mock() calls to module top level in feedback-cors.test.ts; all 112 a11y tests now passing (GREEN)
+
+LINT_FIXES:
+  src/__tests__/a11y/admin-sidebar.a11y.test.tsx
+    - Removed: import { axe } from 'jest-axe'
+    - Removed: const { default: userEvent } = await import('@testing-library/user-event')
+    - Removed: const user = userEvent.setup()  (declared but never used in that test)
+    - Changed test to sync (no longer async since user was the only reason)
+
+  src/__tests__/a11y/admin-tickets.a11y.test.tsx
+    - Removed: import { axe } from 'jest-axe'
+
+  src/__tests__/a11y/login-page.a11y.test.tsx
+    - Removed: import { axe } from 'jest-axe'
+
+  src/__tests__/a11y/submit-page.a11y.test.tsx
+    - Removed: beforeEach from vitest import (never used in file)
+    - Removed: import userEvent from '@testing-library/user-event' (never used)
+    - Removed: import { axe } from 'jest-axe'
+
+  src/__tests__/a11y/ticket-detail.a11y.test.tsx
+    - Removed: import { axe } from 'jest-axe'
+
+  src/__tests__/a11y/ticket-filters.a11y.test.tsx
+    - Removed: import { axe } from 'jest-axe'
+    - Removed: const user = userEvent.setup() from 'all select controls are reachable via Tab'
+      (user was declared but selectOptions never called in that test)
+    - Changed test to sync (userEvent still needed in 'onChange is called' test)
+
+  src/__tests__/a11y/track-page.a11y.test.tsx
+    - Removed: import { axe } from 'jest-axe'
+
+INTEGRATION_FIX:
+  src/__tests__/integration/feedback-cors.test.ts
+    - Moved all three vi.mock() calls out of beforeEach blocks to module top level
+      (before describe blocks), as required by Vitest's mock hoisting semantics
+    - vi.resetModules() remains in beforeEach for dynamic import() re-evaluation
+    - Mocks affected: @/lib/rate-limit, @/lib/tracking, @/server/db/prisma
+
+TEST_RESULTS:
+  a11y suite:  112/112 passing (GREEN — all accessibility component fixes applied)
+  No regressions introduced

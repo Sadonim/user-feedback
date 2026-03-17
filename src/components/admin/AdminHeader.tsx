@@ -13,7 +13,11 @@ export function AdminHeader({ user }: AdminHeaderProps) {
           <p className="text-sm font-medium">{user.username}</p>
           <p className="text-xs text-muted-foreground">{user.email ?? ''}</p>
         </div>
-        <div className="flex size-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground uppercase">
+        {/* ADM-07: avatar initial is decorative — username/email already provides context */}
+        <div
+          aria-hidden="true"
+          className="flex size-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground uppercase"
+        >
           {user.username.slice(0, 1)}
         </div>
       </div>

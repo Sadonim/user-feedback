@@ -1,0 +1,38 @@
+AGENT: DESIGNER
+FEATURE: phase4_accessibility
+DATE: 2026-03-17
+STATUS: DONE
+SUMMARY: Implemented full WCAG 2.1 AA accessibility audit — ARIA labels/roles/landmarks, keyboard nav, focus management, skip-nav, and widget a11y fixes across all admin and public surfaces; 112 a11y tests pass green.
+OUTPUT_FILE:
+  src/components/layout/SkipNav.tsx
+  src/lib/a11y/focus-utils.ts
+  src/types/jest-axe.d.ts
+  src/types/jest-axe-vitest.d.ts
+  src/app/layout.tsx
+  src/app/(public)/submit/page.tsx
+  src/app/(public)/track/page.tsx
+  src/app/(admin)/layout.tsx
+  src/app/admin/login/page.tsx
+  src/components/feedback/FeedbackForm.tsx
+  src/components/feedback/FeedbackTypeSelector.tsx
+  src/components/feedback/TrackingView.tsx
+  src/components/admin/AdminSidebar.tsx
+  src/components/admin/AdminHeader.tsx
+  src/components/admin/TicketTable.tsx
+  src/components/admin/TicketPagination.tsx
+  src/components/admin/TicketFiltersBar.tsx
+  src/components/admin/TicketListPageContent.tsx
+  src/components/admin/RecentTicketsTable.tsx
+  src/components/admin/StatusUpdatePanel.tsx
+  src/components/admin/PriorityUpdatePanel.tsx
+  src/components/admin/DangerZoneCard.tsx
+  src/components/auth/LoginForm.tsx
+  src/components/auth/LoginErrorAlert.tsx
+  src/widget/ui/steps/form.ts
+  src/widget/ui/steps/success.ts
+  src/widget/ui/popup.ts
+  src/widget/ui/button.ts (no change needed — already compliant)
+  vitest.config.ts
+  src/__tests__/setup.ts (already updated upstream)
+  src/__tests__/a11y/* (8 test files — verified passing)
+  docs/a11y/KEYBOARD_NAV_CHECKLIST.md

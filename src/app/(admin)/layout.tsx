@@ -19,7 +19,7 @@ export default async function AdminLayout({ children }: Props) {
       <AdminSidebar user={session.user} />
       <div className="flex flex-1 flex-col">
         <AdminHeader user={{ ...session.user, email: session.user.email ?? null }} />
-        <main className="flex-1 p-6">{children}</main>
+        <main id="main-content" className="flex-1 p-6">{children}</main>
       </div>
     </div>
   );

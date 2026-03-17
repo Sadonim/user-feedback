@@ -50,7 +50,14 @@ export function TicketListPageContent({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Tickets</h1>
-        <span className="text-sm text-muted-foreground">{initialMeta.total} tickets</span>
+        {/* TBL-07: live region announces result count change when filters applied */}
+        <span
+          aria-live="polite"
+          aria-atomic="true"
+          className="text-sm text-muted-foreground"
+        >
+          {initialMeta.total} tickets
+        </span>
       </div>
 
       <TicketFiltersBar filters={filters} onChange={updateFilters} />

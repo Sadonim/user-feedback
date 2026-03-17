@@ -1,0 +1,46 @@
+AGENT: TESTER
+FEATURE: phase4_accessibility
+DATE: 2026-03-17
+STATUS: DONE
+SUMMARY: 112 tests written across 8 test files; 60 passing (infrastructure + already-compliant checks), 52 failing (RED — documents all missing WCAG 2.1 AA attributes to be fixed by DESIGNER/BACKEND)
+OUTPUT_FILE: src/__tests__/a11y/
+
+TESTS_WRITTEN: 112
+TESTS_PASSING: 60
+TESTS_FAILING_RED: 52
+
+FILES_CREATED:
+  src/__tests__/a11y/submit-page.a11y.test.tsx     — SUB-01..11 (FeedbackForm, FeedbackTypeSelector)
+  src/__tests__/a11y/track-page.a11y.test.tsx      — TRK-01..07 (TrackingView)
+  src/__tests__/a11y/login-page.a11y.test.tsx      — LGN-01..02 (LoginForm, LoginErrorAlert)
+  src/__tests__/a11y/admin-sidebar.a11y.test.tsx   — ADM-02..04, ADM-08 (AdminSidebar)
+  src/__tests__/a11y/admin-tickets.a11y.test.tsx   — TBL-01..04, PAG-01..03 (TicketTable, TicketPagination)
+  src/__tests__/a11y/ticket-filters.a11y.test.tsx  — TBL-05, TBL-08 (TicketFiltersBar)
+  src/__tests__/a11y/ticket-detail.a11y.test.tsx   — DTL-02..06 (StatusUpdatePanel, PriorityUpdatePanel, DangerZoneCard)
+  src/__tests__/a11y/widget-a11y.test.ts           — WGT-01..05 (widget form, success, popup)
+
+PACKAGES_INSTALLED:
+  jest-axe@^9.0.0
+  @testing-library/react@^16.0.0
+  @testing-library/user-event@^14.5.0
+
+SETUP_CHANGES:
+  src/__tests__/setup.ts — added expect.extend(toHaveNoViolations)
+
+TDD_STATE: RED — all 52 failures are legitimate accessibility gaps.
+           Tests will turn GREEN once DESIGNER/BACKEND applies the component fixes
+           described in docs/handoffs/design_phase4_accessibility.md.
+
+RED_FAILURES_BY_COMPONENT:
+  FeedbackTypeSelector:  SUB-02 (aria-pressed), SUB-03 (emoji aria-hidden), SUB-10 (role=group)
+  FeedbackForm:          SUB-01 (h1), SUB-04 (back btn arrow), SUB-05 (aria-live), SUB-07 (aria-busy), SUB-08 (focus on success), SUB-09 (emoji aria-hidden), SUB-11 (autocomplete)
+  TrackingView:          TRK-01 (input label), TRK-02 (status badge aria-label), TRK-03 (aria-live), TRK-04 (dot aria-hidden), TRK-07 (emoji split)
+  LoginForm:             LGN-01 (h1), LGN-02 (error focus)
+  AdminSidebar:          ADM-02 (aria-current), ADM-03 (nav aria-label), ADM-08 (aside aria-label)
+  TicketTable:           TBL-01 (caption), TBL-02 (th scope), TBL-03 (actions sr-only), TBL-04 (aria-busy)
+  TicketFiltersBar:      TBL-05 (select labels), TBL-08 (role=search) — also fails axe
+  StatusUpdatePanel:     DTL-02 (select labelledby), DTL-03 (textarea label) — also fails axe
+  PriorityUpdatePanel:   DTL-04 (select labelledby) — also fails axe
+  Widget (form.ts):      WGT-01 (back btn aria-label), WGT-02 (aria-busy), WGT-03 (emoji split)
+  Widget (success.ts):   WGT-04 (title tabindex=-1)
+  Widget (popup.ts):     WGT-05 (aria-labelledby)

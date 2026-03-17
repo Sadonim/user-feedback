@@ -1,0 +1,47 @@
+AGENT: REFACTOR
+FEATURE: phase4_accessibility
+DATE: 2026-03-17
+STATUS: DONE
+SUMMARY: 3 bugs fixed, 1 shared utility created, 7 test files deduplicated; 12 files modified + 1 created
+
+ISSUES_FIXED:
+  BUG-01 (CRITICAL): TicketStatusBadge and TicketTypeBadge silently dropped aria-hidden prop —
+    both components now accept 'aria-hidden'?: boolean and forward it to the <span> DOM element.
+    Without this fix, RST-02 intent was unmet: badges inside RecentTicketsTable links were still
+    read by screen readers despite the parent Link having aria-label.
+
+  BUG-02 (DEAD CODE): src/lib/a11y/focus-utils.ts was never imported anywhere.
+    FeedbackForm.tsx replaced its inline useEffect focus pattern with useFocusOnMount() from
+    the shared utility, giving focus-utils.ts its first consumer.
+    Also removed the now-unused `useEffect` import from FeedbackForm.tsx.
+
+  BUG-03 (DUPLICATION ×7): Identical configureAxe({...}) block repeated in all 7 React a11y
+    test files (8-line config × 7 = 56 lines of duplication).
+    Extracted to src/__tests__/a11y/axe-config.ts and all 7 files now import a11yAxeConfig.
+    Also cleaned up a duplicate `import type { ... } from '@/types'` in admin-tickets test.
+
+OUTPUT_FILES:
+  CREATED:
+    src/__tests__/a11y/axe-config.ts
+
+  MODIFIED:
+    src/components/admin/TicketStatusBadge.tsx      — add aria-hidden prop forwarding
+    src/components/admin/TicketTypeBadge.tsx         — add aria-hidden prop forwarding
+    src/components/feedback/FeedbackForm.tsx         — use useFocusOnMount; remove useEffect import
+    src/__tests__/a11y/submit-page.a11y.test.tsx     — import a11yAxeConfig
+    src/__tests__/a11y/track-page.a11y.test.tsx      — import a11yAxeConfig
+    src/__tests__/a11y/login-page.a11y.test.tsx      — import a11yAxeConfig
+    src/__tests__/a11y/admin-sidebar.a11y.test.tsx   — import a11yAxeConfig
+    src/__tests__/a11y/admin-tickets.a11y.test.tsx   — import a11yAxeConfig; fix duplicate import
+    src/__tests__/a11y/ticket-filters.a11y.test.tsx  — import a11yAxeConfig
+    src/__tests__/a11y/ticket-detail.a11y.test.tsx   — import a11yAxeConfig
+
+UNCHANGED (clean, no issues found):
+  All other Phase 4 files: SkipNav.tsx, FeedbackTypeSelector.tsx, TrackingView.tsx,
+  AdminSidebar.tsx, AdminHeader.tsx, TicketTable.tsx, TicketPagination.tsx,
+  TicketFiltersBar.tsx, TicketListPageContent.tsx, RecentTicketsTable.tsx,
+  StatusUpdatePanel.tsx, PriorityUpdatePanel.tsx, DangerZoneCard.tsx, LoginForm.tsx,
+  widget/ui/steps/form.ts, widget/ui/steps/success.ts, widget/ui/popup.ts,
+  app layout files, widget-a11y.test.ts
+
+FILE_SIZES: All files well within 400-line target (largest modified file: FeedbackForm.tsx at 261 lines)

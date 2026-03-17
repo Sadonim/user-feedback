@@ -1,0 +1,6 @@
+AGENT: ARCHITECT
+FEATURE: phase4_accessibility
+DATE: 2026-03-17
+STATUS: DONE
+SUMMARY: Revised design addressing all CRITIC issues (C-01 jsdom env, H-01 WCAG 2.1/2.2 scope, H-02 TicketPagination PAG-01/02/03, H-03 FeedbackTypeSelector group SUB-10, H-04 TrackingView emoji TRK-07, H-05 RecentTicketsTable RST-01/02, M-01 SC 3.3.2 fix, M-02 SC 1.3.5 SUB-11, M-03 WGT-04 fix location, M-04 AdminHeader ADM-07, M-05 mock setup, M-06 SC 3.3.3, L-01 reflow promoted, L-02 aria-labelledby primary, L-03 TBL-08, L-04 ADM-08). Total issues: 47.
+OUTPUT_FILE: docs/handoffs/design_phase4_accessibility.md

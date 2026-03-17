@@ -1,0 +1,6 @@
+AGENT: ARCHITECT
+FEATURE: phase4_accessibility
+DATE: 2026-03-17
+STATUS: DONE
+SUMMARY: Designed WCAG 2.1 AA accessibility audit — 37 issues catalogued across all pages and widget, with test strategy (jest-axe + manual checklist), 11 new files and 21 modified files specified
+OUTPUT_FILE: docs/handoffs/design_phase4_accessibility.md

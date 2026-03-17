@@ -38,17 +38,21 @@ export function DangerZoneCard({ ticketId }: DangerZoneCardProps) {
   return (
     <div className="space-y-3 rounded-xl border border-destructive/30 p-4">
       <h3 className="text-sm font-medium text-destructive">Danger Zone</h3>
-      <p className="text-xs text-muted-foreground">
+      {/* DTL-06: id allows delete button to reference this warning text */}
+      <p id="danger-desc" className="text-xs text-muted-foreground">
         Permanently delete this ticket and all its history.
       </p>
+      {/* DTL-06: aria-describedby associates button with the warning text */}
       <Button
         variant="destructive"
         size="sm"
         onClick={handleDelete}
         disabled={isPending}
+        aria-describedby="danger-desc"
         className="w-full"
       >
-        <Trash2 className="size-4" />
+        {/* DTL-05: Trash2 is decorative — button text already names the action */}
+        <Trash2 aria-hidden="true" className="size-4" />
         {isPending ? 'Deleting...' : 'Delete Ticket'}
       </Button>
     </div>

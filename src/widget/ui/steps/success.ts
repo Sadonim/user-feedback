@@ -26,6 +26,9 @@ export function renderSuccess(
   const title = document.createElement('h3');
   title.className = 'wfb-success-title';
   title.textContent = 'Feedback Submitted!';
+  /* WGT-04 step 1: tabindex=-1 makes the heading programmatically focusable
+     so popup.ts can move focus here before trapFocus is set */
+  title.setAttribute('tabindex', '-1');
 
   const desc = document.createElement('p');
   desc.className = 'wfb-success-desc';

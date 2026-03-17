@@ -15,8 +15,11 @@ export function TicketFiltersBar({ filters, onChange }: TicketFiltersBarProps) {
     filters.priority !== undefined;
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    /* TBL-08: role="search" makes filter controls discoverable via landmark navigation */
+    <div role="search" aria-label="Filter tickets" className="flex flex-wrap items-center gap-2">
+      {/* TBL-05: each select has an accessible label */}
       <select
+        aria-label="Filter by status"
         value={filters.status ?? ''}
         onChange={(e) =>
           onChange({ status: (e.target.value as TicketFiltersInput['status']) || undefined })
@@ -31,6 +34,7 @@ export function TicketFiltersBar({ filters, onChange }: TicketFiltersBarProps) {
       </select>
 
       <select
+        aria-label="Filter by type"
         value={filters.type ?? ''}
         onChange={(e) =>
           onChange({ type: (e.target.value as TicketFiltersInput['type']) || undefined })
@@ -44,6 +48,7 @@ export function TicketFiltersBar({ filters, onChange }: TicketFiltersBarProps) {
       </select>
 
       <select
+        aria-label="Sort order"
         value={`${filters.sort}-${filters.order}`}
         onChange={(e) => {
           const [sort, order] = e.target.value.split('-') as [

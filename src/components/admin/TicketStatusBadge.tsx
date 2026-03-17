@@ -3,6 +3,8 @@ import type { TicketStatus } from '@/types';
 
 interface TicketStatusBadgeProps {
   status: TicketStatus;
+  /** Pass true when the badge is inside a link that already has a descriptive aria-label */
+  'aria-hidden'?: boolean;
 }
 
 const statusConfig: Record<
@@ -27,10 +29,11 @@ const statusConfig: Record<
   },
 };
 
-export function TicketStatusBadge({ status }: TicketStatusBadgeProps) {
+export function TicketStatusBadge({ status, 'aria-hidden': ariaHidden }: TicketStatusBadgeProps) {
   const { label, className } = statusConfig[status];
   return (
     <span
+      aria-hidden={ariaHidden}
       className={cn(
         'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
         className
