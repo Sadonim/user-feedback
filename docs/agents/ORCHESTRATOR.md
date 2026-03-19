@@ -121,23 +121,57 @@ cd [project] && git log --oneline --all -- .env
 ---
 
 ### Step 7 — 리팩토링 (REFACTOR)
+
+REFACTOR는 aider+Ollama 에이전트. task 파일 먼저 작성:
+
+`docs/handoffs/REFACTOR_task.md`:
 ```
-[REFACTOR 터미널]
-> [변경된 디렉토리/파일] 리팩토링해줘.
-  완료 시 signals/REFACTOR_[feature].done 생성해줘.
+FEATURE: [feature-name]
+AGENT: REFACTOR
+OUTPUT_FILE: [리팩토링된 주요 파일, 복수면 쉼표 구분]
+
+## Task: Refactor [feature] implementation
+
+Refactor all files changed in [feature].
+Focus on: naming consistency, extract duplicated logic, reduce complexity.
+Do not change behavior — only improve code structure.
+Reference: docs/handoffs/design_[feature].md for intended architecture.
+Create signals/REFACTOR_[feature].done when complete.
 ```
-**완료 감지:** 터미널 idle 상태 (`❯ ` 프롬프트) 또는 `.done` 파일
+
+**완료 감지:** `signals/REFACTOR_[feature].done` STATUS: DONE
 
 ---
 
 ### Step 8 — 최종 검증 (RUNNER)
+
+RUNNER는 aider+Ollama 에이전트. task 파일 먼저 작성:
+
+`docs/handoffs/RUNNER_task.md`:
 ```
-[RUNNER 터미널]
-> [feature] 구현 완료됐어. 전체 실행 검증해줘.
-  결과를 docs/handoffs/run_[feature]_[날짜].md 에 저장하고
-  signals/RUNNER_[feature].done 생성해줘.
+FEATURE: [feature-name]
+AGENT: RUNNER
+OUTPUT_FILE: docs/handoffs/run_[feature]_[date].md
+
+## Task: Verify [feature] implementation
+
+Run full verification and save results to docs/handoffs/run_[feature]_[date].md.
+
+Commands to run in order:
+1. npm install
+2. npx tsc --noEmit
+3. npm run lint
+4. npm run build
+5. npx prisma migrate dev (if schema changed)
+6. npm run test
+7. npm run test:coverage
+
+Set STATUS: PASS only if all commands succeed and coverage >= 80%.
+Set STATUS: FAIL if any command fails — include error output in the report.
+Create signals/RUNNER_[feature].done when complete.
 ```
-**게이트 조건:** STATUS: PASS + 테스트 전부 통과
+
+**게이트 조건:** STATUS: PASS + 테스트 전부 통과. FAIL이면 파이프라인 중단.
 
 ---
 

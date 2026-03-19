@@ -1,6 +1,6 @@
 FEATURE: aider_validation_test
 AGENT: TESTER
-PHASE: validation
+OUTPUT_FILE: src/__tests__/unit/validators-feedback-submit.test.ts
 
 ## Task: Write unit tests for feedback validators
 
