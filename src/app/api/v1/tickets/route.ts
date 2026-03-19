@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
   const { page, limit, status, type, priority, assigneeId, sort, order } = parsed.data;
 
   const where = {
+    deletedAt: null, // 소프트 삭제된 티켓 제외
     ...(status && { status }),
     ...(type && { type }),
     ...(priority && { priority }),

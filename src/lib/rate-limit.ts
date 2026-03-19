@@ -3,6 +3,7 @@ import { Redis } from '@upstash/redis';
 
 // Lazily initialized — avoids crashing at module load when env vars are absent
 let ratelimit: Ratelimit | null = null;
+let trackRatelimit: Ratelimit | null = null;
 let adminRatelimit: Ratelimit | null = null;
 
 function getRedisClient(): Redis | null {
@@ -28,6 +29,20 @@ function getRatelimit(): Ratelimit | null {
   return ratelimit;
 }
 
+function getTrackRatelimit(): Ratelimit | null {
+  if (trackRatelimit) return trackRatelimit;
+  const redis = getRedisClient();
+  if (!redis) return null;
+  // Tracking lookup: 30 requests per 10 minutes per IP (브루트포스 방지)
+  trackRatelimit = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(30, '10 m'),
+    analytics: false,
+    prefix: 'uf:rl:track',
+  });
+  return trackRatelimit;
+}
+
 function getAdminRatelimit(): Ratelimit | null {
   if (adminRatelimit) return adminRatelimit;
   const redis = getRedisClient();
@@ -51,6 +66,24 @@ export async function checkRateLimit(key: string): Promise<boolean> {
     return success;
   } catch (err) {
     console.error('[RateLimit] Redis error — allowing request', err);
+    return true;
+  }
+}
+
+/**
+ * Rate limit for public ticket tracking endpoint.
+ * Key should be the client IP address.
+ * Limit: 30 requests per 10 minutes (브루트포스 스캔 방지).
+ */
+export async function checkTrackRateLimit(key: string): Promise<boolean> {
+  const rl = getTrackRatelimit();
+  if (!rl) return true;
+
+  try {
+    const { success } = await rl.limit(key);
+    return success;
+  } catch (err) {
+    console.error('[RateLimit] Track Redis error — allowing request', err);
     return true;
   }
 }

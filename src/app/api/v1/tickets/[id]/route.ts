@@ -46,7 +46,7 @@ export async function GET(
 
   try {
     const ticket = await prisma.feedback.findUnique({
-      where: { id },
+      where: { id, deletedAt: null },
       select: TICKET_DETAIL_SELECT,
     });
     if (!ticket) return notFound('Ticket');
@@ -93,25 +93,32 @@ export async function PATCH(
   try {
     await prisma.$transaction(async (tx) => {
       const existing = await tx.feedback.findUnique({
-        where: { id },
-        select: { status: true, email: true, title: true, trackingId: true },
+        where: { id, deletedAt: null },
+        select: { status: true, priority: true, email: true, title: true, trackingId: true },
       });
       if (!existing) throw new Error('NOT_FOUND');
 
       const prevStatus = existing.status;
+      const prevPriority = existing.priority;
       await tx.feedback.update({ where: { id }, data: updateData });
 
       const statusChanged = status !== undefined && status !== prevStatus;
-      const noteOnly = !statusChanged && note !== undefined;
+      const priorityChanged = priority !== undefined && priority !== prevPriority;
+      const noteOnly = !statusChanged && !priorityChanged && note !== undefined;
 
-      if (statusChanged || noteOnly) {
+      if (statusChanged || noteOnly || priorityChanged) {
+        // priority 변경 시 note가 없으면 자동 감사 메시지 생성
+        const auditNote = note ?? (priorityChanged && !statusChanged
+          ? `Priority changed to ${priority}`
+          : null);
+
         await tx.statusHistory.create({
           data: {
             feedbackId: id,
             fromStatus: prevStatus,
             toStatus: statusChanged ? status! : prevStatus,
             changedById: authResult.user.id,
-            note: note ?? null,
+            note: auditNote,
           },
         });
       }
@@ -126,7 +133,7 @@ export async function PATCH(
     });
 
     const updated = await prisma.feedback.findUnique({
-      where: { id },
+      where: { id, deletedAt: null },
       select: TICKET_DETAIL_SELECT,
     });
     if (!updated) return notFound('Ticket');
@@ -168,12 +175,15 @@ export async function DELETE(
 
   try {
     const existing = await prisma.feedback.findUnique({
-      where: { id },
+      where: { id, deletedAt: null },
       select: { id: true },
     });
     if (!existing) return notFound('Ticket');
 
-    await prisma.feedback.delete({ where: { id } });
+    await prisma.feedback.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
 
     return ok({ id, deleted: true });
   } catch (err) {

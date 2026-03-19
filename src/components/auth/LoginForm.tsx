@@ -13,6 +13,7 @@ import {
   CardHeader,
 } from '@/components/ui/card';
 import { LoginErrorAlert } from './LoginErrorAlert';
+import { sanitizeCallbackUrl } from '@/lib/auth/sanitize-callback-url';
 
 interface LoginFormProps {
   callbackUrl?: string;
@@ -60,15 +61,8 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
         return;
       }
 
-      // C1 fix: client-side defence-in-depth — never redirect to absolute URLs
-      const safeCallback =
-        callbackUrl &&
-        callbackUrl.startsWith('/') &&
-        !callbackUrl.startsWith('//')
-          ? callbackUrl
-          : '/admin/dashboard';
-
-      router.push(safeCallback);
+      // 서버의 sanitizeCallbackUrl과 동일한 로직으로 검증 (중복 없이 단일 구현 사용)
+      router.push(sanitizeCallbackUrl(callbackUrl));
       router.refresh();
     });
   }
