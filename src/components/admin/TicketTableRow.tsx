@@ -1,7 +1,23 @@
 import Link from 'next/link';
 import { TicketStatusBadge } from './TicketStatusBadge';
 import { TicketTypeBadge } from './TicketTypeBadge';
+import { TicketPriorityBadge } from './TicketPriorityBadge';
 import type { TicketListItem } from '@/types';
+
+function AssigneeCell({ username }: { username?: string | null }) {
+  if (!username) return <span className="text-xs italic text-muted-foreground">—</span>;
+  return (
+    <span className="inline-flex items-center gap-1 text-xs">
+      <span
+        aria-hidden="true"
+        className="inline-flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground"
+      >
+        {username.charAt(0).toUpperCase()}
+      </span>
+      {username}
+    </span>
+  );
+}
 
 interface TicketTableRowProps {
   ticket: TicketListItem;
@@ -33,6 +49,12 @@ export function TicketTableRow({ ticket }: TicketTableRowProps) {
       </td>
       <td className="px-4 py-3">
         <TicketTypeBadge type={ticket.type} />
+      </td>
+      <td className="px-4 py-3">
+        <TicketPriorityBadge priority={ticket.priority} aria-hidden />
+      </td>
+      <td className="px-4 py-3">
+        <AssigneeCell username={ticket.assigneeUsername} />
       </td>
       <td className="px-4 py-3">
         <Link

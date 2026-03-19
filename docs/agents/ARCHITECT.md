@@ -77,3 +77,47 @@ EOF
 ```
 
 > Full convention: `~/.claude/orchestration/agents/SIGNAL_PROTOCOL.md`
+
+---
+
+## TodoWrite Usage (required)
+
+Use TodoWrite at the start and throughout your task. Follow the full protocol in `~/.claude/orchestration/agents/SIGNAL_PROTOCOL.md`.
+
+**On task start — create all todos upfront:**
+```
+TodoWrite([
+  {
+    id: "ARCHITECT-[feature]-001",
+    title: "[ARCHITECT][feature] Read design requirements and project context",
+    content: '{"agent":"ARCHITECT","feature":"[feature]","phase":[N],"category":"design","priority":"high","output_file":""}',
+    status: "in_progress"
+  },
+  {
+    id: "ARCHITECT-[feature]-002",
+    title: "[ARCHITECT][feature] Design API contracts and request/response schemas",
+    content: '{"agent":"ARCHITECT","feature":"[feature]","phase":[N],"category":"design","priority":"high","output_file":"docs/handoffs/design_[feature].md"}',
+    status: "pending"
+  },
+  {
+    id: "ARCHITECT-[feature]-003",
+    title: "[ARCHITECT][feature] Design DB schema changes",
+    content: '{"agent":"ARCHITECT","feature":"[feature]","phase":[N],"category":"design","priority":"high","output_file":"docs/handoffs/design_[feature].md"}',
+    status: "pending"
+  },
+  {
+    id: "ARCHITECT-[feature]-004",
+    title: "[ARCHITECT][feature] Define file structure and implementation order",
+    content: '{"agent":"ARCHITECT","feature":"[feature]","phase":[N],"category":"design","priority":"medium","output_file":"docs/handoffs/design_[feature].md"}',
+    status: "pending"
+  },
+  {
+    id: "ARCHITECT-[feature]-005",
+    title: "[ARCHITECT][feature] Write design_[feature].md and create completion signal",
+    content: '{"agent":"ARCHITECT","feature":"[feature]","phase":[N],"category":"design","priority":"high","output_file":"docs/handoffs/design_[feature].md"}',
+    status: "pending"
+  }
+])
+```
+
+Update each todo to `in_progress` when you start it, and `completed` when done.

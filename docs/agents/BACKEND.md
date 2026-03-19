@@ -86,3 +86,46 @@ EOF
 ```
 
 > Full convention: `~/.claude/orchestration/agents/SIGNAL_PROTOCOL.md`
+
+---
+
+## TodoWrite Usage (required)
+
+**On task start — create all todos upfront:**
+```
+TodoWrite([
+  {
+    id: "BACKEND-[feature]-001",
+    title: "[BACKEND][feature] Read design_[feature].md and identify implementation scope",
+    content: '{"agent":"BACKEND","feature":"[feature]","phase":[N],"category":"implementation","priority":"high","output_file":""}',
+    status: "in_progress"
+  },
+  {
+    id: "BACKEND-[feature]-002",
+    title: "[BACKEND][feature] Implement API route handlers",
+    content: '{"agent":"BACKEND","feature":"[feature]","phase":[N],"category":"implementation","priority":"high","output_file":"src/app/api/"}',
+    status: "pending"
+  },
+  {
+    id: "BACKEND-[feature]-003",
+    title: "[BACKEND][feature] Implement service layer and DB queries",
+    content: '{"agent":"BACKEND","feature":"[feature]","phase":[N],"category":"implementation","priority":"high","output_file":"src/server/services/"}',
+    status: "pending"
+  },
+  {
+    id: "BACKEND-[feature]-004",
+    title: "[BACKEND][feature] Add Zod validation schemas",
+    content: '{"agent":"BACKEND","feature":"[feature]","phase":[N],"category":"implementation","priority":"high","output_file":"src/lib/validators/"}',
+    status: "pending"
+  },
+  {
+    id: "BACKEND-[feature]-005",
+    title: "[BACKEND][feature] Create completion signal",
+    content: '{"agent":"BACKEND","feature":"[feature]","phase":[N],"category":"implementation","priority":"high","output_file":"docs/handoffs/signals/"}',
+    status: "pending"
+  }
+])
+```
+
+Update each todo to `in_progress` when you start it, and `completed` when done.
+Follow the full protocol in `~/.claude/orchestration/agents/SIGNAL_PROTOCOL.md`.

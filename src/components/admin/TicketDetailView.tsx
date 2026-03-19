@@ -4,10 +4,13 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { TicketTypeBadge } from './TicketTypeBadge';
 import { TicketStatusBadge } from './TicketStatusBadge';
+import { TicketPriorityBadge } from './TicketPriorityBadge';
 import { TrackingIdBadge } from './TrackingIdBadge';
 import { StatusHistoryTimeline } from './StatusHistoryTimeline';
 import { StatusUpdatePanel } from './StatusUpdatePanel';
 import { PriorityUpdatePanel } from './PriorityUpdatePanel';
+import { AssigneeBadge } from './AssigneeBadge';
+import { AssigneePanel } from './AssigneePanel';
 import { DangerZoneCard } from './DangerZoneCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { FeedbackDetail } from '@/types';
@@ -43,6 +46,8 @@ export function TicketDetailView({ ticket: initialTicket }: TicketDetailViewProp
           <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
             <TicketTypeBadge type={ticket.type} />
             <TicketStatusBadge status={ticket.status} />
+            <TicketPriorityBadge priority={ticket.priority} />
+            <AssigneeBadge assignee={ticket.assignee} size="sm" />
             <span>
               Submitted by{' '}
               <strong>{ticket.nickname ?? 'Anonymous'}</strong>
@@ -75,6 +80,7 @@ export function TicketDetailView({ ticket: initialTicket }: TicketDetailViewProp
         <div className="space-y-4">
           <StatusUpdatePanel ticket={ticket} onUpdate={setTicket} />
           <PriorityUpdatePanel ticket={ticket} onUpdate={setTicket} />
+          <AssigneePanel ticket={ticket} onUpdate={setTicket} />
           <DangerZoneCard ticketId={ticket.id} />
         </div>
       </div>

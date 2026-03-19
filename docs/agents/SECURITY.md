@@ -110,3 +110,40 @@ EOF
 ```
 
 > Full convention: `~/.claude/orchestration/agents/SIGNAL_PROTOCOL.md`
+
+---
+
+## TodoWrite Usage (required)
+
+**On task start — create all todos upfront:**
+```
+TodoWrite([
+  {
+    id: "SECURITY-[feature]-001",
+    title: "[SECURITY][feature] Review authentication and authorization",
+    content: '{"agent":"SECURITY","feature":"[feature]","phase":[N],"category":"security","priority":"critical","output_file":"docs/handoffs/security_[feature].md"}',
+    status: "in_progress"
+  },
+  {
+    id: "SECURITY-[feature]-002",
+    title: "[SECURITY][feature] Review API security (rate limiting, input validation, CORS)",
+    content: '{"agent":"SECURITY","feature":"[feature]","phase":[N],"category":"security","priority":"critical","output_file":"docs/handoffs/security_[feature].md"}',
+    status: "pending"
+  },
+  {
+    id: "SECURITY-[feature]-003",
+    title: "[SECURITY][feature] Review environment variables and secrets",
+    content: '{"agent":"SECURITY","feature":"[feature]","phase":[N],"category":"security","priority":"high","output_file":"docs/handoffs/security_[feature].md"}',
+    status: "pending"
+  },
+  {
+    id: "SECURITY-[feature]-004",
+    title: "[SECURITY][feature] Write security_[feature].md and create completion signal",
+    content: '{"agent":"SECURITY","feature":"[feature]","phase":[N],"category":"security","priority":"high","output_file":"docs/handoffs/security_[feature].md"}',
+    status: "pending"
+  }
+])
+```
+
+Update each todo to `in_progress` when you start it, and `completed` when done.
+Follow the full protocol in `~/.claude/orchestration/agents/SIGNAL_PROTOCOL.md`.

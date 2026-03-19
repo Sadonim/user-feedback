@@ -18,6 +18,8 @@ export function TicketTable({ tickets, isLoading = false }: TicketTableProps) {
             {/* TBL-02: scope="col" associates headers with their columns */}
             <th scope="col" className="px-4 py-3 text-left font-medium text-muted-foreground">ID</th>
             <th scope="col" className="px-4 py-3 text-left font-medium text-muted-foreground">Type</th>
+            <th scope="col" className="px-4 py-3 text-left font-medium text-muted-foreground">Priority</th>
+            <th scope="col" className="px-4 py-3 text-left font-medium text-muted-foreground">Assignee</th>
             <th scope="col" className="px-4 py-3 text-left font-medium text-muted-foreground">Title</th>
             <th scope="col" className="px-4 py-3 text-left font-medium text-muted-foreground">Submitter</th>
             <th scope="col" className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
@@ -32,7 +34,7 @@ export function TicketTable({ tickets, isLoading = false }: TicketTableProps) {
           {tickets.length === 0 ? (
             <tr>
               <td
-                colSpan={7}
+                colSpan={9}
                 className="px-4 py-12 text-center text-muted-foreground"
               >
                 No tickets found.

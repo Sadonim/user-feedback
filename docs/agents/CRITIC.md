@@ -97,3 +97,46 @@ EOF
 ```
 
 > Full convention: `~/.claude/orchestration/agents/SIGNAL_PROTOCOL.md`
+
+---
+
+## TodoWrite Usage (required)
+
+**On task start — create all todos upfront:**
+```
+TodoWrite([
+  {
+    id: "CRITIC-[feature]-001",
+    title: "[CRITIC][feature] Read design_[feature].md",
+    content: '{"agent":"CRITIC","feature":"[feature]","phase":[N],"category":"review","priority":"high","output_file":""}',
+    status: "in_progress"
+  },
+  {
+    id: "CRITIC-[feature]-002",
+    title: "[CRITIC][feature] Security review (authentication, input validation, rate limiting)",
+    content: '{"agent":"CRITIC","feature":"[feature]","phase":[N],"category":"review","priority":"critical","output_file":"docs/handoffs/critique_[feature].md"}',
+    status: "pending"
+  },
+  {
+    id: "CRITIC-[feature]-003",
+    title: "[CRITIC][feature] Performance review (N+1 queries, pagination, bundle size)",
+    content: '{"agent":"CRITIC","feature":"[feature]","phase":[N],"category":"review","priority":"high","output_file":"docs/handoffs/critique_[feature].md"}',
+    status: "pending"
+  },
+  {
+    id: "CRITIC-[feature]-004",
+    title: "[CRITIC][feature] Edge case and design consistency review",
+    content: '{"agent":"CRITIC","feature":"[feature]","phase":[N],"category":"review","priority":"medium","output_file":"docs/handoffs/critique_[feature].md"}',
+    status: "pending"
+  },
+  {
+    id: "CRITIC-[feature]-005",
+    title: "[CRITIC][feature] Write critique_[feature].md and create completion signal",
+    content: '{"agent":"CRITIC","feature":"[feature]","phase":[N],"category":"review","priority":"high","output_file":"docs/handoffs/critique_[feature].md"}',
+    status: "pending"
+  }
+])
+```
+
+Update each todo to `in_progress` when you start it, and `completed` when done.
+Follow the full protocol in `~/.claude/orchestration/agents/SIGNAL_PROTOCOL.md`.

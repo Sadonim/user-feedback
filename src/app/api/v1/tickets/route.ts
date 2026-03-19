@@ -15,12 +15,18 @@ export async function GET(req: NextRequest) {
     return badRequest(message);
   }
 
-  const { page, limit, status, type, priority, sort, order } = parsed.data;
+  const { page, limit, status, type, priority, assigneeId, sort, order } = parsed.data;
 
   const where = {
     ...(status && { status }),
     ...(type && { type }),
     ...(priority && { priority }),
+    // "unassigned" is the sentinel for tickets with no assignee
+    ...(assigneeId === "unassigned"
+      ? { assigneeId: null }
+      : assigneeId
+        ? { assigneeId }
+        : {}),
   };
 
   // [H4] 동적 sort 필드에 명시적 맵핑을 적용한다.
@@ -48,13 +54,20 @@ export async function GET(req: NextRequest) {
           nickname: true,
           priority: true,
           assigneeId: true,
+          assignee: { select: { username: true } },
           createdAt: true,
           updatedAt: true,
         },
       }),
     ]);
 
-    return ok(items, {
+    // Map Prisma result to TicketListItem (flatten assignee.username → assigneeUsername)
+    const ticketList = items.map(({ assignee, ...rest }) => ({
+      ...rest,
+      assigneeUsername: assignee?.username ?? null,
+    }));
+
+    return ok(ticketList, {
       total,
       page,
       limit,

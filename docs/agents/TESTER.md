@@ -117,3 +117,46 @@ EOF
 ```
 
 > Full convention: `~/.claude/orchestration/agents/SIGNAL_PROTOCOL.md`
+
+---
+
+## TodoWrite Usage (required)
+
+**On task start — create all todos upfront:**
+```
+TodoWrite([
+  {
+    id: "TESTER-[feature]-001",
+    title: "[TESTER][feature] Read design_[feature].md and plan test coverage",
+    content: '{"agent":"TESTER","feature":"[feature]","phase":[N],"category":"test","priority":"high","output_file":""}',
+    status: "in_progress"
+  },
+  {
+    id: "TESTER-[feature]-002",
+    title: "[TESTER][feature] Write unit tests (RED phase)",
+    content: '{"agent":"TESTER","feature":"[feature]","phase":[N],"category":"test","priority":"high","output_file":"src/__tests__/unit/"}',
+    status: "pending"
+  },
+  {
+    id: "TESTER-[feature]-003",
+    title: "[TESTER][feature] Write integration tests (RED phase)",
+    content: '{"agent":"TESTER","feature":"[feature]","phase":[N],"category":"test","priority":"high","output_file":"src/__tests__/integration/"}',
+    status: "pending"
+  },
+  {
+    id: "TESTER-[feature]-004",
+    title: "[TESTER][feature] Verify coverage meets 80%+ minimum",
+    content: '{"agent":"TESTER","feature":"[feature]","phase":[N],"category":"test","priority":"high","output_file":""}',
+    status: "pending"
+  },
+  {
+    id: "TESTER-[feature]-005",
+    title: "[TESTER][feature] Create completion signal",
+    content: '{"agent":"TESTER","feature":"[feature]","phase":[N],"category":"test","priority":"high","output_file":"docs/handoffs/signals/"}',
+    status: "pending"
+  }
+])
+```
+
+Update each todo to `in_progress` when you start it, and `completed` when done.
+Follow the full protocol in `~/.claude/orchestration/agents/SIGNAL_PROTOCOL.md`.

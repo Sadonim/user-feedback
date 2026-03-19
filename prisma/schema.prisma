@@ -56,6 +56,8 @@ model Feedback {
   @@index([type])
   @@index([createdAt])
   @@index([trackingId])
+  @@index([priority])   // Phase 5-1/5-2: speeds up priority-filtered queries
+  @@index([assigneeId]) // Phase 5-2: speeds up assignee-filtered queries
 }
 
 model User {

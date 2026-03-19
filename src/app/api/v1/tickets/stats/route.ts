@@ -1,11 +1,14 @@
-import { ok, serverError } from '@/lib/api/response';
+import { ok, serverError, tooManyRequests } from '@/lib/api/response';
 import { requireAuth } from '@/lib/api/require-auth';
 import { getTicketStats } from '@/server/services/ticket-stats';
+import { checkAdminRateLimit } from '@/lib/rate-limit';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function GET(_request: Request) {
+export async function GET() {
   const authResult = await requireAuth();
   if (authResult.type === 'error') return authResult.response;
+
+  const allowed = await checkAdminRateLimit(authResult.user.id);
+  if (!allowed) return tooManyRequests();
 
   try {
     const stats = await getTicketStats();

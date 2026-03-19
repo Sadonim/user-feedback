@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
-import { LayoutDashboard, Ticket, LogOut } from 'lucide-react';
+import { LayoutDashboard, Ticket, BarChart3, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { UserRole } from '@prisma/client';
 
@@ -14,6 +14,7 @@ interface AdminSidebarProps {
 const navItems = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/tickets', label: 'Tickets', icon: Ticket },
+  { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
 ];
 
 export function AdminSidebar({ user }: AdminSidebarProps) {

@@ -1,0 +1,6 @@
+AGENT: BACKEND
+FEATURE: phase5
+DATE: 2026-03-19
+STATUS: DONE
+SUMMARY: Implemented 5-2 Assignee (GET /admin/users, POST /tickets/:id/assign, assigneeId filter + assignee select), 5-3 SSE stream (/tickets/stream with poll+keepalive+cancel(), useTicketStream hook), 5-4 Analytics API (/analytics/summary, /analytics/timeseries) + analytics service; added @@index([priority]) and @@index([assigneeId]) via migration phase5_indexes; updated validators and types.
+OUTPUT_FILE: src/app/api/v1/admin/users/route.ts, src/app/api/v1/tickets/[id]/assign/route.ts, src/app/api/v1/tickets/stream/route.ts, src/app/api/v1/analytics/summary/route.ts, src/app/api/v1/analytics/timeseries/route.ts, src/server/services/analytics.ts, src/lib/sse/format.ts, src/hooks/useTicketStream.ts

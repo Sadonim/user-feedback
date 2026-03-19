@@ -110,3 +110,46 @@ EOF
 ```
 
 > Full convention: `~/.claude/orchestration/agents/SIGNAL_PROTOCOL.md`
+
+---
+
+## TodoWrite Usage (required)
+
+**On task start — create all todos upfront:**
+```
+TodoWrite([
+  {
+    id: "DESIGNER-[feature]-001",
+    title: "[DESIGNER][feature] Read design_[feature].md and identify FE scope",
+    content: '{"agent":"DESIGNER","feature":"[feature]","phase":[N],"category":"implementation","priority":"high","output_file":""}',
+    status: "in_progress"
+  },
+  {
+    id: "DESIGNER-[feature]-002",
+    title: "[DESIGNER][feature] Implement page layout and routing",
+    content: '{"agent":"DESIGNER","feature":"[feature]","phase":[N],"category":"implementation","priority":"high","output_file":"src/app/"}',
+    status: "pending"
+  },
+  {
+    id: "DESIGNER-[feature]-003",
+    title: "[DESIGNER][feature] Implement UI components",
+    content: '{"agent":"DESIGNER","feature":"[feature]","phase":[N],"category":"implementation","priority":"high","output_file":"src/components/"}',
+    status: "pending"
+  },
+  {
+    id: "DESIGNER-[feature]-004",
+    title: "[DESIGNER][feature] Add dark mode and accessibility",
+    content: '{"agent":"DESIGNER","feature":"[feature]","phase":[N],"category":"implementation","priority":"medium","output_file":"src/components/"}',
+    status: "pending"
+  },
+  {
+    id: "DESIGNER-[feature]-005",
+    title: "[DESIGNER][feature] Create completion signal",
+    content: '{"agent":"DESIGNER","feature":"[feature]","phase":[N],"category":"implementation","priority":"high","output_file":"docs/handoffs/signals/"}',
+    status: "pending"
+  }
+])
+```
+
+Update each todo to `in_progress` when you start it, and `completed` when done.
+Follow the full protocol in `~/.claude/orchestration/agents/SIGNAL_PROTOCOL.md`.

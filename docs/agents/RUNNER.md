@@ -154,3 +154,46 @@ EOF
 ```
 
 > Full convention: `~/.claude/orchestration/agents/SIGNAL_PROTOCOL.md`
+
+---
+
+## TodoWrite Usage (required)
+
+**On task start — create all todos upfront:**
+```
+TodoWrite([
+  {
+    id: "RUNNER-[feature]-001",
+    title: "[RUNNER][feature] Run npm install and audit",
+    content: '{"agent":"RUNNER","feature":"[feature]","phase":[N],"category":"verification","priority":"high","output_file":"docs/handoffs/run_[feature]_[date].md"}',
+    status: "in_progress"
+  },
+  {
+    id: "RUNNER-[feature]-002",
+    title: "[RUNNER][feature] Run type check and lint",
+    content: '{"agent":"RUNNER","feature":"[feature]","phase":[N],"category":"verification","priority":"high","output_file":"docs/handoffs/run_[feature]_[date].md"}',
+    status: "pending"
+  },
+  {
+    id: "RUNNER-[feature]-003",
+    title: "[RUNNER][feature] Run build",
+    content: '{"agent":"RUNNER","feature":"[feature]","phase":[N],"category":"verification","priority":"critical","output_file":"docs/handoffs/run_[feature]_[date].md"}',
+    status: "pending"
+  },
+  {
+    id: "RUNNER-[feature]-004",
+    title: "[RUNNER][feature] Run all tests and verify coverage 80%+",
+    content: '{"agent":"RUNNER","feature":"[feature]","phase":[N],"category":"verification","priority":"critical","output_file":"docs/handoffs/run_[feature]_[date].md"}',
+    status: "pending"
+  },
+  {
+    id: "RUNNER-[feature]-005",
+    title: "[RUNNER][feature] Write run report and create completion signal",
+    content: '{"agent":"RUNNER","feature":"[feature]","phase":[N],"category":"verification","priority":"high","output_file":"docs/handoffs/run_[feature]_[date].md"}',
+    status: "pending"
+  }
+])
+```
+
+Update each todo to `in_progress` when you start it, and `completed` when done.
+Follow the full protocol in `~/.claude/orchestration/agents/SIGNAL_PROTOCOL.md`.

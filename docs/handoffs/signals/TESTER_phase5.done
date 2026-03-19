@@ -1,0 +1,48 @@
+AGENT: TESTER
+FEATURE: phase5
+DATE: 2026-03-19
+STATUS: DONE
+SUMMARY: 83 tests written (718 total, up from 635), coverage 97%+ on lib/validators and lib/api
+OUTPUT_FILE: src/__tests__/
+
+---
+
+## Tests Added (83 new tests across 9 files)
+
+### Unit Tests — 5 files, 55 tests
+
+| File | Tests | Status |
+|------|-------|--------|
+| src/__tests__/unit/validators-phase5.test.ts | 12 | GREEN (schemas already implemented) |
+| src/__tests__/unit/priority-badge.test.tsx | 9 | GREEN (TicketPriorityBadge already implemented) |
+| src/__tests__/unit/priority-filter.test.tsx | 5 | GREEN (TicketFiltersBar priority select already implemented) |
+| src/__tests__/unit/use-ticket-stream.test.ts | 8 | GREEN (useTicketStream hook already implemented) |
+| src/__tests__/unit/summary-cards.test.tsx | 10 | GREEN (AnalyticsSummaryCards already implemented) |
+
+### Integration Tests — 4 files, 39 tests
+
+| File | Tests | Status |
+|------|-------|--------|
+| src/__tests__/integration/admin-users.test.ts | 7 | GREEN — GET /api/v1/admin/users incl. SECURITY passwordHash check |
+| src/__tests__/integration/ticket-assign.test.ts | 9 | GREEN — POST /api/v1/tickets/:id/assign + assigneeId filters |
+| src/__tests__/integration/ticket-stream.test.ts | 7 | GREEN — SSE stream 401/content-type/init event |
+| src/__tests__/integration/analytics.test.ts | 16 | GREEN — summary + timeseries endpoints |
+
+### Bug Fixes
+
+- src/__tests__/a11y/ticket-filters.a11y.test.tsx: Fixed 2 pre-existing failures
+  caused by Phase 5-1 adding the priority filter <select> (broke index-based
+  select[2] lookup + hardcoded count === 3 assertions)
+
+## Coverage Summary
+
+| Area | Coverage | Target |
+|------|----------|--------|
+| src/lib/validators/ | 100% | 95% ✅ |
+| src/lib/api/ | 97.29% | 90% ✅ |
+| Phase 5 components (hooks, badges, cards) | ~100% | 80% ✅ |
+| src/widget/ | 51% | 80% ❌ PRE-EXISTING |
+
+NOTE: widget/index.ts and widget/ui/steps/index.ts have 0% coverage —
+this is a pre-existing infrastructure limitation (requires real browser DOM).
+The global threshold ERROR predates Phase 5 and was not introduced by these tests.

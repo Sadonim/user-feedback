@@ -162,29 +162,15 @@ READY_FOR_CRITIC
 
 ---
 
-## 터미널 세팅 방법
+## 세션 시작 (operator reference — 에이전트가 실행하지 않음)
 
 ```bash
-# 세션이 없으면 자동 생성
-PROJECT="$HOME/Desktop/Dev_claude/user-feedback"
-SESSION="uf-agents"
-AGENTS=(ARCHITECT CRITIC DESIGNER TESTER SECURITY REFACTOR RUNNER BACKEND)
-
-if ! tmux has-session -t "$SESSION" 2>/dev/null; then
-  tmux new-session -d -s "$SESSION"
-  for AGENT in "${AGENTS[@]}"; do
-    tmux new-window -t "$SESSION" -n "$AGENT" -d
-    tmux send-keys -t "$SESSION:$AGENT" \
-      "cd $PROJECT && claude --system-prompt \"\$(cat docs/agents/${AGENT}.md)\"" Enter
-  done
-fi
-
-# 모니터링 그리드 레이아웃
-cd ~/claude-tmux-grid && bash auto-layout.sh -s "$SESSION" -w overview "${AGENTS[@]}"
-
-# 접속
-tmux attach -t "$SESSION"
+bash ~/.claude/orchestration/scripts/setup_tmux.sh \
+  ~/Desktop/Dev_claude/user-feedback uf-agents \
+  ARCHITECT CRITIC DESIGNER TESTER SECURITY REFACTOR RUNNER BACKEND
 ```
+
+> 세션이 이미 존재하면: `tmux attach -t uf-agents`
 
 ---
 
@@ -193,17 +179,18 @@ tmux attach -t "$SESSION"
 에이전트 pane에 `hit your limit` 메시지 발견 시:
 
 ```bash
-AGENT="BACKEND"  # 대상 에이전트
+SESSION="uf-agents"
 PROJECT="$HOME/Desktop/Dev_claude/user-feedback"
+AGENT="BACKEND"  # 대상 에이전트로 변경
 
 # 1. 메뉴 닫기
-tmux send-keys -t "uf-agents:$AGENT" Escape
+tmux send-keys -t "${SESSION}:${AGENT}" Escape
 sleep 1
 # 2. Claude 종료
-tmux send-keys -t "uf-agents:$AGENT" "q" Enter
+tmux send-keys -t "${SESSION}:${AGENT}" "q" Enter
 sleep 2
 # 3. 재시작
-tmux send-keys -t "uf-agents:$AGENT" \
+tmux send-keys -t "${SESSION}:${AGENT}" \
   "cd $PROJECT && claude --system-prompt \"\$(cat docs/agents/${AGENT}.md)\"" Enter
 sleep 10
 # 4. 이전 작업 이어서 지시 (직전 프롬프트 재전송)

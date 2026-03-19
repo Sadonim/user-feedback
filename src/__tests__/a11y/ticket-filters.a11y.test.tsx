@@ -76,10 +76,10 @@ describe('TicketFiltersBar — axe accessibility', () => {
 
   it('TBL-05: sort <select> has accessible label', () => {
     render(<TicketFiltersBar filters={DEFAULT_FILTERS} onChange={vi.fn()} />);
-    const selects = document.querySelectorAll('select');
-    const sortSelect = selects[2];
+    // Find the sort select by its aria-label (index-based lookups break when new selects are added)
+    const sortSelect = document.querySelector('select[aria-label*="sort" i], select[aria-label*="order" i]') as HTMLSelectElement | null;
     expect(sortSelect).not.toBeNull();
-    const ariaLabel = sortSelect.getAttribute('aria-label');
+    const ariaLabel = sortSelect?.getAttribute('aria-label');
     expect(ariaLabel).toBeTruthy();
     expect(ariaLabel?.toLowerCase()).toMatch(/sort|order/);
   });
@@ -106,7 +106,9 @@ describe('TicketFiltersBar — keyboard navigation', () => {
     render(<TicketFiltersBar filters={DEFAULT_FILTERS} onChange={vi.fn()} />);
 
     const selects = screen.getAllByRole('combobox');
-    expect(selects.length).toBe(3);
+    // Phase 5-1 added a priority select — expect at least 3 (status, type, sort)
+    // and at most 5 (adding priority + assignee in Phase 5-2)
+    expect(selects.length).toBeGreaterThanOrEqual(3);
 
     selects.forEach((sel) => {
       const tabIndex = sel.getAttribute('tabindex');

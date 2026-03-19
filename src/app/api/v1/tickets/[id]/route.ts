@@ -16,6 +16,10 @@ const TICKET_DETAIL_SELECT = {
   email: true,
   priority: true,
   assigneeId: true,
+  // Phase 5-2: include assignee object (no passwordHash — explicit select)
+  assignee: {
+    select: { id: true, username: true, email: true, role: true },
+  },
   createdAt: true,
   updatedAt: true,
   statusHistory: {

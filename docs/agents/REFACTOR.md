@@ -91,3 +91,46 @@ EOF
 ```
 
 > Full convention: `~/.claude/orchestration/agents/SIGNAL_PROTOCOL.md`
+
+---
+
+## TodoWrite Usage (required)
+
+**On task start — create all todos upfront:**
+```
+TodoWrite([
+  {
+    id: "REFACTOR-[feature]-001",
+    title: "[REFACTOR][feature] Check file sizes (400 line limit)",
+    content: '{"agent":"REFACTOR","feature":"[feature]","phase":[N],"category":"refactor","priority":"critical","output_file":""}',
+    status: "in_progress"
+  },
+  {
+    id: "REFACTOR-[feature]-002",
+    title: "[REFACTOR][feature] Remove mutation patterns and enforce immutability",
+    content: '{"agent":"REFACTOR","feature":"[feature]","phase":[N],"category":"refactor","priority":"critical","output_file":""}',
+    status: "pending"
+  },
+  {
+    id: "REFACTOR-[feature]-003",
+    title: "[REFACTOR][feature] Remove duplication and dead code",
+    content: '{"agent":"REFACTOR","feature":"[feature]","phase":[N],"category":"refactor","priority":"medium","output_file":""}',
+    status: "pending"
+  },
+  {
+    id: "REFACTOR-[feature]-004",
+    title: "[REFACTOR][feature] Fix TypeScript strict violations and any types",
+    content: '{"agent":"REFACTOR","feature":"[feature]","phase":[N],"category":"refactor","priority":"high","output_file":""}',
+    status: "pending"
+  },
+  {
+    id: "REFACTOR-[feature]-005",
+    title: "[REFACTOR][feature] Create completion signal",
+    content: '{"agent":"REFACTOR","feature":"[feature]","phase":[N],"category":"refactor","priority":"high","output_file":"docs/handoffs/signals/"}',
+    status: "pending"
+  }
+])
+```
+
+Update each todo to `in_progress` when you start it, and `completed` when done.
+Follow the full protocol in `~/.claude/orchestration/agents/SIGNAL_PROTOCOL.md`.
