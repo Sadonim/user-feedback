@@ -32,17 +32,30 @@ export function FeedbackTypeSelector({ value, onChange }: FeedbackTypeSelectorPr
             /* SUB-02: aria-pressed communicates selected state beyond CSS */
             aria-pressed={value === type.value}
             className={[
-              "flex flex-col items-center gap-2 rounded-lg border-2 p-4 text-center transition-colors",
-              "hover:border-primary hover:bg-primary/5",
+              "flex flex-col items-center gap-2 rounded-xl border-2 p-5 text-center",
+              "transition-all duration-150 ease-out",
+              "hover:scale-[1.03] hover:shadow-md",
+              "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+              "active:scale-[0.98]",
               value === type.value
-                ? "border-primary bg-primary/10"
-                : "border-border bg-background",
+                ? "border-primary bg-primary/8 shadow-sm scale-[1.03]"
+                : "border-border bg-background hover:border-primary/40 hover:bg-primary/5",
             ].join(" ")}
           >
             {/* SUB-03: emoji is decorative — hide from SR */}
-            <span aria-hidden="true" className="text-2xl">{type.emoji}</span>
+            <span
+              aria-hidden="true"
+              className={[
+                "flex size-11 items-center justify-center rounded-full text-xl",
+                "transition-transform duration-150",
+                value === type.value ? "scale-110" : "",
+                value === type.value ? "bg-primary/12" : "bg-muted",
+              ].join(" ")}
+            >
+              {type.emoji}
+            </span>
             <span className="text-sm font-semibold">{type.label}</span>
-            <span className="text-xs text-muted-foreground">{type.description}</span>
+            <span className="text-xs text-muted-foreground leading-snug">{type.description}</span>
           </button>
         ))}
       </div>

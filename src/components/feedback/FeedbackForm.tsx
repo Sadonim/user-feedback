@@ -20,11 +20,61 @@ import type { FeedbackType } from "@/types";
 
 type Step = "type" | "details" | "success";
 
+const STEPS: Step[] = ["type", "details", "success"];
+const STEP_LABELS = ["Type", "Details", "Done"];
+
 const STEP_ANNOUNCEMENTS: Record<Step, string> = {
   type: "Step 1 of 3: Select feedback type",
   details: "Step 2 of 3: Enter feedback details",
   success: "Feedback submitted successfully",
 };
+
+function StepProgress({ current }: { current: Step }) {
+  const currentIdx = STEPS.indexOf(current);
+
+  return (
+    <div className="flex items-center gap-0 mb-6" aria-hidden="true">
+      {STEPS.map((step, idx) => {
+        const isCompleted = idx < currentIdx;
+        const isActive = idx === currentIdx;
+        return (
+          <div key={step} className="flex flex-1 items-center">
+            <div className="flex flex-col items-center gap-1">
+              <div
+                className={cn(
+                  "flex size-6 items-center justify-center rounded-full text-xs font-semibold transition-all duration-300",
+                  isCompleted
+                    ? "bg-primary text-primary-foreground scale-95"
+                    : isActive
+                      ? "bg-primary text-primary-foreground ring-4 ring-primary/20"
+                      : "bg-muted text-muted-foreground"
+                )}
+              >
+                {isCompleted ? "✓" : idx + 1}
+              </div>
+              <span
+                className={cn(
+                  "text-[10px] font-medium transition-colors duration-200",
+                  isActive ? "text-foreground" : "text-muted-foreground"
+                )}
+              >
+                {STEP_LABELS[idx]}
+              </span>
+            </div>
+            {idx < STEPS.length - 1 && (
+              <div
+                className={cn(
+                  "h-px flex-1 mx-2 mb-4 transition-all duration-500",
+                  isCompleted ? "bg-primary" : "bg-border"
+                )}
+              />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export function FeedbackForm() {
   const router = useRouter();
@@ -32,6 +82,7 @@ export function FeedbackForm() {
   const [selectedType, setSelectedType] = useState<FeedbackType | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [trackingId, setTrackingId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   /* SUB-08: focus success card on step transition */
   const successRef = useRef<HTMLDivElement>(null);
@@ -51,6 +102,13 @@ export function FeedbackForm() {
 
   function handleChange(field: keyof typeof formData, value: string) {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function handleCopyId() {
+    if (!trackingId) return;
+    await navigator.clipboard.writeText(trackingId);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -94,29 +152,46 @@ export function FeedbackForm() {
         <Card
           ref={successRef}
           tabIndex={-1}
-          className="mx-auto max-w-lg outline-none"
+          className="mx-auto max-w-lg outline-none animate-in fade-in-0 zoom-in-95 duration-300"
         >
-          <CardHeader className="text-center">
-            {/* SUB-09: decorative emoji hidden from SR */}
-            <div aria-hidden="true" className="mx-auto mb-2 text-4xl">✅</div>
-            {/* SUB-01: h1 for proper heading hierarchy (CardTitle is a div; render h1 directly) */}
+          <CardHeader className="text-center pb-2">
+            <StepProgress current="success" />
+            {/* Animated checkmark */}
+            <div
+              aria-hidden="true"
+              className="mx-auto mb-3 flex size-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30 animate-in zoom-in-50 duration-500"
+            >
+              <span className="text-3xl">✅</span>
+            </div>
+            {/* SUB-01: h1 for proper heading hierarchy */}
             <h1
               data-slot="card-title"
-              className="text-base leading-snug font-medium"
+              className="text-lg font-semibold leading-snug"
             >
-              Feedback Submitted!
+              Submitted!
             </h1>
             <CardDescription>Your feedback has been received.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-center">
-            <p className="text-sm text-muted-foreground">Your tracking ID:</p>
-            <div className="rounded-md bg-muted px-4 py-3">
-              <code className="text-lg font-bold tracking-wider">{trackingId}</code>
+            <div>
+              <p className="text-xs text-muted-foreground mb-2">Your tracking ID:</p>
+              <button
+                onClick={handleCopyId}
+                className="group relative w-full rounded-lg bg-muted px-4 py-3 transition-colors hover:bg-muted/80 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                aria-label={copied ? "Copied!" : "Click to copy tracking ID"}
+              >
+                <code className="tabular-nums text-base font-bold tracking-wider">
+                  {trackingId}
+                </code>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground transition-opacity group-hover:opacity-100">
+                  {copied ? "✓ Copied" : "Copy"}
+                </span>
+              </button>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Save this ID to check your feedback status later.
+              </p>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Save this ID to check your feedback status later.
-            </p>
-            <div className="flex gap-2 pt-2">
+            <div className="flex gap-2 pt-1">
               <button
                 className={cn(buttonVariants({ variant: "outline" }), "flex-1")}
                 onClick={() => router.push(`/track?id=${trackingId}`)}
@@ -130,6 +205,7 @@ export function FeedbackForm() {
                   setSelectedType(null);
                   setFormData({ title: "", description: "", nickname: "", email: "" });
                   setTrackingId(null);
+                  setCopied(false);
                 }}
               >
                 Submit Another
@@ -138,12 +214,13 @@ export function FeedbackForm() {
           </CardContent>
         </Card>
       ) : step === "type" ? (
-        <Card className="mx-auto max-w-lg">
+        <Card className="mx-auto max-w-lg animate-in fade-in-0 slide-in-from-bottom-2 duration-200">
           <CardHeader>
+            <StepProgress current="type" />
             {/* SUB-01: h1 so page has a heading landmark */}
             <h1
               data-slot="card-title"
-              className="text-base leading-snug font-medium"
+              className="text-base leading-snug font-semibold"
             >
               Submit Feedback
             </h1>
@@ -154,22 +231,23 @@ export function FeedbackForm() {
           </CardContent>
         </Card>
       ) : (
-        <Card className="mx-auto max-w-lg">
+        <Card className="mx-auto max-w-lg animate-in fade-in-0 slide-in-from-right-2 duration-200">
           <CardHeader>
+            <StepProgress current="details" />
             {/* SUB-04: raw ← replaced with accessible pattern */}
             <button
               type="button"
               onClick={() => setStep("type")}
-              className="mb-1 text-sm text-muted-foreground hover:text-foreground"
+              className="mb-2 flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors w-fit"
             >
               <span aria-hidden="true">←</span>
               <span className="sr-only">Back to type selection</span>
-              <span aria-hidden="true"> Back</span>
+              <span aria-hidden="true">Back</span>
             </button>
             {/* SUB-01: h1 for proper heading hierarchy */}
             <h1
               data-slot="card-title"
-              className="text-base leading-snug font-medium"
+              className="text-base leading-snug font-semibold"
             >
               Tell us more
             </h1>
@@ -207,9 +285,19 @@ export function FeedbackForm() {
                   aria-describedby="desc-counter"
                   required
                 />
-                <p id="desc-counter" className="text-right text-xs text-muted-foreground">
-                  {formData.description.length}/5000
-                </p>
+                <div className="flex justify-end">
+                  <p
+                    id="desc-counter"
+                    className={cn(
+                      "text-xs tabular-nums transition-colors",
+                      formData.description.length > 4500
+                        ? "text-destructive"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {formData.description.length}/5000
+                  </p>
+                </div>
               </div>
 
               <div className="space-y-1.5">
@@ -228,7 +316,8 @@ export function FeedbackForm() {
 
               <div className="space-y-1.5">
                 <Label htmlFor="email">
-                  Email <span className="text-muted-foreground">(optional)</span>
+                  Email{" "}
+                  <span className="text-muted-foreground font-normal">(optional)</span>
                 </Label>
                 {/* SUB-11: autoComplete for cognitive accessibility */}
                 <Input
@@ -244,10 +333,24 @@ export function FeedbackForm() {
 
               <button
                 type="submit"
-                className={cn(buttonVariants(), "w-full")}
+                className={cn(
+                  buttonVariants(),
+                  "w-full transition-all",
+                  isSubmitting && "opacity-70 cursor-not-allowed"
+                )}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Submit Feedback"}
+                {isSubmitting ? (
+                  <span className="flex items-center gap-2">
+                    <span
+                      aria-hidden="true"
+                      className="size-3.5 rounded-full border-2 border-current border-t-transparent animate-spin"
+                    />
+                    Submitting…
+                  </span>
+                ) : (
+                  "Submit Feedback"
+                )}
               </button>
             </form>
           </CardContent>

@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { SlidersHorizontal, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import type { TicketFiltersInput } from '@/lib/validators/feedback';
 import type { AssigneeInfo } from '@/types';
 
@@ -9,6 +11,15 @@ interface TicketFiltersBarProps {
   filters: TicketFiltersInput;
   onChange: (filters: Partial<TicketFiltersInput>) => void;
 }
+
+const selectClass = cn(
+  'h-8 rounded-lg border border-input bg-background px-3 py-1.5 text-sm',
+  'text-foreground transition-colors',
+  'hover:bg-muted/50',
+  'focus:outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50',
+  'disabled:cursor-not-allowed disabled:opacity-50',
+  'cursor-pointer'
+);
 
 export function TicketFiltersBar({ filters, onChange }: TicketFiltersBarProps) {
   const [admins, setAdmins] = useState<AssigneeInfo[]>([]);
@@ -28,15 +39,24 @@ export function TicketFiltersBar({ filters, onChange }: TicketFiltersBarProps) {
     void load();
     return () => { cancelled = true; };
   }, []);
-  const hasActiveFilters =
-    filters.status !== undefined ||
-    filters.type !== undefined ||
-    filters.priority !== undefined ||
-    filters.assigneeId !== undefined;
+
+  const activeFilterCount = [
+    filters.status,
+    filters.type,
+    filters.priority,
+    filters.assigneeId,
+  ].filter(Boolean).length;
+
+  const hasActiveFilters = activeFilterCount > 0;
 
   return (
     /* TBL-08: role="search" makes filter controls discoverable via landmark navigation */
     <div role="search" aria-label="Filter tickets" className="flex flex-wrap items-center gap-2">
+      <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        <SlidersHorizontal className="size-3.5" aria-hidden="true" />
+        <span className="sr-only">Filters:</span>
+      </span>
+
       {/* TBL-05: each select has an accessible label */}
       <select
         aria-label="Filter by status"
@@ -44,7 +64,7 @@ export function TicketFiltersBar({ filters, onChange }: TicketFiltersBarProps) {
         onChange={(e) =>
           onChange({ status: (e.target.value as TicketFiltersInput['status']) || undefined })
         }
-        className="rounded-lg border bg-background px-3 py-1.5 text-sm"
+        className={cn(selectClass, filters.status && 'border-primary/50 bg-primary/5 font-medium')}
       >
         <option value="">All Statuses</option>
         <option value="OPEN">Open</option>
@@ -59,7 +79,7 @@ export function TicketFiltersBar({ filters, onChange }: TicketFiltersBarProps) {
         onChange={(e) =>
           onChange({ type: (e.target.value as TicketFiltersInput['type']) || undefined })
         }
-        className="rounded-lg border bg-background px-3 py-1.5 text-sm"
+        className={cn(selectClass, filters.type && 'border-primary/50 bg-primary/5 font-medium')}
       >
         <option value="">All Types</option>
         <option value="BUG">Bug</option>
@@ -73,7 +93,7 @@ export function TicketFiltersBar({ filters, onChange }: TicketFiltersBarProps) {
         onChange={(e) =>
           onChange({ priority: (e.target.value as TicketFiltersInput['priority']) || undefined })
         }
-        className="rounded-lg border bg-background px-3 py-1.5 text-sm"
+        className={cn(selectClass, filters.priority && 'border-primary/50 bg-primary/5 font-medium')}
       >
         <option value="">All Priorities</option>
         <option value="CRITICAL">Critical</option>
@@ -90,7 +110,7 @@ export function TicketFiltersBar({ filters, onChange }: TicketFiltersBarProps) {
             assigneeId: (e.target.value as TicketFiltersInput['assigneeId']) || undefined,
           })
         }
-        className="rounded-lg border bg-background px-3 py-1.5 text-sm"
+        className={cn(selectClass, filters.assigneeId && 'border-primary/50 bg-primary/5 font-medium')}
       >
         <option value="">All Assignees</option>
         <option value="unassigned">Unassigned</option>
@@ -111,7 +131,7 @@ export function TicketFiltersBar({ filters, onChange }: TicketFiltersBarProps) {
           ];
           onChange({ sort, order });
         }}
-        className="rounded-lg border bg-background px-3 py-1.5 text-sm"
+        className={selectClass}
       >
         <option value="createdAt-desc">Newest First</option>
         <option value="createdAt-asc">Oldest First</option>
@@ -131,8 +151,16 @@ export function TicketFiltersBar({ filters, onChange }: TicketFiltersBarProps) {
               page: 1,
             })
           }
+          className="gap-1.5 text-muted-foreground hover:text-foreground"
         >
-          Clear Filters
+          <X className="size-3" aria-hidden="true" />
+          Clear
+          <span
+            className="flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground tabular-nums"
+            aria-label={`${activeFilterCount} active filters`}
+          >
+            {activeFilterCount}
+          </span>
         </Button>
       )}
     </div>

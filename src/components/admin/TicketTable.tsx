@@ -1,4 +1,7 @@
+import { Inbox } from 'lucide-react';
 import { TicketTableRow } from './TicketTableRow';
+import { EmptyState } from '@/components/ui/empty-state';
+import { SkeletonTableRows } from '@/components/ui/skeleton';
 import type { TicketListItem } from '@/types';
 
 interface TicketTableProps {
@@ -30,14 +33,17 @@ export function TicketTable({ tickets, isLoading = false }: TicketTableProps) {
             </th>
           </tr>
         </thead>
-        <tbody className={isLoading ? 'opacity-50 transition-opacity' : ''}>
-          {tickets.length === 0 ? (
+        <tbody className={isLoading ? 'opacity-60 transition-opacity duration-200' : 'transition-opacity duration-200'}>
+          {isLoading ? (
+            <SkeletonTableRows rows={5} cols={9} />
+          ) : tickets.length === 0 ? (
             <tr>
-              <td
-                colSpan={9}
-                className="px-4 py-12 text-center text-muted-foreground"
-              >
-                No tickets found.
+              <td colSpan={9}>
+                <EmptyState
+                  icon={Inbox}
+                  title="No tickets found"
+                  description="Try adjusting your filters, or wait for new feedback to arrive."
+                />
               </td>
             </tr>
           ) : (
