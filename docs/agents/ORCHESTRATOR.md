@@ -66,14 +66,34 @@ ARCHITECT → CRITIC → (ARCHITECT 수정) → 병렬 구현 → SECURITY → R
 ---
 
 ### Step 4 — 병렬 구현 (BACKEND + DESIGNER + TESTER)
-```
-[3개 터미널 동시 실행]
-각 에이전트에게: 완료 시 docs/handoffs/signals/[AGENT]_[feature].done 생성 요청
-```
-**완료 감지:** 3개 `.done` 파일 모두 존재 + STATUS: DONE
 
-> ⚠️ **주의:** 각 에이전트가 산출물을 어느 파일에 작성하는지 `.done` 파일의 `OUTPUT_FILE` 필드로 확인.
-> grep 패턴으로 사이드이펙트 감지하지 말 것 — 파일 위치가 설계에 따라 달라질 수 있음.
+**에이전트 provider 확인 후 방식을 다르게 적용:**
+
+#### Claude 에이전트 (provider: claude)
+tmux 창에 직접 프롬프트 전송:
+```
+Read docs/handoffs/design_[feature].md.
+Implement your area. Use TodoWrite to track your steps.
+Create signals/[AGENT]_[feature].done when all todos are completed.
+```
+
+#### aider + Ollama 에이전트 (provider: ollama) — BACKEND, DESIGNER, TESTER
+**먼저 task 파일 작성**, aider-agent.sh가 자동으로 읽음:
+
+파일 경로: `docs/handoffs/[AGENT]_task.md`
+```
+FEATURE: [feature-name]
+AGENT: [AGENT-NAME]
+OUTPUT_FILE: [주요 산출 파일 경로, 예: src/lib/api/tickets.ts]
+
+## Task: [간단한 설명]
+
+[상세 작업 지시 — design_[feature].md 스펙 참조]
+```
+
+> `OUTPUT_FILE` 필수. Step 5 SECURITY가 이 필드를 보고 검토 대상 파일을 결정함.
+
+**완료 감지:** 3개 `.done` 파일 모두 존재 + STATUS: DONE
 
 ---
 
