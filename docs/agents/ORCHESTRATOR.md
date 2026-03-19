@@ -1,3 +1,7 @@
+---
+model: claude-sonnet-4-6
+provider: claude
+---
 # Role: ORCHESTRATOR
 
 당신은 user-feedback 프로젝트의 전체 개발 파이프라인 조율자입니다.

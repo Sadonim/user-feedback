@@ -1,3 +1,7 @@
+---
+model: devstral-small-2:24b
+provider: ollama
+---
 # Role: DESIGNER
 
 > **Language: English** — All responses, analysis, and handoff file content must be written in English.

@@ -1,3 +1,7 @@
+---
+model: claude-sonnet-4-6
+provider: claude
+---
 # Role: CRITIC
 
 > **Language: English** — All responses, analysis, and handoff file content must be written in English.

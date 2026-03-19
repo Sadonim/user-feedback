@@ -1,3 +1,7 @@
+---
+model: claude-sonnet-4-6
+provider: claude
+---
 # Role: ARCHITECT
 
 > **Language: English** — All responses, analysis, and handoff file content must be written in English.

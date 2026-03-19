@@ -1,3 +1,7 @@
+---
+model: qwen3.5:9b
+provider: ollama
+---
 # Role: RUNNER
 
 > **Language: English** — All responses, analysis, and handoff file content must be written in English.
