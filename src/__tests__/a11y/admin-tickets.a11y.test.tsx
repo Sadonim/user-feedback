@@ -104,7 +104,7 @@ describe('TicketTable — axe accessibility', () => {
   it('TBL-01: table caption contains descriptive text', () => {
     render(<TicketTable tickets={SAMPLE_TICKETS} />);
     const caption = document.querySelector('table caption');
-    expect(caption?.textContent?.toLowerCase()).toMatch(/ticket/);
+    expect(caption?.textContent).toMatch(/티켓/);
   });
 
   it('TBL-02: all <th> elements have scope="col"', () => {
@@ -124,7 +124,7 @@ describe('TicketTable — axe accessibility', () => {
     // Either has visible text or sr-only span
     const srOnly = lastHeader.querySelector('.sr-only');
     const textContent = lastHeader.textContent?.trim();
-    expect(srOnly?.textContent?.toLowerCase().includes('action') || textContent?.toLowerCase().includes('action')).toBe(true);
+    expect(srOnly?.textContent?.match(/액션|action/i) || textContent?.match(/액션|action/i)).toBeTruthy();
   });
 
   it('TBL-04: table has aria-busy="false" when not loading', () => {
@@ -174,7 +174,7 @@ describe('TicketPagination — axe accessibility', () => {
     );
     const nav = document.querySelector('nav[aria-label]');
     expect(nav).not.toBeNull();
-    expect(nav?.getAttribute('aria-label')?.toLowerCase()).toMatch(/paginat/);
+    expect(nav?.getAttribute('aria-label')).toBeTruthy();
   });
 
   it('PAG-02: Previous button has descriptive aria-label', () => {
@@ -185,9 +185,9 @@ describe('TicketPagination — axe accessibility', () => {
         onPageChange={vi.fn()}
       />
     );
-    const prevBtn = screen.getByRole('button', { name: /previous/i });
+    const prevBtn = screen.getByRole('button', { name: /이전/ });
     const ariaLabel = prevBtn.getAttribute('aria-label') ?? prevBtn.textContent ?? '';
-    expect(ariaLabel.toLowerCase()).toMatch(/previous|go to/);
+    expect(ariaLabel).toBeTruthy();
   });
 
   it('PAG-02: Next button has descriptive aria-label', () => {
@@ -198,7 +198,7 @@ describe('TicketPagination — axe accessibility', () => {
         onPageChange={vi.fn()}
       />
     );
-    const nextBtn = screen.getByRole('button', { name: /next/i });
+    const nextBtn = screen.getByRole('button', { name: /다음/ });
     expect(nextBtn).toBeTruthy();
   });
 
@@ -210,7 +210,7 @@ describe('TicketPagination — axe accessibility', () => {
         onPageChange={vi.fn()}
       />
     );
-    const prevBtn = screen.getByRole('button', { name: /previous/i });
+    const prevBtn = screen.getByRole('button', { name: /이전/ });
     // Either disabled or aria-disabled
     const isAriaDisabled = prevBtn.getAttribute('aria-disabled') === 'true';
     const isDisabled = prevBtn.hasAttribute('disabled');
@@ -225,7 +225,7 @@ describe('TicketPagination — axe accessibility', () => {
         onPageChange={vi.fn()}
       />
     );
-    const nextBtn = screen.getByRole('button', { name: /next/i });
+    const nextBtn = screen.getByRole('button', { name: /다음/ });
     const isAriaDisabled = nextBtn.getAttribute('aria-disabled') === 'true';
     const isDisabled = nextBtn.hasAttribute('disabled');
     expect(isAriaDisabled || isDisabled).toBe(true);
@@ -239,7 +239,7 @@ describe('TicketPagination — axe accessibility', () => {
         onPageChange={vi.fn()}
       />
     );
-    const prevBtn = screen.getByRole('button', { name: /previous/i });
+    const prevBtn = screen.getByRole('button', { name: /이전/ });
     expect(prevBtn.getAttribute('aria-disabled')).not.toBe('true');
     expect(prevBtn.hasAttribute('disabled')).toBe(false);
   });

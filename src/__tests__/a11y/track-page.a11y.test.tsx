@@ -85,12 +85,12 @@ describe('TrackingView — not-found state', () => {
     const user = userEvent.setup();
     render(<TrackingView initialId="FB-UNKNOWN" />);
 
-    const trackButton = screen.getByRole('button', { name: /track/i });
+    const trackButton = screen.getByRole('button', { name: /조회/ });
     await act(async () => { await user.click(trackButton); });
 
     await waitFor(() => {
       // "not found" paragraph should exist
-      const notFoundText = screen.queryByText(/no feedback found/i);
+      const notFoundText = screen.queryByText(/피드백을 찾을 수 없습니다/);
       expect(notFoundText).not.toBeNull();
     });
 
@@ -98,7 +98,7 @@ describe('TrackingView — not-found state', () => {
     const liveRegion = document.querySelector('[aria-live]');
     expect(liveRegion).not.toBeNull();
     if (liveRegion) {
-      expect(liveRegion.textContent).toMatch(/no feedback found|not found/i);
+      expect(liveRegion.textContent).toMatch(/피드백을 찾을 수 없습니다|not found/i);
     }
   });
 });
@@ -114,7 +114,7 @@ describe('TrackingView — results found state', () => {
     const user = userEvent.setup();
     const { container } = render(<TrackingView initialId="FB-TESTTEST" />);
 
-    const trackButton = screen.getByRole('button', { name: /track/i });
+    const trackButton = screen.getByRole('button', { name: /조회/ });
     await act(async () => { await user.click(trackButton); });
 
     await waitFor(() => {
@@ -136,7 +136,7 @@ describe('TrackingView — results found state', () => {
     render(<TrackingView initialId="FB-TESTTEST" />);
 
     await act(async () => {
-      await user.click(screen.getByRole('button', { name: /track/i }));
+      await user.click(screen.getByRole('button', { name: /조회/ }));
     });
 
     await waitFor(() => {
@@ -165,7 +165,7 @@ describe('TrackingView — results found state', () => {
     render(<TrackingView initialId="FB-TESTTEST" />);
 
     await act(async () => {
-      await user.click(screen.getByRole('button', { name: /track/i }));
+      await user.click(screen.getByRole('button', { name: /조회/ }));
     });
 
     await waitFor(() => {
@@ -188,7 +188,7 @@ describe('TrackingView — results found state', () => {
     render(<TrackingView initialId="FB-TESTTEST" />);
 
     await act(async () => {
-      await user.click(screen.getByRole('button', { name: /track/i }));
+      await user.click(screen.getByRole('button', { name: /조회/ }));
     });
 
     await waitFor(() => {
@@ -211,11 +211,11 @@ describe('TrackingView — results found state', () => {
     render(<TrackingView initialId="FB-TESTTEST" />);
 
     await act(async () => {
-      await user.click(screen.getByRole('button', { name: /track/i }));
+      await user.click(screen.getByRole('button', { name: /조회/ }));
     });
 
     await waitFor(() => {
-      expect(screen.queryByText(/status history/i)).not.toBeNull();
+      expect(screen.queryByText(/상태 변경 이력/)).not.toBeNull();
     });
 
     const list = document.querySelector('ol');
@@ -224,7 +224,7 @@ describe('TrackingView — results found state', () => {
     const labelledBy = list?.getAttribute('aria-labelledby');
     if (labelledBy) {
       const heading = document.getElementById(labelledBy);
-      expect(heading?.textContent).toMatch(/status history/i);
+      expect(heading?.textContent).toMatch(/상태 변경 이력/);
     }
   });
 });

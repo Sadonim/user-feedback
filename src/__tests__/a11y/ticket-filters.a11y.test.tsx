@@ -62,7 +62,7 @@ describe('TicketFiltersBar — axe accessibility', () => {
       statusSelect.getAttribute('aria-labelledby') !== null ||
       document.querySelector(`label[for="${statusSelect.id}"]`) !== null;
     expect(hasLabel).toBe(true);
-    expect(statusSelect.getAttribute('aria-label')?.toLowerCase()).toMatch(/status/);
+    expect(statusSelect.getAttribute('aria-label')).toMatch(/상태/);
   });
 
   it('TBL-05: type <select> has accessible label', () => {
@@ -71,17 +71,16 @@ describe('TicketFiltersBar — axe accessibility', () => {
     const typeSelect = selects[1];
     expect(typeSelect).not.toBeNull();
     const ariaLabel = typeSelect.getAttribute('aria-label');
-    expect(ariaLabel?.toLowerCase()).toMatch(/type/);
+    expect(ariaLabel).toMatch(/유형/);
   });
 
   it('TBL-05: sort <select> has accessible label', () => {
     render(<TicketFiltersBar filters={DEFAULT_FILTERS} onChange={vi.fn()} />);
     // Find the sort select by its aria-label (index-based lookups break when new selects are added)
-    const sortSelect = document.querySelector('select[aria-label*="sort" i], select[aria-label*="order" i]') as HTMLSelectElement | null;
+    const sortSelect = document.querySelector('select[aria-label*="정렬"]') as HTMLSelectElement | null;
     expect(sortSelect).not.toBeNull();
     const ariaLabel = sortSelect?.getAttribute('aria-label');
     expect(ariaLabel).toBeTruthy();
-    expect(ariaLabel?.toLowerCase()).toMatch(/sort|order/);
   });
 
   it('TBL-08: root container has role="search"', () => {
@@ -97,7 +96,7 @@ describe('TicketFiltersBar — axe accessibility', () => {
       <TicketFiltersBar filters={DEFAULT_FILTERS} onChange={vi.fn()} />
     );
     const searchRegion = container.querySelector('[role="search"]');
-    expect(searchRegion?.getAttribute('aria-label')).toBe('Filter tickets');
+    expect(searchRegion?.getAttribute('aria-label')).toBe('티켓 필터');
   });
 });
 
@@ -118,7 +117,7 @@ describe('TicketFiltersBar — keyboard navigation', () => {
 
   it('Clear Filters button appears and is keyboard-accessible with active filters', () => {
     render(<TicketFiltersBar filters={ACTIVE_FILTERS} onChange={vi.fn()} />);
-    const clearBtn = screen.getByRole('button', { name: /clear/i });
+    const clearBtn = screen.getByRole('button', { name: /초기화/ });
     expect(clearBtn).toBeTruthy();
     const tabIndex = clearBtn.getAttribute('tabindex');
     expect(tabIndex === null || tabIndex === '0').toBe(true);

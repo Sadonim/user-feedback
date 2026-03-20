@@ -79,10 +79,10 @@ describe('StatusUpdatePanel — axe accessibility', () => {
 
     if (labelledBy) {
       const labelElement = document.getElementById(labelledBy);
-      expect(labelElement?.textContent?.toLowerCase()).toMatch(/status/);
+      expect(labelElement?.textContent).toMatch(/상태/);
     } else {
       // Accept aria-label as alternative
-      expect(ariaLabel?.toLowerCase()).toMatch(/status/);
+      expect(ariaLabel).toMatch(/상태/);
     }
   });
 
@@ -109,9 +109,9 @@ describe('StatusUpdatePanel — axe accessibility', () => {
       : null;
 
     if (label) {
-      expect(label.textContent?.toLowerCase()).toMatch(/note|comment/);
+      expect(label.textContent).toMatch(/메모|노트|note/i);
     } else if (textarea?.getAttribute('aria-label')) {
-      expect(textarea.getAttribute('aria-label')?.toLowerCase()).toMatch(/note|comment/);
+      expect(textarea.getAttribute('aria-label')).toMatch(/메모|노트|note/i);
     }
   });
 });
@@ -126,7 +126,7 @@ describe('StatusUpdatePanel — keyboard navigation', () => {
 
   it('Update Status button is keyboard operable', () => {
     render(<StatusUpdatePanel ticket={MOCK_TICKET} onUpdate={vi.fn()} />);
-    const updateBtn = screen.getByRole('button', { name: /update status/i });
+    const updateBtn = screen.getByRole('button', { name: /상태 업데이트/ });
     expect(updateBtn).toBeTruthy();
     expect(updateBtn.getAttribute('tabindex')).not.toBe('-1');
   });
@@ -153,15 +153,15 @@ describe('PriorityUpdatePanel — axe accessibility', () => {
 
     if (labelledBy) {
       const labelElement = document.getElementById(labelledBy);
-      expect(labelElement?.textContent?.toLowerCase()).toMatch(/priority/);
+      expect(labelElement?.textContent).toMatch(/우선순위/);
     } else {
-      expect(ariaLabel?.toLowerCase()).toMatch(/priority/);
+      expect(ariaLabel).toMatch(/우선순위/);
     }
   });
 
   it('Set Priority button is keyboard operable', () => {
     render(<PriorityUpdatePanel ticket={MOCK_TICKET} onUpdate={vi.fn()} />);
-    const btn = screen.getByRole('button', { name: /set priority/i });
+    const btn = screen.getByRole('button', { name: /우선순위 설정/ });
     expect(btn).toBeTruthy();
   });
 });
@@ -186,24 +186,24 @@ describe('DangerZoneCard — axe accessibility', () => {
 
   it('Delete Ticket button has accessible name', () => {
     render(<DangerZoneCard ticketId="ticket-abc-123" />);
-    const deleteBtn = screen.getByRole('button', { name: /delete/i });
+    const deleteBtn = screen.getByRole('button', { name: /삭제/ });
     expect(deleteBtn).toBeTruthy();
   });
 
   it('DTL-06: delete button has aria-describedby pointing to warning text', () => {
     render(<DangerZoneCard ticketId="ticket-abc-123" />);
-    const deleteBtn = screen.getByRole('button', { name: /delete/i });
+    const deleteBtn = screen.getByRole('button', { name: /삭제/ });
     const describedBy = deleteBtn.getAttribute('aria-describedby');
     if (describedBy) {
       const descElement = document.getElementById(describedBy);
       expect(descElement).not.toBeNull();
-      expect(descElement?.textContent?.toLowerCase()).toMatch(/delete|permanent|cannot/);
+      expect(descElement?.textContent).toMatch(/삭제|영구|되돌릴/);
     }
   });
 
   it('Delete Ticket button is keyboard operable', () => {
     render(<DangerZoneCard ticketId="ticket-abc-123" />);
-    const deleteBtn = screen.getByRole('button', { name: /delete/i });
+    const deleteBtn = screen.getByRole('button', { name: /삭제/ });
     const tabIndex = deleteBtn.getAttribute('tabindex');
     expect(tabIndex === null || tabIndex === '0').toBe(true);
   });

@@ -380,7 +380,7 @@ describe('DELETE /api/v1/tickets/:id', () => {
     expect(body.data.deleted).toBe(true);
   });
 
-  it('삭제 후 DB에서 해당 티켓이 사라져야 한다', async () => {
+  it('삭제 후 DB에서 deletedAt이 설정되어야 한다 (소프트 삭제)', async () => {
     await setAdminSession();
     const ticket = await createTestFeedback();
     const idx = createdIds.indexOf(ticket.id);
@@ -389,11 +389,18 @@ describe('DELETE /api/v1/tickets/:id', () => {
 
     await DELETE(makeRequest('DELETE', ticket.id), makeParams(ticket.id));
 
+    // 소프트 삭제: 행은 존재하지만 deletedAt이 설정됨
     const found = await prisma.feedback.findUnique({ where: { id: ticket.id } });
-    expect(found).toBeNull();
+    expect(found).not.toBeNull();
+    expect(found?.deletedAt).not.toBeNull();
+    // 삭제된 티켓은 일반 조회(deletedAt: null)에서 제외됨
+    const active = await prisma.feedback.findUnique({ where: { id: ticket.id, deletedAt: null } });
+    expect(active).toBeNull();
+    // afterEach 클린업을 위해 ID 복구
+    createdIds.push(ticket.id);
   });
 
-  it('삭제 후 StatusHistory도 Cascade 삭제되어야 한다', async () => {
+  it('삭제 후에도 StatusHistory는 유지되어야 한다 (소프트 삭제)', async () => {
     await setAdminSession();
     const ticket = await createTestFeedback();
     const idx = createdIds.indexOf(ticket.id);
@@ -402,8 +409,11 @@ describe('DELETE /api/v1/tickets/:id', () => {
 
     await DELETE(makeRequest('DELETE', ticket.id), makeParams(ticket.id));
 
+    // 소프트 삭제이므로 StatusHistory는 그대로 존재
     const history = await prisma.statusHistory.findMany({ where: { feedbackId: ticket.id } });
-    expect(history).toHaveLength(0);
+    expect(history.length).toBeGreaterThanOrEqual(1);
+    // afterEach 클린업을 위해 ID 복구
+    createdIds.push(ticket.id);
   });
 
   it('같은 ID로 두 번 DELETE하면 두 번째는 404를 반환해야 한다', async () => {

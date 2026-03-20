@@ -68,7 +68,7 @@ describe('AdminSidebar — axe accessibility', () => {
     mockPathname.mockReturnValue('/admin/dashboard');
     render(<AdminSidebar user={MOCK_USER} />);
 
-    const dashboardLink = screen.getByRole('link', { name: /dashboard/i });
+    const dashboardLink = screen.getByRole('link', { name: /대시보드/ });
     expect(dashboardLink.getAttribute('aria-current')).toBe('page');
   });
 
@@ -76,7 +76,7 @@ describe('AdminSidebar — axe accessibility', () => {
     mockPathname.mockReturnValue('/admin/dashboard');
     render(<AdminSidebar user={MOCK_USER} />);
 
-    const ticketsLink = screen.getByRole('link', { name: /tickets/i });
+    const ticketsLink = screen.getByRole('link', { name: /티켓/ });
     const ariaCurrent = ticketsLink.getAttribute('aria-current');
     expect(ariaCurrent === null || ariaCurrent === 'false' || ariaCurrent === 'undefined').toBe(true);
   });
@@ -85,10 +85,10 @@ describe('AdminSidebar — axe accessibility', () => {
     mockPathname.mockReturnValue('/admin/tickets');
     render(<AdminSidebar user={MOCK_USER} />);
 
-    const ticketsLink = screen.getByRole('link', { name: /tickets/i });
+    const ticketsLink = screen.getByRole('link', { name: /티켓/ });
     expect(ticketsLink.getAttribute('aria-current')).toBe('page');
 
-    const dashboardLink = screen.getByRole('link', { name: /dashboard/i });
+    const dashboardLink = screen.getByRole('link', { name: /대시보드/ });
     const dashboardCurrent = dashboardLink.getAttribute('aria-current');
     expect(dashboardCurrent === null || dashboardCurrent === 'false' || dashboardCurrent === 'undefined').toBe(true);
   });
@@ -105,8 +105,8 @@ describe('AdminSidebar — axe accessibility', () => {
   it('ADM-04: nav link labels are still visible to screen readers via text content', () => {
     render(<AdminSidebar user={MOCK_USER} />);
     // Even with aria-hidden icons, text labels must remain visible
-    expect(screen.getByRole('link', { name: /dashboard/i })).toBeTruthy();
-    expect(screen.getByRole('link', { name: /tickets/i })).toBeTruthy();
+    expect(screen.getByRole('link', { name: /대시보드/ })).toBeTruthy();
+    expect(screen.getByRole('link', { name: /티켓/ })).toBeTruthy();
   });
 });
 
@@ -127,7 +127,7 @@ describe('AdminSidebar — keyboard navigation', () => {
 
   it('Sign Out button is reachable via keyboard', () => {
     render(<AdminSidebar user={MOCK_USER} />);
-    const signOutBtn = screen.getByRole('button', { name: /sign out/i });
+    const signOutBtn = screen.getByRole('button', { name: /로그아웃/ });
     expect(signOutBtn).toBeTruthy();
     const tabIndex = signOutBtn.getAttribute('tabindex');
     expect(tabIndex === null || tabIndex === '0').toBe(true);

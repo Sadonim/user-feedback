@@ -52,9 +52,9 @@ describe('LoginForm — axe accessibility', () => {
     const user = userEvent.setup();
     const { container } = render(<LoginForm />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const submitButton = screen.getByRole('button', { name: /sign in/i });
+    const emailInput = screen.getByLabelText(/이메일/);
+    const passwordInput = screen.getByLabelText(/비밀번호/);
+    const submitButton = screen.getByRole('button', { name: /로그인/ });
 
     await act(async () => {
       await user.type(emailInput, 'admin@example.com');
@@ -74,32 +74,32 @@ describe('LoginForm — axe accessibility', () => {
     render(<LoginForm />);
     const h1 = document.querySelector('h1');
     expect(h1).not.toBeNull();
-    expect(h1?.textContent).toMatch(/admin login/i);
+    expect(h1?.textContent).toMatch(/관리자 로그인/);
   });
 
-  it('LGN-01: "Admin Login" heading is an h1, not a div', () => {
+  it('LGN-01: "관리자 로그인" heading is an h1, not a div', () => {
     render(<LoginForm />);
     // If CardTitle renders as div, this will fail — fix requires asChild
-    const heading = screen.getByText(/admin login/i);
+    const heading = screen.getByText(/관리자 로그인/);
     expect(heading.tagName.toLowerCase()).toBe('h1');
   });
 
   it('has proper form field labels linked by htmlFor', () => {
     render(<LoginForm />);
     // Both inputs must have associated <label> elements
-    expect(screen.getByLabelText(/email/i)).toBeTruthy();
-    expect(screen.getByLabelText(/password/i)).toBeTruthy();
+    expect(screen.getByLabelText(/이메일/)).toBeTruthy();
+    expect(screen.getByLabelText(/비밀번호/)).toBeTruthy();
   });
 
   it('email input has autoComplete="email"', () => {
     render(<LoginForm />);
-    const emailInput = screen.getByLabelText(/email/i) as HTMLInputElement;
+    const emailInput = screen.getByLabelText(/이메일/) as HTMLInputElement;
     expect(emailInput.getAttribute('autocomplete')).toBe('email');
   });
 
   it('password input has autoComplete="current-password"', () => {
     render(<LoginForm />);
-    const passwordInput = screen.getByLabelText(/password/i) as HTMLInputElement;
+    const passwordInput = screen.getByLabelText(/비밀번호/) as HTMLInputElement;
     expect(passwordInput.getAttribute('autocomplete')).toBe('current-password');
   });
 });
@@ -126,9 +126,9 @@ describe('LoginForm — keyboard navigation', () => {
     const user = userEvent.setup();
     render(<LoginForm />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const submitButton = screen.getByRole('button', { name: /sign in/i });
+    const emailInput = screen.getByLabelText(/이메일/);
+    const passwordInput = screen.getByLabelText(/비밀번호/);
+    const submitButton = screen.getByRole('button', { name: /로그인/ });
 
     emailInput.focus();
     expect(document.activeElement).toBe(emailInput);
@@ -144,8 +144,8 @@ describe('LoginForm — keyboard navigation', () => {
     const user = userEvent.setup();
     render(<LoginForm />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const emailInput = screen.getByLabelText(/이메일/);
+    const passwordInput = screen.getByLabelText(/비밀번호/);
 
     await act(async () => {
       await user.type(emailInput, 'admin@example.com');
@@ -169,9 +169,9 @@ describe('LoginForm — keyboard navigation', () => {
     render(<LoginForm />);
 
     await act(async () => {
-      await user.type(screen.getByLabelText(/email/i), 'bad@example.com');
-      await user.type(screen.getByLabelText(/password/i), 'wrong');
-      await user.click(screen.getByRole('button', { name: /sign in/i }));
+      await user.type(screen.getByLabelText(/이메일/), 'bad@example.com');
+      await user.type(screen.getByLabelText(/비밀번호/), 'wrong');
+      await user.click(screen.getByRole('button', { name: /로그인/ }));
     });
 
     await waitFor(() => {

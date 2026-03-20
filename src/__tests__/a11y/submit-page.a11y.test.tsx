@@ -82,7 +82,7 @@ describe('FeedbackTypeSelector — axe accessibility', () => {
     );
     const pressedBtn = container.querySelector('[aria-pressed="true"]');
     expect(pressedBtn).not.toBeNull();
-    expect(pressedBtn?.textContent).toContain('Bug Report');
+    expect(pressedBtn?.textContent).toContain('버그 신고');
   });
 
   it('SUB-03: emoji spans in type selector have aria-hidden="true"', () => {
@@ -100,7 +100,7 @@ describe('FeedbackForm details step — axe accessibility', () => {
     // Click the Bug Report button to advance to the details step.
     // Use textContent match since aria-pressed is not yet implemented.
     const typeButtons = screen.getAllByRole('button');
-    const bugButton = typeButtons.find((btn) => btn.textContent?.includes('Bug Report'));
+    const bugButton = typeButtons.find((btn) => btn.textContent?.includes('버그 신고'));
     if (bugButton) {
       await act(async () => { fireEvent.click(bugButton); });
     }
@@ -125,7 +125,7 @@ describe('FeedbackForm details step — axe accessibility', () => {
     // Back button is identified by text content or aria-label containing "back"
     const backButton = buttons.find((btn) => {
       const label = btn.getAttribute('aria-label') ?? btn.textContent ?? '';
-      return label.toLowerCase().includes('back');
+      return label.includes('돌아가기') || label.includes('뒤로') || label.toLowerCase().includes('back');
     });
     expect(backButton).toBeTruthy();
 
@@ -177,15 +177,15 @@ describe('FeedbackForm success step — axe accessibility', () => {
 
     // Navigate to details step via text match (pre-fix fallback)
     const typeButtons = screen.getAllByRole('button');
-    const bugButton = typeButtons.find((btn) => btn.textContent?.includes('Bug Report'));
+    const bugButton = typeButtons.find((btn) => btn.textContent?.includes('버그 신고'));
     if (bugButton) {
       await act(async () => { fireEvent.click(bugButton); });
     }
 
     // Fill required fields
-    const titleInput = screen.getByLabelText(/title/i);
-    const descInput = screen.getByLabelText(/description/i);
-    const nicknameInput = screen.getByLabelText(/nickname/i);
+    const titleInput = screen.getByLabelText(/제목/);
+    const descInput = screen.getByLabelText(/내용/);
+    const nicknameInput = screen.getByLabelText(/닉네임/);
 
     await act(async () => {
       fireEvent.change(titleInput, { target: { value: 'Test bug' } });
@@ -199,11 +199,11 @@ describe('FeedbackForm success step — axe accessibility', () => {
       json: async () => ({ success: true, data: { trackingId: 'FB-TESTTEST' } }),
     }));
 
-    const submitBtn = screen.getByRole('button', { name: /submit/i });
+    const submitBtn = screen.getByRole('button', { name: /제출/ });
     await act(async () => { fireEvent.click(submitBtn); });
 
     await waitFor(() => {
-      expect(screen.queryByText(/tracking id/i)).not.toBeNull();
+      expect(screen.queryByText(/접수 번호/)).not.toBeNull();
     });
 
     vi.unstubAllGlobals();
