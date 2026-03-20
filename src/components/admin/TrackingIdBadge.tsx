@@ -24,7 +24,7 @@ export function TrackingIdBadge({ id }: TrackingIdBadgeProps) {
         'inline-flex items-center gap-1.5 rounded-md border px-2 py-1 font-mono text-xs transition-colors',
         'hover:bg-muted'
       )}
-      title="Click to copy tracking ID"
+      title="클릭하여 접수 번호 복사"
     >
       <span>{id}</span>
       {copied ? (

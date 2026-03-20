@@ -1,9 +1,10 @@
+import { type NextRequest } from 'next/server';
 import { ok, serverError, tooManyRequests } from '@/lib/api/response';
 import { requireAuth } from '@/lib/api/require-auth';
 import { getTicketStats } from '@/server/services/ticket-stats';
 import { checkAdminRateLimit } from '@/lib/rate-limit';
 
-export async function GET() {
+export async function GET(_req: NextRequest) {
   const authResult = await requireAuth();
   if (authResult.type === 'error') return authResult.response;
 

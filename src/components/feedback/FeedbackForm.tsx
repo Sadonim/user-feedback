@@ -20,11 +20,61 @@ import type { FeedbackType } from "@/types";
 
 type Step = "type" | "details" | "success";
 
+const STEPS: Step[] = ["type", "details", "success"];
+const STEP_LABELS = ["유형", "내용", "완료"];
+
 const STEP_ANNOUNCEMENTS: Record<Step, string> = {
-  type: "Step 1 of 3: Select feedback type",
-  details: "Step 2 of 3: Enter feedback details",
-  success: "Feedback submitted successfully",
+  type: "1단계 / 3단계: 피드백 유형 선택",
+  details: "2단계 / 3단계: 피드백 내용 입력",
+  success: "피드백이 성공적으로 제출되었습니다",
 };
+
+function StepProgress({ current }: { current: Step }) {
+  const currentIdx = STEPS.indexOf(current);
+
+  return (
+    <div className="flex items-center gap-0 mb-6" aria-hidden="true">
+      {STEPS.map((step, idx) => {
+        const isCompleted = idx < currentIdx;
+        const isActive = idx === currentIdx;
+        return (
+          <div key={step} className="flex flex-1 items-center">
+            <div className="flex flex-col items-center gap-1">
+              <div
+                className={cn(
+                  "flex size-6 items-center justify-center rounded-full text-xs font-semibold transition-all duration-300",
+                  isCompleted
+                    ? "bg-primary text-primary-foreground scale-95"
+                    : isActive
+                      ? "bg-primary text-primary-foreground ring-4 ring-primary/20"
+                      : "bg-muted text-muted-foreground"
+                )}
+              >
+                {isCompleted ? "✓" : idx + 1}
+              </div>
+              <span
+                className={cn(
+                  "text-[10px] font-medium transition-colors duration-200",
+                  isActive ? "text-foreground" : "text-muted-foreground"
+                )}
+              >
+                {STEP_LABELS[idx]}
+              </span>
+            </div>
+            {idx < STEPS.length - 1 && (
+              <div
+                className={cn(
+                  "h-px flex-1 mx-2 mb-4 transition-all duration-500",
+                  isCompleted ? "bg-primary" : "bg-border"
+                )}
+              />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export function FeedbackForm() {
   const router = useRouter();
@@ -32,6 +82,7 @@ export function FeedbackForm() {
   const [selectedType, setSelectedType] = useState<FeedbackType | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [trackingId, setTrackingId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   /* SUB-08: focus success card on step transition */
   const successRef = useRef<HTMLDivElement>(null);
@@ -53,6 +104,13 @@ export function FeedbackForm() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   }
 
+  async function handleCopyId() {
+    if (!trackingId) return;
+    await navigator.clipboard.writeText(trackingId);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
@@ -69,14 +127,14 @@ export function FeedbackForm() {
       const json = await res.json();
 
       if (!res.ok || !json.success) {
-        toast.error(json.error ?? "Submission failed. Please try again.");
+        toast.error(json.error ?? "제출에 실패했습니다. 다시 시도해주세요.");
         return;
       }
 
       setTrackingId(json.data.trackingId);
       setStep("success");
     } catch {
-      toast.error("Network error. Please check your connection.");
+      toast.error("네트워크 오류가 발생했습니다. 연결 상태를 확인해주세요.");
     } finally {
       setIsSubmitting(false);
     }
@@ -94,34 +152,51 @@ export function FeedbackForm() {
         <Card
           ref={successRef}
           tabIndex={-1}
-          className="mx-auto max-w-lg outline-none"
+          className="mx-auto max-w-lg outline-none animate-in fade-in-0 zoom-in-95 duration-300"
         >
-          <CardHeader className="text-center">
-            {/* SUB-09: decorative emoji hidden from SR */}
-            <div aria-hidden="true" className="mx-auto mb-2 text-4xl">✅</div>
-            {/* SUB-01: h1 for proper heading hierarchy (CardTitle is a div; render h1 directly) */}
+          <CardHeader className="text-center pb-2">
+            <StepProgress current="success" />
+            {/* Animated checkmark */}
+            <div
+              aria-hidden="true"
+              className="mx-auto mb-3 flex size-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30 animate-in zoom-in-50 duration-500"
+            >
+              <span className="text-3xl">✅</span>
+            </div>
+            {/* SUB-01: h1 for proper heading hierarchy */}
             <h1
               data-slot="card-title"
-              className="text-base leading-snug font-medium"
+              className="text-lg font-semibold leading-snug"
             >
-              Feedback Submitted!
+              제출 완료!
             </h1>
-            <CardDescription>Your feedback has been received.</CardDescription>
+            <CardDescription>피드백이 접수되었습니다.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-center">
-            <p className="text-sm text-muted-foreground">Your tracking ID:</p>
-            <div className="rounded-md bg-muted px-4 py-3">
-              <code className="text-lg font-bold tracking-wider">{trackingId}</code>
+            <div>
+              <p className="text-xs text-muted-foreground mb-2">접수 번호:</p>
+              <button
+                onClick={handleCopyId}
+                className="group relative w-full rounded-lg bg-muted px-4 py-3 transition-colors hover:bg-muted/80 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                aria-label={copied ? "복사됨!" : "클릭하여 접수 번호 복사"}
+              >
+                <code className="tabular-nums text-base font-bold tracking-wider">
+                  {trackingId}
+                </code>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground transition-opacity group-hover:opacity-100">
+                  {copied ? "✓ 복사됨" : "복사"}
+                </span>
+              </button>
+              <p className="mt-2 text-xs text-muted-foreground">
+                이 번호로 나중에 처리 상태를 확인할 수 있습니다.
+              </p>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Save this ID to check your feedback status later.
-            </p>
-            <div className="flex gap-2 pt-2">
+            <div className="flex gap-2 pt-1">
               <button
                 className={cn(buttonVariants({ variant: "outline" }), "flex-1")}
                 onClick={() => router.push(`/track?id=${trackingId}`)}
               >
-                Track Status
+                상태 조회
               </button>
               <button
                 className={cn(buttonVariants(), "flex-1")}
@@ -130,63 +205,66 @@ export function FeedbackForm() {
                   setSelectedType(null);
                   setFormData({ title: "", description: "", nickname: "", email: "" });
                   setTrackingId(null);
+                  setCopied(false);
                 }}
               >
-                Submit Another
+                추가 제출
               </button>
             </div>
           </CardContent>
         </Card>
       ) : step === "type" ? (
-        <Card className="mx-auto max-w-lg">
+        <Card className="mx-auto max-w-lg animate-in fade-in-0 slide-in-from-bottom-2 duration-200">
           <CardHeader>
+            <StepProgress current="type" />
             {/* SUB-01: h1 so page has a heading landmark */}
             <h1
               data-slot="card-title"
-              className="text-base leading-snug font-medium"
+              className="text-base leading-snug font-semibold"
             >
-              Submit Feedback
+              피드백 제출
             </h1>
-            <CardDescription>What type of feedback do you have?</CardDescription>
+            <CardDescription>어떤 종류의 피드백인가요?</CardDescription>
           </CardHeader>
           <CardContent>
             <FeedbackTypeSelector value={selectedType} onChange={handleTypeSelect} />
           </CardContent>
         </Card>
       ) : (
-        <Card className="mx-auto max-w-lg">
+        <Card className="mx-auto max-w-lg animate-in fade-in-0 slide-in-from-right-2 duration-200">
           <CardHeader>
+            <StepProgress current="details" />
             {/* SUB-04: raw ← replaced with accessible pattern */}
             <button
               type="button"
               onClick={() => setStep("type")}
-              className="mb-1 text-sm text-muted-foreground hover:text-foreground"
+              className="mb-2 flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors w-fit"
             >
               <span aria-hidden="true">←</span>
-              <span className="sr-only">Back to type selection</span>
-              <span aria-hidden="true"> Back</span>
+              <span className="sr-only">유형 선택으로 돌아가기</span>
+              <span aria-hidden="true">뒤로</span>
             </button>
             {/* SUB-01: h1 for proper heading hierarchy */}
             <h1
               data-slot="card-title"
-              className="text-base leading-snug font-medium"
+              className="text-base leading-snug font-semibold"
             >
-              Tell us more
+              자세히 알려주세요
             </h1>
             <CardDescription>
-              {selectedType === "BUG" && "Describe the bug you encountered"}
-              {selectedType === "FEATURE" && "Describe the feature you'd like to see"}
-              {selectedType === "GENERAL" && "Share your thoughts"}
+              {selectedType === "BUG" && "경험하신 버그를 설명해 주세요"}
+              {selectedType === "FEATURE" && "원하시는 기능을 설명해 주세요"}
+              {selectedType === "GENERAL" && "하고 싶은 말씀을 자유롭게 적어주세요"}
             </CardDescription>
           </CardHeader>
           <CardContent>
             {/* SUB-07: aria-busy communicates pending state to SR */}
             <form onSubmit={handleSubmit} className="space-y-4" aria-busy={isSubmitting}>
               <div className="space-y-1.5">
-                <Label htmlFor="title">Title *</Label>
+                <Label htmlFor="title">제목 *</Label>
                 <Input
                   id="title"
-                  placeholder="Brief summary"
+                  placeholder="한 줄로 요약해주세요"
                   maxLength={200}
                   value={formData.title}
                   onChange={(e) => handleChange("title", e.target.value)}
@@ -195,11 +273,11 @@ export function FeedbackForm() {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="description">Description *</Label>
+                <Label htmlFor="description">내용 *</Label>
                 {/* SUB-06: aria-describedby links character counter to textarea */}
                 <Textarea
                   id="description"
-                  placeholder="Provide details..."
+                  placeholder="자세한 내용을 입력해주세요..."
                   rows={4}
                   maxLength={5000}
                   value={formData.description}
@@ -207,17 +285,27 @@ export function FeedbackForm() {
                   aria-describedby="desc-counter"
                   required
                 />
-                <p id="desc-counter" className="text-right text-xs text-muted-foreground">
-                  {formData.description.length}/5000
-                </p>
+                <div className="flex justify-end">
+                  <p
+                    id="desc-counter"
+                    className={cn(
+                      "text-xs tabular-nums transition-colors",
+                      formData.description.length > 4500
+                        ? "text-destructive"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {formData.description.length}/5000
+                  </p>
+                </div>
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="nickname">Nickname *</Label>
+                <Label htmlFor="nickname">닉네임 *</Label>
                 {/* SUB-11: autoComplete for cognitive accessibility */}
                 <Input
                   id="nickname"
-                  placeholder="How should we call you?"
+                  placeholder="어떻게 불러드릴까요?"
                   maxLength={100}
                   autoComplete="nickname"
                   value={formData.nickname}
@@ -228,13 +316,14 @@ export function FeedbackForm() {
 
               <div className="space-y-1.5">
                 <Label htmlFor="email">
-                  Email <span className="text-muted-foreground">(optional)</span>
+                  이메일{" "}
+                  <span className="text-muted-foreground font-normal">(선택)</span>
                 </Label>
                 {/* SUB-11: autoComplete for cognitive accessibility */}
                 <Input
                   id="email"
                   type="email"
-                  placeholder="Get notified on status updates"
+                  placeholder="처리 상태 변경 시 알림을 받아보세요"
                   maxLength={255}
                   autoComplete="email"
                   value={formData.email}
@@ -244,10 +333,24 @@ export function FeedbackForm() {
 
               <button
                 type="submit"
-                className={cn(buttonVariants(), "w-full")}
+                className={cn(
+                  buttonVariants(),
+                  "w-full transition-all",
+                  isSubmitting && "opacity-70 cursor-not-allowed"
+                )}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Submit Feedback"}
+                {isSubmitting ? (
+                  <span className="flex items-center gap-2">
+                    <span
+                      aria-hidden="true"
+                      className="size-3.5 rounded-full border-2 border-current border-t-transparent animate-spin"
+                    />
+                    제출 중…
+                  </span>
+                ) : (
+                  "피드백 제출"
+                )}
               </button>
             </form>
           </CardContent>

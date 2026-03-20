@@ -30,7 +30,7 @@ export function AssigneePanel({ ticket, onUpdate }: AssigneePanelProps) {
         }
       } catch {
         // Non-critical: dropdown will be empty but panel remains functional
-        if (!cancelled) toast.error('Could not load admin users');
+        if (!cancelled) toast.error('관리자 목록을 불러올 수 없습니다');
       }
     }
 
@@ -55,16 +55,16 @@ export function AssigneePanel({ ticket, onUpdate }: AssigneePanelProps) {
         const json = await res.json();
 
         if (!res.ok || !json.success) {
-          toast.error(json.error ?? 'Failed to update assignee');
+          toast.error(json.error ?? '담당자 업데이트에 실패했습니다');
           return;
         }
 
         onUpdate(json.data as FeedbackDetail);
         toast.success(
-          selectedId ? 'Ticket assigned' : 'Ticket unassigned'
+          selectedId ? '담당자가 지정되었습니다' : '담당자가 해제되었습니다'
         );
       } catch {
-        toast.error('Network error — please try again');
+        toast.error('네트워크 오류가 발생했습니다. 다시 시도해주세요');
       }
     });
   }
@@ -74,7 +74,7 @@ export function AssigneePanel({ ticket, onUpdate }: AssigneePanelProps) {
   return (
     <div className="space-y-3 rounded-xl border p-4">
       <h3 id="assignee-heading" className="text-sm font-medium">
-        Assignee
+        담당자
       </h3>
 
       <div className="text-sm">
@@ -89,7 +89,7 @@ export function AssigneePanel({ ticket, onUpdate }: AssigneePanelProps) {
         disabled={isPending}
         className="w-full rounded-lg border bg-background px-3 py-1.5 text-sm disabled:opacity-50"
       >
-        <option value="">Unassigned</option>
+        <option value="">미배정</option>
         {admins.map((admin) => (
           <option key={admin.id} value={admin.id}>
             {admin.username}
@@ -103,7 +103,7 @@ export function AssigneePanel({ ticket, onUpdate }: AssigneePanelProps) {
         className="w-full"
         variant="outline"
       >
-        {isPending ? 'Saving…' : 'Assign'}
+        {isPending ? '저장 중…' : '담당자 지정'}
       </Button>
     </div>
   );

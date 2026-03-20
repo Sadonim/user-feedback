@@ -116,14 +116,48 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+:root {
+  /* Status semantic colors */
+  --status-open:           oklch(0.52 0.18 250);
+  --status-open-bg:        oklch(0.95 0.04 250);
+  --status-open-bg-dark:   oklch(0.25 0.06 250);
+  --status-progress:       oklch(0.62 0.14 80);
+  --status-progress-bg:    oklch(0.97 0.04 80);
+  --status-progress-bg-dark: oklch(0.26 0.05 80);
+  --status-resolved:       oklch(0.56 0.15 145);
+  --status-resolved-bg:    oklch(0.95 0.04 145);
+  --status-resolved-bg-dark: oklch(0.22 0.05 145);
+  --status-closed:         oklch(0.48 0.00 0);
+  --status-closed-bg:      oklch(0.94 0.00 0);
+  --status-closed-bg-dark: oklch(0.24 0.00 0);
+
+  /* Type semantic colors */
+  --type-bug:              oklch(0.55 0.20 27);
+  --type-bug-bg:           oklch(0.96 0.04 27);
+  --type-bug-bg-dark:      oklch(0.24 0.06 27);
+  --type-feature:          oklch(0.52 0.20 295);
+  --type-feature-bg:       oklch(0.96 0.04 295);
+  --type-feature-bg-dark:  oklch(0.24 0.06 295);
+  --type-general:          oklch(0.52 0.14 195);
+  --type-general-bg:       oklch(0.95 0.04 195);
+  --type-general-bg-dark:  oklch(0.22 0.05 195);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "kern" 1;
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
+  }
+  /* Tabular numbers for stats and metrics */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
   }
 }

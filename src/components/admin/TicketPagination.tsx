@@ -20,10 +20,10 @@ export function TicketPagination({
 
   return (
     /* PAG-01: nav landmark makes pagination discoverable by AT */
-    <nav aria-label="Pagination" className="flex items-center justify-between text-sm">
-      <p className="text-muted-foreground">
-        Showing {(currentPage - 1) * meta.limit + 1}–
-        {Math.min(currentPage * meta.limit, meta.total)} of {meta.total}
+    <nav aria-label="페이지 이동" className="flex items-center justify-between text-sm">
+      <p className="tabular-nums text-muted-foreground">
+        {(currentPage - 1) * meta.limit + 1}–
+        {Math.min(currentPage * meta.limit, meta.total)} / 전체 {meta.total}건
       </p>
       <div className="flex gap-2">
         {/* PAG-02, PAG-03: descriptive labels; aria-disabled (not disabled attr)
@@ -31,28 +31,28 @@ export function TicketPagination({
         <Button
           variant="outline"
           size="sm"
-          aria-label="Go to previous page"
+          aria-label="이전 페이지로 이동"
           aria-disabled={isFirst}
           onClick={() => { if (!isFirst) onPageChange(currentPage - 1); }}
           className={isFirst ? 'pointer-events-none opacity-50' : ''}
         >
-          Previous
+          이전
         </Button>
         <Button
           variant="outline"
           size="sm"
-          aria-label="Go to next page"
+          aria-label="다음 페이지로 이동"
           aria-disabled={isLast}
           onClick={() => { if (!isLast) onPageChange(currentPage + 1); }}
           className={isLast ? 'pointer-events-none opacity-50' : ''}
         >
-          Next
+          다음
         </Button>
       </div>
-      <p className="text-muted-foreground">
+      <p className="tabular-nums text-muted-foreground">
         {/* PAG-02: current page context for SR */}
-        <span aria-current="page" aria-label={`Page ${currentPage} of ${totalPages}, current page`}>
-          Page {currentPage} of {totalPages}
+        <span aria-current="page" aria-label={`${totalPages}페이지 중 ${currentPage}페이지, 현재 페이지`}>
+          {currentPage} / {totalPages} 페이지
         </span>
       </p>
     </nav>

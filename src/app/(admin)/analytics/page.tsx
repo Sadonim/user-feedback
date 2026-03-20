@@ -3,7 +3,7 @@ import { getAnalyticsData } from '@/server/services/analytics';
 import { AnalyticsDashboard } from '@/components/admin/charts/AnalyticsDashboard';
 import type { AnalyticsData } from '@/types';
 
-export const metadata: Metadata = { title: 'Analytics' };
+export const metadata: Metadata = { title: '분석' };
 
 /**
  * Analytics page — React Server Component.
@@ -23,12 +23,12 @@ export default async function AnalyticsPage() {
     initialData = await getAnalyticsData({ period: '30d', granularity: 'day' });
   } catch (err) {
     console.error('[AnalyticsPage] Failed to load initial analytics:', err);
-    fetchError = 'Could not load analytics data. Please try again later.';
+    fetchError = '분석 데이터를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.';
   }
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Analytics</h1>
+      <h1 className="text-2xl font-semibold">분석</h1>
 
       {fetchError ? (
         <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">

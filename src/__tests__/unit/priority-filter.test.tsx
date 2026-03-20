@@ -24,12 +24,12 @@ const defaultFilters: TicketFiltersInput = {
 describe('TicketFiltersBar — priority filter select', () => {
   it('renders the priority filter select with aria-label', () => {
     render(<TicketFiltersBar filters={defaultFilters} onChange={vi.fn()} />);
-    expect(screen.getByRole('combobox', { name: /filter by priority/i })).toBeTruthy();
+    expect(screen.getByRole('combobox', { name: /우선순위로 필터/i })).toBeTruthy();
   });
 
   it('renders all priority options', () => {
     render(<TicketFiltersBar filters={defaultFilters} onChange={vi.fn()} />);
-    const select = screen.getByRole('combobox', { name: /filter by priority/i });
+    const select = screen.getByRole('combobox', { name: /우선순위로 필터/i });
     const options = Array.from((select as HTMLSelectElement).options).map((o) => o.value);
     expect(options).toContain('CRITICAL');
     expect(options).toContain('HIGH');
@@ -42,7 +42,7 @@ describe('TicketFiltersBar — priority filter select', () => {
   it('fires onChange with selected priority when changed', () => {
     const onChange = vi.fn();
     render(<TicketFiltersBar filters={defaultFilters} onChange={onChange} />);
-    const select = screen.getByRole('combobox', { name: /filter by priority/i });
+    const select = screen.getByRole('combobox', { name: /우선순위로 필터/i });
     fireEvent.change(select, { target: { value: 'HIGH' } });
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ priority: 'HIGH' }));
   });
@@ -51,7 +51,7 @@ describe('TicketFiltersBar — priority filter select', () => {
     const onChange = vi.fn();
     const filtersWithPriority: TicketFiltersInput = { ...defaultFilters, priority: 'HIGH' };
     render(<TicketFiltersBar filters={filtersWithPriority} onChange={onChange} />);
-    const select = screen.getByRole('combobox', { name: /filter by priority/i });
+    const select = screen.getByRole('combobox', { name: /우선순위로 필터/i });
     fireEvent.change(select, { target: { value: '' } });
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ priority: undefined }));
   });
@@ -59,7 +59,7 @@ describe('TicketFiltersBar — priority filter select', () => {
   it('reflects the current priority filter value', () => {
     const filtersWithPriority: TicketFiltersInput = { ...defaultFilters, priority: 'CRITICAL' };
     render(<TicketFiltersBar filters={filtersWithPriority} onChange={vi.fn()} />);
-    const select = screen.getByRole('combobox', { name: /filter by priority/i }) as HTMLSelectElement;
+    const select = screen.getByRole('combobox', { name: /우선순위로 필터/i }) as HTMLSelectElement;
     expect(select.value).toBe('CRITICAL');
   });
 });

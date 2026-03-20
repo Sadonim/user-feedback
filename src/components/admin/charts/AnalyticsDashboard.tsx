@@ -16,9 +16,9 @@ interface AnalyticsDashboardProps {
 type Period = '7d' | '30d' | '90d';
 
 const PERIOD_LABELS: Record<Period, string> = {
-  '7d': '7 days',
-  '30d': '30 days',
-  '90d': '90 days',
+  '7d': '7일',
+  '30d': '30일',
+  '90d': '90일',
 };
 
 const PERIODS: Period[] = ['7d', '30d', '90d'];
@@ -45,7 +45,7 @@ export function AnalyticsDashboard({ initialData }: AnalyticsDashboardProps) {
         const json = await res.json();
 
         if (!res.ok || !json.success) {
-          toast.error(json.error ?? 'Failed to load analytics');
+          toast.error(json.error ?? '분석 데이터를 불러올 수 없습니다');
           return;
         }
 
@@ -57,7 +57,7 @@ export function AnalyticsDashboard({ initialData }: AnalyticsDashboardProps) {
           trend: json.data as TimeseriesDataPoint[],
         }));
       } catch {
-        toast.error('Network error — could not refresh analytics');
+        toast.error('네트워크 오류 — 분석 데이터를 새로 고칠 수 없습니다');
       }
     });
   }
@@ -67,7 +67,7 @@ export function AnalyticsDashboard({ initialData }: AnalyticsDashboardProps) {
       {/* Period selector */}
       <div
         role="group"
-        aria-label="Analytics period"
+        aria-label="분석 기간"
         className="flex items-center gap-1 rounded-lg border bg-muted/30 p-1 w-fit"
       >
         {PERIODS.map((p) => (
@@ -98,7 +98,7 @@ export function AnalyticsDashboard({ initialData }: AnalyticsDashboardProps) {
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Submission Trend
+              제출 추이
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -110,7 +110,7 @@ export function AnalyticsDashboard({ initialData }: AnalyticsDashboardProps) {
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Type Distribution
+              유형별 분포
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -123,7 +123,7 @@ export function AnalyticsDashboard({ initialData }: AnalyticsDashboardProps) {
       <Card>
         <CardHeader>
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            Status Funnel
+            상태별 현황
           </CardTitle>
         </CardHeader>
         <CardContent>

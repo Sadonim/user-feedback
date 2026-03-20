@@ -49,14 +49,14 @@ export function TicketListPageContent({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Tickets</h1>
+        <h1 className="text-2xl font-semibold">티켓</h1>
         {/* TBL-07: live region announces result count change when filters applied */}
         <span
           aria-live="polite"
           aria-atomic="true"
-          className="text-sm text-muted-foreground"
+          className="tabular-nums text-sm text-muted-foreground"
         >
-          {initialMeta.total} tickets
+          {initialMeta.total}건
         </span>
       </div>
 

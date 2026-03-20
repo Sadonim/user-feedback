@@ -47,6 +47,7 @@ model Feedback {
   assigneeId  String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?    // null = 활성, non-null = 소프트 삭제됨
 
   user          User?           @relation(fields: [userId], references: [id])
   assignee      AdminUser?      @relation("AssignedTickets", fields: [assigneeId], references: [id])
@@ -58,6 +59,7 @@ model Feedback {
   @@index([trackingId])
   @@index([priority])   // Phase 5-1/5-2: speeds up priority-filtered queries
   @@index([assigneeId]) // Phase 5-2: speeds up assignee-filtered queries
+  @@index([deletedAt])  // SSE 스트림 삭제 감지 및 필터링용
 }
 
 model User {

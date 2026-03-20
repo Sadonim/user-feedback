@@ -1,13 +1,19 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/server/db/prisma";
 import { trackingIdSchema } from "@/lib/validators/feedback";
-import { ok, badRequest, notFound, serverError } from "@/lib/api/response";
+import { ok, badRequest, notFound, serverError, tooManyRequests } from "@/lib/api/response";
+import { checkTrackRateLimit } from "@/lib/rate-limit";
+import { getClientIp } from "@/lib/api/get-client-ip";
 
 interface RouteParams {
   params: Promise<{ trackingId: string }>;
 }
 
-export async function GET(_req: NextRequest, { params }: RouteParams) {
+export async function GET(req: NextRequest, { params }: RouteParams) {
+  const ip = getClientIp(req);
+  const allowed = await checkTrackRateLimit(ip);
+  if (!allowed) return tooManyRequests();
+
   try {
     const { trackingId } = await params;
 

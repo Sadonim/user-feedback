@@ -30,7 +30,7 @@ export function TicketDetailView({ ticket: initialTicket }: TicketDetailViewProp
           href="/admin/tickets"
           className="text-sm text-muted-foreground hover:text-foreground"
         >
-          ← Back to tickets
+          ← 티켓 목록으로
         </Link>
         <div className="flex flex-wrap items-start gap-3">
           <h1 className="flex-1 text-2xl font-semibold">{ticket.title}</h1>
@@ -49,8 +49,8 @@ export function TicketDetailView({ ticket: initialTicket }: TicketDetailViewProp
             <TicketPriorityBadge priority={ticket.priority} />
             <AssigneeBadge assignee={ticket.assignee} size="sm" />
             <span>
-              Submitted by{' '}
-              <strong>{ticket.nickname ?? 'Anonymous'}</strong>
+              제출자:{' '}
+              <strong>{ticket.nickname ?? '익명'}</strong>
             </span>
             <span>{new Date(ticket.createdAt).toLocaleString()}</span>
           </div>
@@ -58,7 +58,7 @@ export function TicketDetailView({ ticket: initialTicket }: TicketDetailViewProp
           {/* Description */}
           <Card>
             <CardHeader>
-              <CardTitle>Description</CardTitle>
+              <CardTitle>내용</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="whitespace-pre-wrap text-sm">{ticket.description}</p>
@@ -68,7 +68,7 @@ export function TicketDetailView({ ticket: initialTicket }: TicketDetailViewProp
           {/* Contact info if available */}
           {ticket.email && (
             <p className="text-sm text-muted-foreground">
-              Contact: <a href={`mailto:${ticket.email}`} className="hover:underline">{ticket.email}</a>
+              연락처: <a href={`mailto:${ticket.email}`} className="hover:underline">{ticket.email}</a>
             </p>
           )}
 

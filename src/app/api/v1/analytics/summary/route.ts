@@ -1,3 +1,4 @@
+import { type NextRequest } from "next/server";
 import { ok, serverError, tooManyRequests } from "@/lib/api/response";
 import { requireAuth } from "@/lib/api/require-auth";
 import { getAnalyticsSummary } from "@/server/services/analytics";
@@ -11,7 +12,7 @@ import { checkAdminRateLimit } from "@/lib/rate-limit";
  *
  * Auth: required (any authenticated admin)
  */
-export async function GET() {
+export async function GET(_req: NextRequest) {
   const authResult = await requireAuth();
   if (authResult.type === "error") return authResult.response;
 

@@ -5,7 +5,7 @@
  *  response.ts  — ok, created, badRequest, unauthorized, forbidden,
  *                 notFound, tooManyRequests, serverError
  *  cors.ts      — withCors, corsPreflightResponse
- *  tracking.ts  — generateTrackingId, generateTrackingIdWithRetry
+ *  tracking.ts  — generateTrackingId
  *
  * 모두 순수함수 / I/O 없음 → DB 불필요, 빠른 단위 테스트
  */
@@ -18,7 +18,7 @@ import {
   forbidden, notFound, tooManyRequests, serverError,
 } from '@/lib/api/response';
 import { withCors, corsPreflightResponse } from '@/lib/api/cors';
-import { generateTrackingId, generateTrackingIdWithRetry } from '@/lib/tracking';
+import { generateTrackingId } from '@/lib/tracking';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // response.ts
@@ -426,44 +426,5 @@ describe('tracking helpers (src/lib/tracking.ts)', () => {
     });
   });
 
-  // ── generateTrackingIdWithRetry() ─────────────────────────────────────────
-  describe('generateTrackingIdWithRetry()', () => {
-    it('호출하면 유효한 trackingId를 반환해야 한다', () => {
-      const generate = generateTrackingIdWithRetry(3);
-      expect(generate()).toMatch(/^FB-[a-z0-9]{8}$/);
-    });
-
-    it('maxAttempts 이내에서는 계속 생성해야 한다', () => {
-      const generate = generateTrackingIdWithRetry(3);
-      expect(generate()).toBeTruthy(); // 1회
-      expect(generate()).toBeTruthy(); // 2회
-      expect(generate()).toBeTruthy(); // 3회
-    });
-
-    it('maxAttempts 초과 시 Error를 던져야 한다', () => {
-      const generate = generateTrackingIdWithRetry(2);
-      generate(); // 1회
-      generate(); // 2회 (한도 소진)
-      expect(() => generate()).toThrow('Failed to generate unique tracking ID');
-    });
-
-    it('인수 없이 호출하면 기본 maxAttempts=3 이어야 한다', () => {
-      const generate = generateTrackingIdWithRetry();
-      generate(); generate(); generate(); // 3회 소진
-      expect(() => generate()).toThrow();
-    });
-
-    it('독립된 generator 인스턴스는 카운터를 공유하지 않아야 한다', () => {
-      const g1 = generateTrackingIdWithRetry(1);
-      const g2 = generateTrackingIdWithRetry(1);
-      g1(); // g1 소진
-      expect(() => g2()).not.toThrow(); // g2는 독립적
-    });
-
-    it('maxAttempts=1 이면 1회 후 에러를 던져야 한다', () => {
-      const generate = generateTrackingIdWithRetry(1);
-      generate(); // 1회 소진
-      expect(() => generate()).toThrow();
-    });
-  });
 });
+

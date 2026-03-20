@@ -10,7 +10,7 @@ import {
   STREAM_POLL_INTERVAL_MS,
   STREAM_KEEPALIVE_INTERVAL_MS,
 } from "@/lib/sse/format";
-import type { TicketStreamItem, SSEInitPayload } from "@/types";
+import type { TicketStreamItem, SSEInitPayload, TicketDeletedPayload } from "@/types";
 
 // Vercel Hobby limit; increase to 300 on Pro
 export const maxDuration = 60;
@@ -36,8 +36,8 @@ const TICKET_STREAM_SELECT = {
  * Polling: queries DB every 3 s for tickets updated since last check.
  * Keepalive: sends SSE comment every 15 s to prevent proxy timeout.
  *
- * Known limitation: ticket.deleted is NOT emitted — deleted rows are
- * undetectable via updatedAt polling. See design §3.7.
+ * Soft delete: ticket.deleted 이벤트는 deletedAt 필드를 폴링해 감지한다.
+ * deletedAt > lastCheckedAt 인 행을 주기적으로 쿼리하여 클라이언트에 알린다.
  */
 export async function GET(req: NextRequest) {
   const authResult = await requireAuth();
@@ -86,12 +86,14 @@ export async function GET(req: NextRequest) {
         console.error("[SSE] init stats failed", err);
       }
 
-      // Poll DB for new/updated tickets every STREAM_POLL_INTERVAL_MS
+      // Poll DB for new/updated/deleted tickets every STREAM_POLL_INTERVAL_MS
       pollTimer = setInterval(async () => {
         try {
           const pollTime = new Date();
+
+          // 업데이트된 활성 티켓 감지 (created / updated)
           const changed = await prisma.feedback.findMany({
-            where: { updatedAt: { gt: lastCheckedAt } },
+            where: { updatedAt: { gt: lastCheckedAt }, deletedAt: null },
             select: TICKET_STREAM_SELECT,
             orderBy: { updatedAt: "asc" },
           });
@@ -117,7 +119,23 @@ export async function GET(req: NextRequest) {
             enqueue(formatSSEEvent(eventId, eventType, item));
           }
 
-          if (changed.length > 0) {
+          // 소프트 삭제된 티켓 감지 (deleted)
+          const deleted = await prisma.feedback.findMany({
+            where: {
+              deletedAt: { not: null, gt: lastCheckedAt },
+            },
+            select: { id: true, deletedAt: true },
+            orderBy: { deletedAt: "asc" },
+          });
+
+          for (const row of deleted) {
+            const payload: TicketDeletedPayload = { id: row.id };
+            const eventId = String(row.deletedAt!.getTime());
+            enqueue(formatSSEEvent(eventId, "ticket.deleted", payload));
+            seenIds.delete(row.id);
+          }
+
+          if (changed.length > 0 || deleted.length > 0) {
             lastCheckedAt = pollTime;
           }
         } catch (err) {

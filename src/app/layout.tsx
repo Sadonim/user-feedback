@@ -16,10 +16,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "User Feedback",
-    template: "%s | User Feedback",
+    default: "피드백 센터",
+    template: "%s | 피드백 센터",
   },
-  description: "Submit and track feedback, bug reports, and feature requests.",
+  description: "버그 신고, 기능 요청, 일반 문의를 제출하고 처리 상태를 확인하세요.",
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SkipNav />
         {children}

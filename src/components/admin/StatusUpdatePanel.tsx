@@ -20,7 +20,7 @@ export function StatusUpdatePanel({ ticket, onUpdate }: StatusUpdatePanelProps) 
 
   function handleSubmit() {
     if (selectedStatus === ticket.status) {
-      toast.info('Status is already set to this value');
+      toast.info('이미 해당 상태로 설정되어 있습니다');
       return;
     }
 
@@ -34,13 +34,13 @@ export function StatusUpdatePanel({ ticket, onUpdate }: StatusUpdatePanelProps) 
       const json = await res.json();
 
       if (!res.ok || !json.success) {
-        toast.error(json.error ?? 'Failed to update status');
+        toast.error(json.error ?? '상태 업데이트에 실패했습니다');
         return;
       }
 
       onUpdate(json.data);
       setNote('');
-      toast.success('Status updated');
+      toast.success('상태가 업데이트되었습니다');
     });
   }
 
@@ -48,7 +48,7 @@ export function StatusUpdatePanel({ ticket, onUpdate }: StatusUpdatePanelProps) 
     <div className="space-y-3 rounded-xl border p-4">
       <div className="flex items-center justify-between">
         {/* DTL-02: id on heading so select can reference it via aria-labelledby */}
-        <h3 id="status-heading" className="text-sm font-medium">Status</h3>
+        <h3 id="status-heading" className="text-sm font-medium">상태</h3>
         <TicketStatusBadge status={ticket.status} />
       </div>
 
@@ -69,13 +69,13 @@ export function StatusUpdatePanel({ ticket, onUpdate }: StatusUpdatePanelProps) 
 
       {/* DTL-03: explicit label for the note textarea */}
       <label htmlFor="status-note" className="sr-only">
-        Status update note
+        상태 변경 메모
       </label>
       <textarea
         id="status-note"
         value={note}
         onChange={(e) => setNote(e.target.value)}
-        placeholder="Add a note (optional)"
+        placeholder="메모 추가 (선택)"
         maxLength={500}
         rows={2}
         disabled={isPending}
@@ -87,7 +87,7 @@ export function StatusUpdatePanel({ ticket, onUpdate }: StatusUpdatePanelProps) 
         disabled={isPending || selectedStatus === ticket.status}
         className="w-full"
       >
-        {isPending ? 'Updating...' : 'Update Status'}
+        {isPending ? '업데이트 중...' : '상태 업데이트'}
       </Button>
     </div>
   );

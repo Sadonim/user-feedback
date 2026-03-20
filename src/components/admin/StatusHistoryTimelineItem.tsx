@@ -27,7 +27,7 @@ export function StatusHistoryTimelineItem({
             </>
           ) : (
             <>
-              <span className="text-muted-foreground">Created as</span>
+              <span className="text-muted-foreground">접수 상태:</span>
               <TicketStatusBadge status={entry.toStatus} />
             </>
           )}

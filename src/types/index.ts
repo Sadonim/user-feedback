@@ -90,8 +90,11 @@ export interface TicketFilters {
 }
 
 // Phase 5-3: SSE types
-// ticket.deleted is intentionally omitted — deleted rows are undetectable via updatedAt polling
-export type SSEEventType = "init" | "ticket.created" | "ticket.updated";
+export type SSEEventType = "init" | "ticket.created" | "ticket.updated" | "ticket.deleted";
+
+export interface TicketDeletedPayload {
+  id: string;
+}
 
 export interface TicketStreamItem {
   id: string;

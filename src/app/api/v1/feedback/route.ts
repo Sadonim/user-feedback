@@ -6,6 +6,7 @@ import { generateTrackingId } from "@/lib/tracking";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { withPublicCors, publicCorsPreflightResponse } from "@/lib/api/cors";
 import { emailService, parseAdminEmails } from "@/server/services/email";
+import { getClientIp } from "@/lib/api/get-client-ip";
 
 export async function OPTIONS(req: NextRequest) {
   return publicCorsPreflightResponse(req.headers.get("origin"));
@@ -14,10 +15,7 @@ export async function OPTIONS(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const origin = req.headers.get("origin");
   try {
-    // Use last entry of X-Forwarded-For (platform-appended, not client-controlled on Vercel)
-    // Cap key length to prevent Redis key size abuse (H1 security fix)
-    const forwarded = req.headers.get("x-forwarded-for");
-    const ip = (forwarded?.split(",").at(-1)?.trim() ?? "anonymous").slice(0, 45);
+    const ip = getClientIp(req);
     const allowed = await checkRateLimit(ip);
     if (!allowed) {
       return withPublicCors(tooManyRequests(), origin);

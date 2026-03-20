@@ -38,24 +38,24 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Dashboard</h1>
+      <h1 className="text-2xl font-semibold">대시보드</h1>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatsCard title="Total" value={stats.total} icon={Inbox} />
+        <StatsCard title="전체" value={stats.total} icon={Inbox} />
         <StatsCard
-          title="Open"
+          title="접수됨"
           value={stats.byStatus.OPEN}
           icon={AlertCircle}
           color="blue"
         />
         <StatsCard
-          title="In Progress"
+          title="처리 중"
           value={stats.byStatus.IN_PROGRESS}
           icon={Clock}
           color="amber"
         />
         <StatsCard
-          title="Resolved"
+          title="해결됨"
           value={stats.byStatus.RESOLVED}
           icon={CheckCircle2}
           color="green"
