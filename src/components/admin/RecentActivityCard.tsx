@@ -9,16 +9,16 @@ export function RecentActivityCard({ today, thisWeek }: RecentActivityCardProps)
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recent Activity</CardTitle>
+        <CardTitle>최근 접수 현황</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">Today</span>
-          <span className="text-xl font-bold">{today}</span>
+          <span className="text-sm text-muted-foreground">오늘</span>
+          <span className="tabular-nums text-xl font-bold">{today}</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">This week</span>
-          <span className="text-xl font-bold">{thisWeek}</span>
+          <span className="text-sm text-muted-foreground">이번 주</span>
+          <span className="tabular-nums text-xl font-bold">{thisWeek}</span>
         </div>
       </CardContent>
     </Card>

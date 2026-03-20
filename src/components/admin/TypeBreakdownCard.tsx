@@ -7,17 +7,17 @@ interface TypeBreakdownCardProps {
 
 const typeConfig: Record<FeedbackType, { label: string; barClass: string; dotClass: string }> = {
   BUG: {
-    label: 'Bug Reports',
+    label: '버그 신고',
     barClass: 'bg-red-500 dark:bg-red-400',
     dotClass: 'bg-red-500 dark:bg-red-400',
   },
   FEATURE: {
-    label: 'Feature Requests',
+    label: '기능 요청',
     barClass: 'bg-purple-500 dark:bg-purple-400',
     dotClass: 'bg-purple-500 dark:bg-purple-400',
   },
   GENERAL: {
-    label: 'General Inquiries',
+    label: '일반 문의',
     barClass: 'bg-teal-500 dark:bg-teal-400',
     dotClass: 'bg-teal-500 dark:bg-teal-400',
   },
@@ -29,7 +29,7 @@ export function TypeBreakdownCard({ byType }: TypeBreakdownCardProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>By Type</CardTitle>
+        <CardTitle>유형별 현황</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {(Object.entries(byType) as [FeedbackType, number][]).map(
@@ -69,7 +69,7 @@ export function TypeBreakdownCard({ byType }: TypeBreakdownCardProps) {
           }
         )}
         {total === 0 && (
-          <p className="text-center text-sm text-muted-foreground py-4">No data yet.</p>
+          <p className="text-center text-sm text-muted-foreground py-4">아직 데이터가 없습니다.</p>
         )}
       </CardContent>
     </Card>

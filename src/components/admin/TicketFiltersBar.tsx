@@ -51,59 +51,59 @@ export function TicketFiltersBar({ filters, onChange }: TicketFiltersBarProps) {
 
   return (
     /* TBL-08: role="search" makes filter controls discoverable via landmark navigation */
-    <div role="search" aria-label="Filter tickets" className="flex flex-wrap items-center gap-2">
+    <div role="search" aria-label="티켓 필터" className="flex flex-wrap items-center gap-2">
       <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
         <SlidersHorizontal className="size-3.5" aria-hidden="true" />
-        <span className="sr-only">Filters:</span>
+        <span className="sr-only">필터:</span>
       </span>
 
       {/* TBL-05: each select has an accessible label */}
       <select
-        aria-label="Filter by status"
+        aria-label="상태로 필터"
         value={filters.status ?? ''}
         onChange={(e) =>
           onChange({ status: (e.target.value as TicketFiltersInput['status']) || undefined })
         }
         className={cn(selectClass, filters.status && 'border-primary/50 bg-primary/5 font-medium')}
       >
-        <option value="">All Statuses</option>
-        <option value="OPEN">Open</option>
-        <option value="IN_PROGRESS">In Progress</option>
-        <option value="RESOLVED">Resolved</option>
-        <option value="CLOSED">Closed</option>
+        <option value="">전체 상태</option>
+        <option value="OPEN">접수됨</option>
+        <option value="IN_PROGRESS">처리 중</option>
+        <option value="RESOLVED">해결됨</option>
+        <option value="CLOSED">종료됨</option>
       </select>
 
       <select
-        aria-label="Filter by type"
+        aria-label="유형으로 필터"
         value={filters.type ?? ''}
         onChange={(e) =>
           onChange({ type: (e.target.value as TicketFiltersInput['type']) || undefined })
         }
         className={cn(selectClass, filters.type && 'border-primary/50 bg-primary/5 font-medium')}
       >
-        <option value="">All Types</option>
-        <option value="BUG">Bug</option>
-        <option value="FEATURE">Feature</option>
-        <option value="GENERAL">General</option>
+        <option value="">전체 유형</option>
+        <option value="BUG">버그</option>
+        <option value="FEATURE">기능 요청</option>
+        <option value="GENERAL">일반</option>
       </select>
 
       <select
-        aria-label="Filter by priority"
+        aria-label="우선순위로 필터"
         value={filters.priority ?? ''}
         onChange={(e) =>
           onChange({ priority: (e.target.value as TicketFiltersInput['priority']) || undefined })
         }
         className={cn(selectClass, filters.priority && 'border-primary/50 bg-primary/5 font-medium')}
       >
-        <option value="">All Priorities</option>
-        <option value="CRITICAL">Critical</option>
-        <option value="HIGH">High</option>
-        <option value="MEDIUM">Medium</option>
-        <option value="LOW">Low</option>
+        <option value="">전체 우선순위</option>
+        <option value="CRITICAL">긴급</option>
+        <option value="HIGH">높음</option>
+        <option value="MEDIUM">보통</option>
+        <option value="LOW">낮음</option>
       </select>
 
       <select
-        aria-label="Filter by assignee"
+        aria-label="담당자로 필터"
         value={filters.assigneeId ?? ''}
         onChange={(e) =>
           onChange({
@@ -112,8 +112,8 @@ export function TicketFiltersBar({ filters, onChange }: TicketFiltersBarProps) {
         }
         className={cn(selectClass, filters.assigneeId && 'border-primary/50 bg-primary/5 font-medium')}
       >
-        <option value="">All Assignees</option>
-        <option value="unassigned">Unassigned</option>
+        <option value="">전체 담당자</option>
+        <option value="unassigned">미배정</option>
         {admins.map((admin) => (
           <option key={admin.id} value={admin.id}>
             {admin.username}
@@ -122,7 +122,7 @@ export function TicketFiltersBar({ filters, onChange }: TicketFiltersBarProps) {
       </select>
 
       <select
-        aria-label="Sort order"
+        aria-label="정렬 순서"
         value={`${filters.sort}-${filters.order}`}
         onChange={(e) => {
           const [sort, order] = e.target.value.split('-') as [
@@ -133,9 +133,9 @@ export function TicketFiltersBar({ filters, onChange }: TicketFiltersBarProps) {
         }}
         className={selectClass}
       >
-        <option value="createdAt-desc">Newest First</option>
-        <option value="createdAt-asc">Oldest First</option>
-        <option value="updatedAt-desc">Recently Updated</option>
+        <option value="createdAt-desc">최신순</option>
+        <option value="createdAt-asc">오래된순</option>
+        <option value="updatedAt-desc">최근 수정순</option>
       </select>
 
       {hasActiveFilters && (
@@ -154,10 +154,10 @@ export function TicketFiltersBar({ filters, onChange }: TicketFiltersBarProps) {
           className="gap-1.5 text-muted-foreground hover:text-foreground"
         >
           <X className="size-3" aria-hidden="true" />
-          Clear
+          초기화
           <span
             className="flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground tabular-nums"
-            aria-label={`${activeFilterCount} active filters`}
+            aria-label={`활성 필터 ${activeFilterCount}개`}
           >
             {activeFilterCount}
           </span>

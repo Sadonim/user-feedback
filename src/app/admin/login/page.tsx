@@ -3,7 +3,7 @@ import { LoginForm } from '@/components/auth/LoginForm';
 import { sanitizeCallbackUrl as _sanitize } from '@/lib/auth/sanitize-callback-url';
 
 export const metadata: Metadata = {
-  title: 'Admin Login',
+  title: '관리자 로그인',
 };
 
 /**

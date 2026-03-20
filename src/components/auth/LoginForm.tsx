@@ -57,7 +57,7 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
 
       if (result?.error) {
         /* LGN-02: setting error triggers the useEffect which moves focus */
-        setError('Invalid email or password');
+        setError('이메일 또는 비밀번호가 올바르지 않습니다');
         return;
       }
 
@@ -72,9 +72,9 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
       <CardHeader>
         {/* LGN-01: h1 so the login page has a heading landmark */}
         <h1 data-slot="card-title" className="text-base leading-snug font-medium">
-          Admin Login
+          관리자 로그인
         </h1>
-        <CardDescription>user-feedback management</CardDescription>
+        <CardDescription>피드백 관리 시스템</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -89,7 +89,7 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
           )}
 
           <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">이메일</Label>
             <Input
               id="email"
               name="email"
@@ -101,7 +101,7 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">비밀번호</Label>
             <Input
               id="password"
               name="password"
@@ -113,12 +113,12 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
           </div>
 
           <Button type="submit" className="w-full" disabled={isPending}>
-            {isPending ? 'Signing in...' : 'Sign In'}
+            {isPending ? '로그인 중...' : '로그인'}
           </Button>
         </form>
 
         <p className="mt-4 text-center text-xs text-muted-foreground">
-          Forgot password? Contact the system administrator.
+          비밀번호를 잊으셨나요? 시스템 관리자에게 문의하세요.
         </p>
       </CardContent>
     </Card>

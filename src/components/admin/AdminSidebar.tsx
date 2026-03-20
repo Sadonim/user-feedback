@@ -12,9 +12,9 @@ interface AdminSidebarProps {
 }
 
 const navItems = [
-  { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/admin/tickets', label: 'Tickets', icon: Ticket },
-  { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
+  { href: '/admin/dashboard', label: '대시보드', icon: LayoutDashboard },
+  { href: '/admin/tickets', label: '티켓', icon: Ticket },
+  { href: '/admin/analytics', label: '분석', icon: BarChart3 },
 ];
 
 export function AdminSidebar({ user }: AdminSidebarProps) {
@@ -73,7 +73,7 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
         >
           {/* ADM-04: decorative icon */}
           <LogOut aria-hidden="true" className="size-4 shrink-0" />
-          Sign Out
+          로그아웃
         </button>
       </div>
     </aside>

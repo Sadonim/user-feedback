@@ -8,9 +8,9 @@ const FEEDBACK_TYPES: {
   emoji: string;
   description: string;
 }[] = [
-  { value: "BUG", label: "Bug Report", emoji: "🐛", description: "Something isn't working" },
-  { value: "FEATURE", label: "Feature Request", emoji: "✨", description: "Suggest an improvement" },
-  { value: "GENERAL", label: "General", emoji: "💬", description: "General inquiry" },
+  { value: "BUG", label: "버그 신고", emoji: "🐛", description: "뭔가 작동하지 않아요" },
+  { value: "FEATURE", label: "기능 요청", emoji: "✨", description: "개선 사항을 제안해요" },
+  { value: "GENERAL", label: "일반 문의", emoji: "💬", description: "기타 문의사항이에요" },
 ];
 
 interface FeedbackTypeSelectorProps {

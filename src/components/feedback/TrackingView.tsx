@@ -42,9 +42,9 @@ const TYPE_EMOJI: Record<FeedbackType, string> = {
 };
 
 const TYPE_TEXT: Record<FeedbackType, string> = {
-  BUG: "Bug",
-  FEATURE: "Feature",
-  GENERAL: "General",
+  BUG: "버그",
+  FEATURE: "기능 요청",
+  GENERAL: "일반",
 };
 
 interface TrackingViewProps {
@@ -74,14 +74,14 @@ export function TrackingView({ initialId = "" }: TrackingViewProps) {
         /* TRK-05: only set state for the live region, skip toast on 404
            to avoid duplicate SR announcements */
         if (res.status !== 404) {
-          toast.error(json.error ?? "Something went wrong.");
+          toast.error(json.error ?? "오류가 발생했습니다.");
         }
         return;
       }
 
       setData(json.data);
     } catch {
-      toast.error("Network error. Please check your connection.");
+      toast.error("네트워크 오류가 발생했습니다. 연결 상태를 확인해주세요.");
     } finally {
       setIsLoading(false);
     }
@@ -91,14 +91,14 @@ export function TrackingView({ initialId = "" }: TrackingViewProps) {
     <div className="mx-auto max-w-lg space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Track Your Feedback</CardTitle>
-          <CardDescription>Enter your tracking ID to check the status.</CardDescription>
+          <CardTitle>피드백 조회</CardTitle>
+          <CardDescription>접수 번호를 입력하여 처리 상태를 확인하세요.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSearch} className="flex gap-2">
             {/* TRK-01: explicit label association */}
             <Label htmlFor="tracking-id-input" className="sr-only">
-              Tracking ID
+              접수 번호
             </Label>
             <Input
               id="tracking-id-input"
@@ -108,7 +108,7 @@ export function TrackingView({ initialId = "" }: TrackingViewProps) {
               className="font-mono"
             />
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Searching..." : "Track"}
+              {isLoading ? "조회 중..." : "조회"}
             </Button>
           </form>
         </CardContent>
@@ -118,7 +118,7 @@ export function TrackingView({ initialId = "" }: TrackingViewProps) {
       <div aria-live="polite" aria-atomic="false">
         {searched && !isLoading && !data && (
           <p className="text-center text-sm text-muted-foreground">
-            No feedback found. Double-check your tracking ID.
+            피드백을 찾을 수 없습니다. 접수 번호를 다시 확인해주세요.
           </p>
         )}
 
@@ -150,7 +150,7 @@ export function TrackingView({ initialId = "" }: TrackingViewProps) {
                   <span>{TYPE_TEXT[data.type]}</span>
                 </span>
                 <span aria-hidden="true">·</span>
-                <span>Submitted {new Date(data.createdAt).toLocaleDateString()}</span>
+                <span>제출일: {new Date(data.createdAt).toLocaleDateString('ko-KR')}</span>
               </div>
 
               {data.statusHistory.length > 0 && (
@@ -159,7 +159,7 @@ export function TrackingView({ initialId = "" }: TrackingViewProps) {
                   <div>
                     {/* TRK-06: heading associated with the list via id/aria-labelledby */}
                     <p id="status-history-heading" className="mb-3 text-sm font-medium">
-                      Status History
+                      상태 변경 이력
                     </p>
                     <ol aria-labelledby="status-history-heading" className="space-y-3">
                       {data.statusHistory.map((entry) => (

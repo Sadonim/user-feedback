@@ -65,7 +65,7 @@ export function StatsCard({
                 trendDown && 'text-red-500 dark:text-red-400',
                 trendFlat && 'text-muted-foreground'
               )}
-              aria-label={`Trend: ${trend > 0 ? '+' : ''}${trend}% vs previous period`}
+              aria-label={`추세: 이전 대비 ${trend > 0 ? '+' : ''}${trend}%`}
             >
               {trendUp && <TrendingUp className="size-3" aria-hidden="true" />}
               {trendDown && <TrendingDown className="size-3" aria-hidden="true" />}

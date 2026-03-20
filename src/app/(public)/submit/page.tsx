@@ -1,8 +1,8 @@
 import { FeedbackForm } from "@/components/feedback/FeedbackForm";
 
 export const metadata = {
-  title: "Submit Feedback",
-  description: "Submit a bug report, feature request, or general inquiry.",
+  title: "피드백 제출",
+  description: "버그 신고, 기능 요청, 일반 문의를 제출하세요.",
 };
 
 export default function SubmitPage() {

@@ -27,11 +27,11 @@ function formatRelativeDate(date: Date): string {
   const now = Date.now();
   const diff = now - new Date(date).getTime();
   const hours = Math.floor(diff / (1000 * 60 * 60));
-  if (hours < 1) return 'Just now';
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 1) return '방금';
+  if (hours < 24) return `${hours}시간 전`;
   const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Date(date).toLocaleDateString();
+  if (days < 7) return `${days}일 전`;
+  return new Date(date).toLocaleDateString('ko-KR');
 }
 
 export function TicketTableRow({ ticket }: TicketTableRowProps) {
@@ -65,7 +65,7 @@ export function TicketTableRow({ ticket }: TicketTableRowProps) {
         </Link>
       </td>
       <td className="px-4 py-2.5 text-sm text-muted-foreground">
-        {ticket.nickname ?? 'Anonymous'}
+        {ticket.nickname ?? '익명'}
       </td>
       <td className="px-4 py-2.5">
         <TicketStatusBadge status={ticket.status} />
@@ -77,9 +77,9 @@ export function TicketTableRow({ ticket }: TicketTableRowProps) {
         <Link
           href={`/admin/tickets/${ticket.id}`}
           className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-foreground transition-all duration-150"
-          aria-label={`View ticket: ${ticket.title}`}
+          aria-label={`티켓 보기: ${ticket.title}`}
         >
-          View →
+          보기 →
         </Link>
       </td>
     </tr>

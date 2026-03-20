@@ -3,7 +3,7 @@ interface SkipNavProps {
   label?: string;
 }
 
-export function SkipNav({ href = '#main-content', label = 'Skip to main content' }: SkipNavProps) {
+export function SkipNav({ href = '#main-content', label = '본문으로 바로가기' }: SkipNavProps) {
   return (
     <a
       href={href}

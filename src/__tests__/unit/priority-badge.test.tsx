@@ -19,22 +19,22 @@ describe('TicketPriorityBadge', () => {
   describe('renders correct label per priority value', () => {
     it('renders "Critical" for CRITICAL priority', () => {
       render(<TicketPriorityBadge priority="CRITICAL" />);
-      expect(screen.getByText('Critical')).toBeTruthy();
+      expect(screen.getByText('긴급')).toBeTruthy();
     });
 
     it('renders "High" for HIGH priority', () => {
       render(<TicketPriorityBadge priority="HIGH" />);
-      expect(screen.getByText('High')).toBeTruthy();
+      expect(screen.getByText('높음')).toBeTruthy();
     });
 
     it('renders "Medium" for MEDIUM priority', () => {
       render(<TicketPriorityBadge priority="MEDIUM" />);
-      expect(screen.getByText('Medium')).toBeTruthy();
+      expect(screen.getByText('보통')).toBeTruthy();
     });
 
     it('renders "Low" for LOW priority', () => {
       render(<TicketPriorityBadge priority="LOW" />);
-      expect(screen.getByText('Low')).toBeTruthy();
+      expect(screen.getByText('낮음')).toBeTruthy();
     });
   });
 

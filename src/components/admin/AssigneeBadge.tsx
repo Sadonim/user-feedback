@@ -13,7 +13,7 @@ function getInitial(username: string): string {
 export function AssigneeBadge({ assignee, size = 'md' }: AssigneeBadgeProps) {
   if (!assignee) {
     return (
-      <span className="text-muted-foreground text-xs italic">Unassigned</span>
+      <span className="text-muted-foreground text-xs italic">미배정</span>
     );
   }
 

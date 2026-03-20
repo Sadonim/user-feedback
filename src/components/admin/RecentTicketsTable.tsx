@@ -16,15 +16,15 @@ export function RecentTicketsTable({ tickets }: RecentTicketsTableProps) {
       <CardHeader>
         {/* RST-01: h2 for proper heading hierarchy under Dashboard h1 */}
         <h2 data-slot="card-title" className="text-base leading-snug font-medium">
-          Recent Tickets
+          최근 티켓
         </h2>
       </CardHeader>
       <CardContent>
         {tickets.length === 0 ? (
           <EmptyState
             icon={Inbox}
-            title="No tickets yet"
-            description="New feedback submissions will appear here."
+            title="아직 티켓이 없습니다"
+            description="새로운 피드백이 제출되면 여기에 표시됩니다."
             className="py-8"
           />
         ) : (
