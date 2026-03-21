@@ -2,27 +2,16 @@ import { z } from "zod";
 
 export const submitFeedbackSchema = z.object({
   type: z.enum(["BUG", "FEATURE", "GENERAL"]),
-  title: z
+  content: z
     .string()
-    .min(1, "Title is required")
-    .max(200, "Title must be 200 characters or less")
-    .trim(),
-  description: z
-    .string()
-    .min(10, "Description must be at least 10 characters")
-    .max(5000, "Description must be 5000 characters or less")
+    .min(1, "내용을 입력해주세요")
+    .max(5000, "5000자 이하로 입력해주세요")
     .trim(),
   nickname: z
     .string()
-    .min(1, "Nickname is required")
-    .max(100, "Nickname must be 100 characters or less")
+    .min(1, "닉네임을 입력해주세요")
+    .max(100, "닉네임은 100자 이하로 입력해주세요")
     .trim(),
-  email: z
-    .string()
-    .email("Invalid email address")
-    .max(255)
-    .optional()
-    .or(z.literal("")),
 });
 
 export const trackingIdSchema = z.object({

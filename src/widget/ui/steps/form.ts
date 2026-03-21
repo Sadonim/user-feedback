@@ -11,45 +11,11 @@ interface FormField {
   readonly maxLength: number;
 }
 
-const FORM_FIELDS: readonly FormField[] = [
-  {
-    id: 'wfb-title',
-    field: 'title',
-    label: '제목',
-    type: 'input',
-    required: true,
-    placeholder: '간단한 제목을 입력하세요',
-    maxLength: 200,
-  },
-  {
-    id: 'wfb-description',
-    field: 'description',
-    label: '내용',
-    type: 'textarea',
-    required: true,
-    placeholder: '자세히 설명해 주세요 (10자 이상)',
-    maxLength: 5000,
-  },
-  {
-    id: 'wfb-nickname',
-    field: 'nickname',
-    label: '닉네임',
-    type: 'input',
-    required: true,
-    placeholder: '이름 또는 닉네임',
-    maxLength: 100,
-  },
-  {
-    id: 'wfb-email',
-    field: 'email',
-    label: '이메일',
-    type: 'input',
-    inputType: 'email',
-    required: false,
-    placeholder: '선택 — 답변 수신용',
-    maxLength: 255,
-  },
-] as const;
+const CONTENT_PLACEHOLDER: Record<string, string> = {
+  BUG:     '겪고 계신 증상을 설명해주세요',
+  FEATURE: '어떤 기능이 있으면 좋을지 알려주세요',
+  GENERAL: '궁금한 점을 편하게 남겨주세요',
+};
 
 const SUBMIT_BTN_IDLE = '피드백 제출';
 const SUBMIT_BTN_LOADING = '제출 중…';
@@ -80,19 +46,16 @@ export function renderForm(
   const header = document.createElement('div');
   header.className = 'wfb-form-header';
 
-  /* WGT-01: accessible back button — aria-label replaces raw arrow announcement */
   const backBtn = document.createElement('button');
   backBtn.className = 'wfb-back-btn';
   backBtn.setAttribute('data-wfb-back', '');
   backBtn.setAttribute('aria-label', '유형 선택으로 돌아가기');
-  // Visible arrow text is decorative
   const arrowSpan = document.createElement('span');
   arrowSpan.setAttribute('aria-hidden', 'true');
   arrowSpan.textContent = '← 돌아가기';
   backBtn.appendChild(arrowSpan);
   backBtn.addEventListener('click', onBack);
 
-  /* WGT-03: type badge — emoji in aria-hidden span, text in separate span */
   const typeBadge = document.createElement('span');
   typeBadge.className = 'wfb-form-type-badge';
   const selectedType = state.selectedType ?? '';
@@ -118,60 +81,38 @@ export function renderForm(
   errorBanner.textContent = state.errorMessage ?? '';
   container.appendChild(errorBanner);
 
-  // 폼 필드
-  FORM_FIELDS.forEach((fieldDef) => {
-    const fieldWrapper = document.createElement('div');
-    fieldWrapper.className = 'wfb-field';
+  // 내용 textarea
+  const contentPlaceholder = CONTENT_PLACEHOLDER[selectedType] ?? '내용을 입력해주세요';
+  const contentArea = document.createElement('textarea');
+  contentArea.className = 'wfb-textarea';
+  contentArea.id = 'wfb-content';
+  contentArea.placeholder = contentPlaceholder;
+  contentArea.maxLength = 5000;
+  contentArea.required = true;
+  contentArea.setAttribute('data-field', 'content');
+  contentArea.setAttribute('aria-label', contentPlaceholder);
+  contentArea.value = state.formData.content;
+  contentArea.addEventListener('input', () => onFieldChange('content', contentArea.value));
+  container.appendChild(contentArea);
 
-    const label = document.createElement('label');
-    label.className = 'wfb-label';
-    label.setAttribute('for', fieldDef.id);
-    label.textContent = fieldDef.label;
-
-    if (fieldDef.required) {
-      const req = document.createElement('span');
-      req.className = 'wfb-required';
-      req.setAttribute('aria-hidden', 'true');
-      req.textContent = ' *';
-      label.appendChild(req);
-    }
-
-    let inputEl: HTMLInputElement | HTMLTextAreaElement;
-
-    if (fieldDef.type === 'textarea') {
-      const ta = document.createElement('textarea');
-      ta.className = 'wfb-textarea';
-      ta.id = fieldDef.id;
-      ta.placeholder = fieldDef.placeholder;
-      ta.maxLength = fieldDef.maxLength;
-      ta.required = fieldDef.required;
-      ta.setAttribute('data-field', fieldDef.field);
-      ta.value = state.formData[fieldDef.field];
-      ta.addEventListener('input', () => onFieldChange(fieldDef.field, ta.value));
-      inputEl = ta;
-    } else {
-      const inp = document.createElement('input');
-      inp.className = 'wfb-input';
-      inp.id = fieldDef.id;
-      inp.type = fieldDef.inputType ?? 'text';
-      inp.placeholder = fieldDef.placeholder;
-      inp.maxLength = fieldDef.maxLength;
-      inp.required = fieldDef.required;
-      inp.setAttribute('data-field', fieldDef.field);
-      inp.value = state.formData[fieldDef.field];
-      inp.addEventListener('input', () => onFieldChange(fieldDef.field, inp.value));
-      inputEl = inp;
-    }
-
-    fieldWrapper.append(label, inputEl);
-    container.appendChild(fieldWrapper);
-  });
+  // 닉네임 input
+  const nicknameInput = document.createElement('input');
+  nicknameInput.className = 'wfb-input';
+  nicknameInput.id = 'wfb-nickname';
+  nicknameInput.type = 'text';
+  nicknameInput.placeholder = '닉네임';
+  nicknameInput.maxLength = 100;
+  nicknameInput.required = true;
+  nicknameInput.setAttribute('data-field', 'nickname');
+  nicknameInput.setAttribute('aria-label', '닉네임');
+  nicknameInput.value = state.formData.nickname;
+  nicknameInput.addEventListener('input', () => onFieldChange('nickname', nicknameInput.value));
+  container.appendChild(nicknameInput);
 
   // 제출 버튼
   const submitBtn = document.createElement('button');
   submitBtn.className = 'wfb-submit-btn';
   submitBtn.setAttribute('data-wfb-submit', '');
-  /* WGT-02: initial aria-busy state */
   submitBtn.setAttribute('aria-busy', state.step === 'submitting' ? 'true' : 'false');
   submitBtn.disabled = state.step === 'submitting';
   submitBtn.textContent = state.step === 'submitting' ? SUBMIT_BTN_LOADING : SUBMIT_BTN_IDLE;
@@ -201,7 +142,6 @@ export function updateFormState(
   if (submitBtn) {
     submitBtn.disabled = state.step === 'submitting';
     submitBtn.textContent = state.step === 'submitting' ? SUBMIT_BTN_LOADING : SUBMIT_BTN_IDLE;
-    /* WGT-02: aria-busy reflects submitting state without relying on text change alone */
     submitBtn.setAttribute('aria-busy', state.step === 'submitting' ? 'true' : 'false');
   }
 }

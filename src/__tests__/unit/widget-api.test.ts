@@ -1,19 +1,12 @@
 /**
  * Unit: src/widget/api.ts — submitFeedback
  *
- * [TDD RED PHASE] src/widget/api.ts가 존재하지 않으므로 전체 실패 예상.
- *
  * 대상 함수:
  *   submitFeedback(apiUrl, type, formData): Promise<FeedbackSubmitResult>
  *
- * 설계 문서 참조: docs/handoffs/design_phase3_widget.md §7-1, §14, §16-2
- *
  * 전략:
  *   - fetch 를 vi.stubGlobal 로 mock — 실제 네트워크 호출 없음
- *   - DB mock 금지 원칙 적용 대상 아님 (위젯 클라이언트 단위 테스트)
- *   - 에러는 ApiError { message, statusCode } 형태로 throw되어야 함
- *   - email 빈 문자열 → payload 에서 완전 제거
- *   - title / description / nickname trim 검증
+ *   - content / nickname trim 검증
  */
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { submitFeedback } from '@/widget/api';
@@ -56,10 +49,8 @@ function stubFetchJsonParseError(status: number) {
 const API_URL = 'https://feedback.example.com';
 
 const VALID_FORM: FormData = {
-  title: 'Widget button not showing',
-  description: 'The feedback button does not appear on mobile browsers.',
+  content: '위젯 버튼이 모바일에서 표시되지 않습니다.',
   nickname: 'test-user',
-  email: 'test@example.com',
 };
 
 const SUCCESS_RESPONSE = {
@@ -154,59 +145,25 @@ describe('submitFeedback (src/widget/api.ts)', () => {
       expect(body.type).toBe('GENERAL');
     });
 
-    it('payload 에 title, description, nickname 이 포함되어야 한다', async () => {
+    it('payload 에 content, nickname 이 포함되어야 한다', async () => {
       const body = await capturePayload(VALID_FORM);
-      expect(body.title).toBe('Widget button not showing');
-      expect(body.description).toBe('The feedback button does not appear on mobile browsers.');
+      expect(body.content).toBe('위젯 버튼이 모바일에서 표시되지 않습니다.');
       expect(body.nickname).toBe('test-user');
     });
 
-    it('title 앞뒤 공백을 trim 해야 한다', async () => {
-      const body = await capturePayload({ ...VALID_FORM, title: '  spaced title  ' });
-      expect(body.title).toBe('spaced title');
+    it('payload 에 email 이 포함되지 않아야 한다', async () => {
+      const body = await capturePayload(VALID_FORM);
+      expect(body).not.toHaveProperty('email');
     });
 
-    it('description 앞뒤 공백을 trim 해야 한다', async () => {
-      const body = await capturePayload({ ...VALID_FORM, description: '  spaced desc  ' });
-      expect(body.description).toBe('spaced desc');
+    it('content 앞뒤 공백을 trim 해야 한다', async () => {
+      const body = await capturePayload({ ...VALID_FORM, content: '  내용  ' });
+      expect(body.content).toBe('내용');
     });
 
     it('nickname 앞뒤 공백을 trim 해야 한다', async () => {
       const body = await capturePayload({ ...VALID_FORM, nickname: '  alice  ' });
       expect(body.nickname).toBe('alice');
-    });
-  });
-
-  // ── email 필드 조건부 포함 ───────────────────────────────────────────────
-  describe('email 필드 조건부 처리', () => {
-    async function capturePayload(form: FormData) {
-      const fetchMock = vi.fn().mockResolvedValue({
-        ok: true, status: 201, json: vi.fn().mockResolvedValue(SUCCESS_RESPONSE),
-      });
-      vi.stubGlobal('fetch', fetchMock);
-      await submitFeedback(API_URL, 'BUG', form);
-      const [, opts] = fetchMock.mock.calls[0] as [string, RequestInit];
-      return JSON.parse(opts.body as string) as Record<string, unknown>;
-    }
-
-    it('email 이 있으면 payload 에 포함해야 한다', async () => {
-      const body = await capturePayload(VALID_FORM);
-      expect(body.email).toBe('test@example.com');
-    });
-
-    it('email 이 빈 문자열이면 payload 에서 제외해야 한다', async () => {
-      const body = await capturePayload({ ...VALID_FORM, email: '' });
-      expect(body).not.toHaveProperty('email');
-    });
-
-    it('email 이 공백만 있으면 payload 에서 제외해야 한다', async () => {
-      const body = await capturePayload({ ...VALID_FORM, email: '   ' });
-      expect(body).not.toHaveProperty('email');
-    });
-
-    it('email trim 후 비어있으면 payload 에서 제외해야 한다', async () => {
-      const body = await capturePayload({ ...VALID_FORM, email: '\t\n' });
-      expect(body).not.toHaveProperty('email');
     });
   });
 
@@ -216,11 +173,11 @@ describe('submitFeedback (src/widget/api.ts)', () => {
       stubFetch({
         ok: false,
         status: 400,
-        jsonData: { success: false, data: null, error: 'Title is required', meta: null },
+        jsonData: { success: false, data: null, error: '내용을 입력해주세요', meta: null },
       });
 
       await expect(submitFeedback(API_URL, 'BUG', VALID_FORM)).rejects.toMatchObject({
-        message: 'Title is required',
+        message: '내용을 입력해주세요',
         statusCode: 400,
       });
     });
@@ -319,7 +276,6 @@ describe('submitFeedback (src/widget/api.ts)', () => {
         await submitFeedback(API_URL, 'BUG', VALID_FORM);
         expect.fail('should have thrown');
       } catch (err: unknown) {
-        // ApiError 는 plain object 이어야 함 — Error 인스턴스가 아님
         expect((err as Record<string, unknown>).stack).toBeUndefined();
       }
     });

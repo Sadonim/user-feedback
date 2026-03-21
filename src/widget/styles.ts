@@ -169,7 +169,8 @@ export const WIDGET_CSS = `
   }
   .wfb-overlay-type-btn:hover         { background: var(--wfb-bg-hover); border-color: var(--wfb-primary); transform: translateY(-1px); }
   .wfb-overlay-type-btn:focus-visible { outline: 2px solid var(--wfb-primary); outline-offset: 2px; }
-  .wfb-overlay-type-emoji { font-size: 18px; line-height: 1; }
+  .wfb-overlay-type-icon { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; color: var(--wfb-text-muted); transition: color var(--wfb-transition); }
+  .wfb-overlay-type-btn:hover .wfb-overlay-type-icon { color: var(--wfb-primary); }
   .wfb-overlay-type-label {
     font-size: 10px;
     font-weight: 500;

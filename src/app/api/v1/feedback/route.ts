@@ -32,7 +32,13 @@ export async function POST(req: NextRequest) {
       return withPublicCors(badRequest(message), origin);
     }
 
-    const { type, title, description, nickname, email } = parsed.data;
+    const { type, content, nickname } = parsed.data;
+
+    // content 첫 줄 → title (50자 truncate), 나머지 → description
+    const firstNewline = content.indexOf('\n');
+    const rawTitle = firstNewline === -1 ? content : content.slice(0, firstNewline);
+    const title = rawTitle.slice(0, 50);
+    const description = firstNewline === -1 ? null : content.slice(firstNewline + 1).trim() || null;
 
     // Retry loop for trackingId uniqueness (collision probability is negligible but handled correctly)
     let feedback = null;
@@ -45,7 +51,6 @@ export async function POST(req: NextRequest) {
             title,
             description,
             nickname,
-            email: email || null,
             trackingId: generateTrackingId(),
             statusHistory: {
               create: { toStatus: "OPEN" },

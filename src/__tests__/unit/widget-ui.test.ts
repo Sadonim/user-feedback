@@ -333,16 +333,16 @@ describe('createPopup (src/widget/ui/popup.ts)', () => {
       expect(handle.el.querySelectorAll('[data-type]').length).toBe(3);
     });
 
-    it('step=form 이면 title input 이 렌더링되어야 한다', () => {
+    it('step=form 이면 content textarea 가 렌더링되어야 한다', () => {
       const { handle, triggerBtn } = setupPopup();
       handle.update(OPEN_FORM_STATE, triggerBtn);
-      expect(handle.el.querySelector('[data-field="title"]')).not.toBeNull();
+      expect(handle.el.querySelector('[data-field="content"]')).not.toBeNull();
     });
 
-    it('step=form 이면 description textarea 가 렌더링되어야 한다', () => {
+    it('step=form 이면 nickname input 이 렌더링되어야 한다', () => {
       const { handle, triggerBtn } = setupPopup();
       handle.update(OPEN_FORM_STATE, triggerBtn);
-      expect(handle.el.querySelector('[data-field="description"]')).not.toBeNull();
+      expect(handle.el.querySelector('[data-field="nickname"]')).not.toBeNull();
     });
 
     it('step=success 이면 trackingId 가 .wfb-tracking-id 에 표시되어야 한다', () => {
@@ -485,16 +485,10 @@ describe('renderTypeSelect (src/widget/ui/steps/type-select.ts)', () => {
 describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
   beforeEach(() => { document.body.innerHTML = ''; });
 
-  it('title input (data-field="title") 이 있어야 한다', () => {
+  it('content textarea (data-field="content") 이 있어야 한다', () => {
     const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
-    expect(el.querySelector('[data-field="title"]')).not.toBeNull();
-  });
-
-  it('description textarea (data-field="description") 이 있어야 한다', () => {
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
-    document.body.appendChild(el);
-    expect(el.querySelector('[data-field="description"]')).not.toBeNull();
+    expect(el.querySelector('[data-field="content"]')).not.toBeNull();
   });
 
   it('nickname input (data-field="nickname") 이 있어야 한다', () => {
@@ -503,17 +497,10 @@ describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
     expect(el.querySelector('[data-field="nickname"]')).not.toBeNull();
   });
 
-  it('email input (data-field="email") 이 있어야 한다 (선택 필드)', () => {
+  it('email 필드가 없어야 한다 (제거됨)', () => {
     const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
-    expect(el.querySelector('[data-field="email"]')).not.toBeNull();
-  });
-
-  it('email input type="email" 이어야 한다', () => {
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
-    document.body.appendChild(el);
-    const emailInput = el.querySelector<HTMLInputElement>('[data-field="email"]');
-    expect(emailInput!.type).toBe('email');
+    expect(el.querySelector('[data-field="email"]')).toBeNull();
   });
 
   it('submit 버튼에 data-wfb-submit 속성이 있어야 한다', () => {
@@ -569,11 +556,11 @@ describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
     const onFormChange = vi.fn();
     const el = renderForm(OPEN_FORM_STATE, vi.fn(), onFormChange, vi.fn());
     document.body.appendChild(el);
-    const titleInput = el.querySelector<HTMLInputElement>('[data-field="title"]');
+    const contentInput = el.querySelector<HTMLTextAreaElement>('[data-field="content"]');
     // jsdom 에서는 직접 value 설정 후 input 이벤트 발생이 가장 신뢰성 높음
-    titleInput!.value = 'new title';
-    titleInput!.dispatchEvent(new Event('input', { bubbles: true }));
-    expect(onFormChange).toHaveBeenCalledWith('title', 'new title');
+    contentInput!.value = '새 내용';
+    contentInput!.dispatchEvent(new Event('input', { bubbles: true }));
+    expect(onFormChange).toHaveBeenCalledWith('content', '새 내용');
   });
 
   // ── updateFormState() [M3] ───────────────────────────────────────────

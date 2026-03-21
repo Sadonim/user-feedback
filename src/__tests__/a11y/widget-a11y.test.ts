@@ -48,7 +48,7 @@ describe('Widget renderForm — accessibility attributes', () => {
     // Must have aria-label to override the raw "← Back" text content
     const ariaLabel = backBtn?.getAttribute('aria-label');
     expect(ariaLabel).not.toBeNull();
-    expect(ariaLabel?.toLowerCase()).toMatch(/back|return|go back/);
+    expect(ariaLabel).toMatch(/back|return|go back|돌아가기/i);
     // ariaLabel should NOT start with the unicode arrow character only
     expect(ariaLabel).not.toBe('←');
   });
@@ -83,7 +83,7 @@ describe('Widget renderForm — accessibility attributes', () => {
     const badge = container.querySelector('.wfb-form-type-badge');
     // Should have a text node or span that contains the label without emoji
     const textContent = badge?.textContent ?? '';
-    expect(textContent.toLowerCase()).toMatch(/bug report|bug/);
+    expect(textContent).toMatch(/bug report|bug|버그/i);
   });
 
   it('WGT-03: FEATURE type badge has emoji in aria-hidden span', () => {
@@ -95,7 +95,7 @@ describe('Widget renderForm — accessibility attributes', () => {
     expect(hiddenEmoji).not.toBeNull();
   });
 
-  it('all form inputs have associated <label> elements', () => {
+  it('all form inputs have aria-label or associated <label> elements', () => {
     const state = makeFormState();
     const container = renderForm(state, vi.fn(), vi.fn(), vi.fn());
 
@@ -105,11 +105,10 @@ describe('Widget renderForm — accessibility attributes', () => {
     expect(inputs.length).toBeGreaterThan(0);
 
     inputs.forEach((input) => {
+      const hasAriaLabel = input.getAttribute('aria-label') !== null;
       const inputId = input.id;
-      if (inputId) {
-        const label = container.querySelector(`label[for="${inputId}"]`);
-        expect(label).not.toBeNull();
-      }
+      const hasLabel = inputId ? container.querySelector(`label[for="${inputId}"]`) !== null : false;
+      expect(hasAriaLabel || hasLabel).toBe(true);
     });
   });
 
@@ -120,7 +119,7 @@ describe('Widget renderForm — accessibility attributes', () => {
     const submitBtn = container.querySelector<HTMLButtonElement>('[data-wfb-submit]');
     expect(submitBtn).not.toBeNull();
     expect(submitBtn?.disabled).toBe(false);
-    expect(submitBtn?.textContent).toMatch(/submit/i);
+    expect(submitBtn?.textContent).toMatch(/submit|제출/i);
   });
 });
 
@@ -155,7 +154,7 @@ describe('Widget updateFormState — aria-busy during submitting', () => {
     updateFormState(container, makeFormState({ step: 'submitting' }));
 
     const submitBtn = container.querySelector<HTMLButtonElement>('[data-wfb-submit]');
-    expect(submitBtn?.textContent).toMatch(/submitting/i);
+    expect(submitBtn?.textContent).toMatch(/submitting|제출 중/i);
   });
 });
 
@@ -186,7 +185,7 @@ describe('Widget renderSuccess — accessibility attributes', () => {
     const copyBtn = container.querySelector<HTMLButtonElement>('[data-wfb-copy]');
     expect(copyBtn).not.toBeNull();
     const ariaLabel = copyBtn?.getAttribute('aria-label');
-    expect(ariaLabel?.toLowerCase()).toMatch(/copy/);
+    expect(ariaLabel).toMatch(/copy|복사/i);
   });
 
   it('close button exists and is keyboard operable', () => {
@@ -236,7 +235,7 @@ describe('Widget createPopup — accessibility attributes', () => {
 
     const titleEl = el.querySelector(`#${labelledBy}`);
     expect(titleEl).not.toBeNull();
-    expect(titleEl?.textContent?.toLowerCase()).toMatch(/feedback/);
+    expect(titleEl?.textContent).toMatch(/feedback|피드백/i);
   });
 
   it('popup has role="dialog"', () => {
@@ -254,7 +253,7 @@ describe('Widget createPopup — accessibility attributes', () => {
     const closeBtn = el.querySelector<HTMLButtonElement>('.wfb-close-btn');
     expect(closeBtn).not.toBeNull();
     const ariaLabel = closeBtn?.getAttribute('aria-label');
-    expect(ariaLabel?.toLowerCase()).toMatch(/close/);
+    expect(ariaLabel).toMatch(/close|닫기/i);
   });
 
   it('close button SVG icon has aria-hidden="true"', () => {

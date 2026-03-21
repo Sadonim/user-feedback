@@ -7,10 +7,8 @@ export type WidgetStep =
   | 'success';    // 제출 성공
 
 export interface FormData {
-  readonly title: string;
-  readonly description: string;
+  readonly content: string;
   readonly nickname: string;
-  readonly email: string;
 }
 
 export interface WidgetState {
@@ -28,7 +26,7 @@ export const INITIAL_STATE: WidgetState = {
   isOverlayOpen: false,
   step: 'type',
   selectedType: null,
-  formData: { title: '', description: '', nickname: '', email: '' },
+  formData: { content: '', nickname: '' },
   trackingId: null,
   errorMessage: null,
 };

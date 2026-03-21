@@ -38,7 +38,7 @@ model Feedback {
   type        FeedbackType
   status      TicketStatus @default(OPEN)
   title       String       @db.VarChar(200)
-  description String       @db.VarChar(5000)
+  description String?      @db.VarChar(5000)
   nickname    String?      @db.VarChar(100)
   email       String?      @db.VarChar(255)
   userId      String?
