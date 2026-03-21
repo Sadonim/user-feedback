@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 async function getTicket(id: string) {
   return prisma.feedback.findUnique({
-    where: { id },
+    where: { id, deletedAt: null },
     select: {
       id: true,
       trackingId: true,

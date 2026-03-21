@@ -71,14 +71,22 @@ export async function getAnalyticsData(
   const [trendRows, avgRows, statusGroups, typeGroups, total] =
     await Promise.all([
       // Query 1: date-bucketed counts via raw SQL (DATE_TRUNC)
+      // Subquery approach: compute date_bucket once so ${granularity} is a
+      // single parameter ($1). Avoids PostgreSQL error 42803 that occurs when
+      // the same Prisma template variable is used in both SELECT and GROUP BY
+      // (each occurrence becomes a separate $N, making them look like different
+      // expressions to the planner).
       prisma.$queryRaw<TrendRow[]>`
         SELECT
-          TO_CHAR(DATE_TRUNC(${granularity}, "createdAt" AT TIME ZONE 'UTC'), 'YYYY-MM-DD') AS date,
+          TO_CHAR(date_bucket, 'YYYY-MM-DD') AS date,
           COUNT(*)::int AS count
-        FROM "Feedback"
-        WHERE "createdAt" >= ${startDate}
-        GROUP BY DATE_TRUNC(${granularity}, "createdAt" AT TIME ZONE 'UTC')
-        ORDER BY 1 ASC
+        FROM (
+          SELECT DATE_TRUNC(${granularity}, "createdAt" AT TIME ZONE 'UTC') AS date_bucket
+          FROM "Feedback"
+          WHERE "createdAt" >= ${startDate}
+        ) sub
+        GROUP BY date_bucket
+        ORDER BY date_bucket ASC
       `,
 
       // Query 2: average hours to first resolution per type

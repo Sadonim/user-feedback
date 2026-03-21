@@ -21,6 +21,7 @@ async function fetchTickets(rawParams: Record<string, string>): Promise<{
 
   const { page, limit, status, type, priority, sort, order } = filters;
   const where = {
+    deletedAt: null,
     ...(status && { status }),
     ...(type && { type }),
     ...(priority && { priority }),
