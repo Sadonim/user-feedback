@@ -1,4 +1,5 @@
 import type { FeedbackType } from '../../state';
+import { createCloseBtn } from '../popup';
 
 interface TypeOption {
   readonly type: FeedbackType;
@@ -14,10 +15,23 @@ const TYPE_OPTIONS: readonly TypeOption[] = [
 ] as const;
 
 export function renderTypeSelect(
-  onSelect: (type: FeedbackType) => void
+  onSelect: (type: FeedbackType) => void,
+  onClose: () => void
 ): HTMLElement {
   const container = document.createElement('div');
   container.className = 'wfb-step-type';
+
+  // 헤더: 제목 + 닫기 버튼
+  const header = document.createElement('div');
+  header.className = 'wfb-step-header';
+  const title = document.createElement('span');
+  title.className = 'wfb-step-title';
+  title.textContent = '피드백 보내기';
+  header.append(title, createCloseBtn(onClose));
+  container.appendChild(header);
+
+  const cards = document.createElement('div');
+  cards.className = 'wfb-type-cards';
 
   TYPE_OPTIONS.forEach((option) => {
     const card = document.createElement('div');
@@ -61,8 +75,9 @@ export function renderTypeSelect(
       }
     });
 
-    container.appendChild(card);
+    cards.appendChild(card);
   });
 
+  container.appendChild(cards);
   return container;
 }

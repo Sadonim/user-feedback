@@ -202,22 +202,36 @@ export const WIDGET_CSS = `
   @keyframes wfb-slide-up   { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
   @keyframes wfb-slide-down { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
 
-  /* ── 팝업 헤더 (.wfb-popup-header) ─────────────────────────────────────── */
-  .wfb-popup-header {
+  /* ── 접근성 숨김 (.wfb-visually-hidden) ─────────────────────────────────── */
+  .wfb-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ── 공통 step 헤더 (.wfb-step-header) ──────────────────────────────────── */
+  .wfb-step-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 14px 16px;
+    padding: 12px 14px;
     border-bottom: 1px solid var(--wfb-border);
-    background: var(--wfb-bg);
-    flex-shrink: 0;
+    gap: 8px;
   }
-  .wfb-popup-title {
+  .wfb-step-title {
+    flex: 1;
     font-family: var(--wfb-font);
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--wfb-text);
   }
+
+  /* ── 닫기 버튼 (.wfb-close-btn) ─────────────────────────────────────────── */
   .wfb-close-btn {
     display: flex;
     align-items: center;
@@ -238,15 +252,20 @@ export const WIDGET_CSS = `
   /* ── 팝업 콘텐츠 영역 (.wfb-popup-content) ──────────────────────────────── */
   .wfb-popup-content {
     overflow-y: auto;
-    max-height: 480px;
+    max-height: 520px;
   }
 
   /* ── Step 1: 타입 선택 (.wfb-step-type) ─────────────────────────────────── */
   .wfb-step-type {
     display: flex;
     flex-direction: column;
+    gap: 0;
+  }
+  .wfb-step-type .wfb-type-cards {
+    display: flex;
+    flex-direction: column;
     gap: 8px;
-    padding: 16px;
+    padding: 14px;
   }
   .wfb-type-card {
     display: flex;
@@ -275,14 +294,12 @@ export const WIDGET_CSS = `
   .wfb-form {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 16px;
   }
-  .wfb-form-header {
+  .wfb-form-fields {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 4px;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px;
   }
   .wfb-back-btn {
     display: inline-flex;

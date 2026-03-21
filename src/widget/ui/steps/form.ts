@@ -1,4 +1,5 @@
 import type { WidgetState, FormData as WidgetFormData } from '../../state';
+import { createCloseBtn } from '../popup';
 
 interface FormField {
   readonly id: string;
@@ -20,31 +21,26 @@ const CONTENT_PLACEHOLDER: Record<string, string> = {
 const SUBMIT_BTN_IDLE = '피드백 제출';
 const SUBMIT_BTN_LOADING = '제출 중…';
 
-/* WGT-03: text-only labels for the type badge (emoji rendered separately) */
+/* WGT-03: text-only labels for the type badge */
 const TYPE_TEXT: Record<string, string> = {
   BUG: '버그 신고',
   FEATURE: '기능 제안',
   GENERAL: '일반 문의',
 };
 
-const TYPE_EMOJI: Record<string, string> = {
-  BUG: '🐛',
-  FEATURE: '✨',
-  GENERAL: '💬',
-};
-
 export function renderForm(
   state: WidgetState,
   onBack: () => void,
   onFieldChange: (field: keyof WidgetFormData, value: string) => void,
-  onSubmit: () => void
+  onSubmit: () => void,
+  onClose: () => void
 ): HTMLElement {
   const container = document.createElement('div');
   container.className = 'wfb-form';
 
-  // 헤더: 뒤로가기 + 타입 배지
+  // 헤더: [← 돌아가기] [버그 신고] [×] — 한 줄
   const header = document.createElement('div');
-  header.className = 'wfb-form-header';
+  header.className = 'wfb-step-header';
 
   const backBtn = document.createElement('button');
   backBtn.className = 'wfb-back-btn';
@@ -56,21 +52,17 @@ export function renderForm(
   backBtn.appendChild(arrowSpan);
   backBtn.addEventListener('click', onBack);
 
+  const selectedType = state.selectedType ?? '';
   const typeBadge = document.createElement('span');
   typeBadge.className = 'wfb-form-type-badge';
-  const selectedType = state.selectedType ?? '';
-  if (selectedType) {
-    const emojiSpan = document.createElement('span');
-    emojiSpan.setAttribute('aria-hidden', 'true');
-    emojiSpan.textContent = (TYPE_EMOJI[selectedType] ?? '') + ' ';
-    const textSpan = document.createElement('span');
-    textSpan.textContent = TYPE_TEXT[selectedType] ?? selectedType;
-    typeBadge.appendChild(emojiSpan);
-    typeBadge.appendChild(textSpan);
-  }
+  typeBadge.textContent = TYPE_TEXT[selectedType] ?? selectedType;
 
-  header.append(backBtn, typeBadge);
+  header.append(backBtn, typeBadge, createCloseBtn(onClose));
   container.appendChild(header);
+
+  // 필드 영역 (패딩 분리)
+  const fields = document.createElement('div');
+  fields.className = 'wfb-form-fields';
 
   // 에러 배너
   const errorBanner = document.createElement('div');
@@ -79,21 +71,7 @@ export function renderForm(
   errorBanner.setAttribute('data-wfb-error', '');
   errorBanner.style.display = state.errorMessage ? 'block' : 'none';
   errorBanner.textContent = state.errorMessage ?? '';
-  container.appendChild(errorBanner);
-
-  // 내용 textarea
-  const contentPlaceholder = CONTENT_PLACEHOLDER[selectedType] ?? '내용을 입력해주세요';
-  const contentArea = document.createElement('textarea');
-  contentArea.className = 'wfb-textarea';
-  contentArea.id = 'wfb-content';
-  contentArea.placeholder = contentPlaceholder;
-  contentArea.maxLength = 5000;
-  contentArea.required = true;
-  contentArea.setAttribute('data-field', 'content');
-  contentArea.setAttribute('aria-label', contentPlaceholder);
-  contentArea.value = state.formData.content;
-  contentArea.addEventListener('input', () => onFieldChange('content', contentArea.value));
-  container.appendChild(contentArea);
+  fields.appendChild(errorBanner);
 
   // 닉네임 input
   const nicknameInput = document.createElement('input');
@@ -107,7 +85,21 @@ export function renderForm(
   nicknameInput.setAttribute('aria-label', '닉네임');
   nicknameInput.value = state.formData.nickname;
   nicknameInput.addEventListener('input', () => onFieldChange('nickname', nicknameInput.value));
-  container.appendChild(nicknameInput);
+  fields.appendChild(nicknameInput);
+
+  // 내용 textarea
+  const contentPlaceholder = CONTENT_PLACEHOLDER[selectedType] ?? '내용을 입력해주세요';
+  const contentArea = document.createElement('textarea');
+  contentArea.className = 'wfb-textarea';
+  contentArea.id = 'wfb-content';
+  contentArea.placeholder = contentPlaceholder;
+  contentArea.maxLength = 5000;
+  contentArea.required = true;
+  contentArea.setAttribute('data-field', 'content');
+  contentArea.setAttribute('aria-label', contentPlaceholder);
+  contentArea.value = state.formData.content;
+  contentArea.addEventListener('input', () => onFieldChange('content', contentArea.value));
+  fields.appendChild(contentArea);
 
   // 제출 버튼
   const submitBtn = document.createElement('button');
@@ -117,7 +109,9 @@ export function renderForm(
   submitBtn.disabled = state.step === 'submitting';
   submitBtn.textContent = state.step === 'submitting' ? SUBMIT_BTN_LOADING : SUBMIT_BTN_IDLE;
   submitBtn.addEventListener('click', onSubmit);
-  container.appendChild(submitBtn);
+  fields.appendChild(submitBtn);
+
+  container.appendChild(fields);
 
   return container;
 }

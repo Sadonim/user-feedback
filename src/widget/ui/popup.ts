@@ -30,8 +30,12 @@ export function createPopup(
   el.setAttribute('aria-labelledby', 'wfb-popup-title');
   el.style.display = 'none';
 
-  const header = createPopupHeader(callbacks.onClose);
-  el.appendChild(header);
+  /* 접근성용 숨김 타이틀 — 각 step이 자체 시각적 헤더를 렌더링하므로 시각적으로 숨김 */
+  const a11yTitle = document.createElement('span');
+  a11yTitle.id = 'wfb-popup-title';
+  a11yTitle.className = 'wfb-visually-hidden';
+  a11yTitle.textContent = '피드백 보내기';
+  el.appendChild(a11yTitle);
 
   const content = document.createElement('div');
   content.className = 'wfb-popup-content';
@@ -79,7 +83,7 @@ export function createPopup(
 
       switch (state.step) {
         case 'type':
-          content.appendChild(renderTypeSelect(callbacks.onSelectType));
+          content.appendChild(renderTypeSelect(callbacks.onSelectType, callbacks.onClose));
           break;
         case 'form':
         case 'submitting':
@@ -88,7 +92,8 @@ export function createPopup(
               state,
               callbacks.onBackToType,
               callbacks.onFormChange,
-              callbacks.onSubmit
+              callbacks.onSubmit,
+              callbacks.onClose
             )
           );
           break;
@@ -121,19 +126,10 @@ export function createPopup(
   return { el, update, destroy };
 }
 
-function createPopupHeader(onClose: () => void): HTMLElement {
-  const header = document.createElement('div');
-  header.className = 'wfb-popup-header';
-
-  const title = document.createElement('span');
-  title.className = 'wfb-popup-title';
-  /* WGT-05: id referenced by aria-labelledby on the dialog element */
-  title.id = 'wfb-popup-title';
-  title.textContent = '피드백 보내기'; // [C2] textContent 사용
-
+export function createCloseBtn(onClose: () => void, label = '피드백 폼 닫기'): HTMLButtonElement {
   const closeBtn = document.createElement('button');
   closeBtn.className = 'wfb-close-btn';
-  closeBtn.setAttribute('aria-label', '피드백 폼 닫기');
+  closeBtn.setAttribute('aria-label', label);
 
   // [C2] 닫기 아이콘 SVG — createElementNS 사용
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -156,7 +152,5 @@ function createPopupHeader(onClose: () => void): HTMLElement {
   svg.append(line1, line2);
   closeBtn.appendChild(svg);
   closeBtn.addEventListener('click', onClose);
-
-  header.append(title, closeBtn);
-  return header;
+  return closeBtn;
 }

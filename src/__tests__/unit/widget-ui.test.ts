@@ -486,31 +486,31 @@ describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
   beforeEach(() => { document.body.innerHTML = ''; });
 
   it('content textarea (data-field="content") 이 있어야 한다', () => {
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
     expect(el.querySelector('[data-field="content"]')).not.toBeNull();
   });
 
   it('nickname input (data-field="nickname") 이 있어야 한다', () => {
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
     expect(el.querySelector('[data-field="nickname"]')).not.toBeNull();
   });
 
   it('email 필드가 없어야 한다 (제거됨)', () => {
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
     expect(el.querySelector('[data-field="email"]')).toBeNull();
   });
 
   it('submit 버튼에 data-wfb-submit 속성이 있어야 한다', () => {
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
     expect(el.querySelector('[data-wfb-submit]')).not.toBeNull();
   });
 
   it('에러 배너에 data-wfb-error 속성과 role="alert" 가 있어야 한다', () => {
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
     const banner = el.querySelector('[data-wfb-error]');
     expect(banner).not.toBeNull();
@@ -518,7 +518,7 @@ describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
   });
 
   it('초기 에러 배너는 숨겨져 있어야 한다 (errorMessage=null)', () => {
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
     const banner = el.querySelector<HTMLElement>('[data-wfb-error]');
     expect(banner!.style.display).toBe('none');
@@ -526,7 +526,7 @@ describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
 
   it('errorMessage 있으면 배너가 초기 렌더링 시 표시되어야 한다', () => {
     const stateWithError = { ...OPEN_FORM_STATE, errorMessage: '서버 오류' };
-    const el = renderForm(stateWithError, vi.fn(), vi.fn(), vi.fn());
+    const el = renderForm(stateWithError, vi.fn(), vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
     const banner = el.querySelector<HTMLElement>('[data-wfb-error]');
     expect(banner!.style.display).not.toBe('none');
@@ -536,7 +536,7 @@ describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
   // ── [RED] 설계 스펙 data-wfb-back 속성 ──────────────────────────────
   // 현재 구현은 class="wfb-back-btn" 사용 → data-wfb-back 미존재 → RED
   it('[RED] 뒤로가기 버튼에 data-wfb-back 속성이 있어야 한다', () => {
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
     // 현재 구현은 class="wfb-back-btn" 만 사용하므로 실패 예상
     expect(el.querySelector('[data-wfb-back]')).not.toBeNull();
@@ -544,7 +544,7 @@ describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
 
   it('뒤로가기 버튼 클릭 시 onBack 이 호출되어야 한다', () => {
     const onBack = vi.fn();
-    const el = renderForm(OPEN_FORM_STATE, onBack, vi.fn(), vi.fn());
+    const el = renderForm(OPEN_FORM_STATE, onBack, vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
     // class 기반으로도 동작 확인 (구현에 따라 클릭 이벤트가 연결되어 있음)
     const backBtn = el.querySelector<HTMLElement>('.wfb-back-btn');
@@ -554,7 +554,7 @@ describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
 
   it('input 변경 시 onFormChange(field, value) 가 호출되어야 한다 [H4]', () => {
     const onFormChange = vi.fn();
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), onFormChange, vi.fn());
+    const el = renderForm(OPEN_FORM_STATE, vi.fn(), onFormChange, vi.fn(), vi.fn());
     document.body.appendChild(el);
     const contentInput = el.querySelector<HTMLTextAreaElement>('[data-field="content"]');
     // jsdom 에서는 직접 value 설정 후 input 이벤트 발생이 가장 신뢰성 높음
@@ -566,7 +566,7 @@ describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
   // ── updateFormState() [M3] ───────────────────────────────────────────
   describe('updateFormState() [M3 — DOM 재빌드 없이 속성만 업데이트]', () => {
     it('errorMessage 표시 시 배너 텍스트가 설정되어야 한다', () => {
-      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
       document.body.appendChild(el);
       updateFormState(el, { ...OPEN_FORM_STATE, errorMessage: '제출 실패' });
       const banner = el.querySelector<HTMLElement>('[data-wfb-error]');
@@ -575,7 +575,7 @@ describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
     });
 
     it('errorMessage=null 이면 배너가 숨겨져야 한다', () => {
-      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
       document.body.appendChild(el);
       updateFormState(el, { ...OPEN_FORM_STATE, errorMessage: '오류' });
       updateFormState(el, { ...OPEN_FORM_STATE, errorMessage: null });
@@ -583,21 +583,21 @@ describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
     });
 
     it('step=submitting 이면 submit 버튼이 disabled 되어야 한다', () => {
-      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
       document.body.appendChild(el);
       updateFormState(el, { ...OPEN_FORM_STATE, step: 'submitting' });
       expect(el.querySelector<HTMLButtonElement>('[data-wfb-submit]')!.disabled).toBe(true);
     });
 
     it('step=submitting 이면 버튼 텍스트가 로딩 상태 문자열이어야 한다', () => {
-      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
       document.body.appendChild(el);
       updateFormState(el, { ...OPEN_FORM_STATE, step: 'submitting' });
       expect(el.querySelector<HTMLButtonElement>('[data-wfb-submit]')!.textContent).toMatch(/제출 중/);
     });
 
     it('step=form(재활성화) 이면 submit 버튼이 활성화되어야 한다', () => {
-      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
       document.body.appendChild(el);
       updateFormState(el, { ...OPEN_FORM_STATE, step: 'submitting' });
       updateFormState(el, { ...OPEN_FORM_STATE, step: 'form' });
