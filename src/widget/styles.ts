@@ -74,30 +74,109 @@ export const WIDGET_CSS = `
     align-items: flex-start;
   }
 
-  /* ── 플로팅 트리거 버튼 ──────────────────────────────────────────────────── */
+  /* ── 플로팅 트리거 버튼 (원형 아이콘) ──────────────────────────────────── */
   .wfb-trigger {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
     background: var(--wfb-primary);
     color: var(--wfb-primary-text);
     border: none;
-    border-radius: 9999px;
-    font-family: var(--wfb-font);
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: .01em;
+    border-radius: 50%;
     cursor: pointer;
     box-shadow: 0 4px 14px rgba(79,70,229,.35);
     transition: background var(--wfb-transition), transform var(--wfb-transition), box-shadow var(--wfb-transition);
     outline: none;
-    white-space: nowrap;
+    flex-shrink: 0;
   }
-  .wfb-trigger:hover  { background: var(--wfb-primary-hover); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(79,70,229,.45); }
+  .wfb-trigger:hover  { background: var(--wfb-primary-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79,70,229,.45); }
   .wfb-trigger:active { transform: translateY(0); }
   .wfb-trigger:focus-visible { outline: 2px solid var(--wfb-primary); outline-offset: 3px; }
-  .wfb-trigger-label  { font-family: var(--wfb-font); }
+
+  /* ── 미니 오버레이 (.wfb-overlay) ────────────────────────────────────── */
+  .wfb-overlay {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 220px;
+    background: var(--wfb-bg);
+    border: 1px solid var(--wfb-border);
+    border-radius: var(--wfb-radius);
+    box-shadow: var(--wfb-shadow);
+    padding: 12px;
+    margin-bottom: 10px;
+    font-family: var(--wfb-font);
+    animation: wfb-slide-up 0.15s ease;
+  }
+  :host([data-position^="top"]) .wfb-overlay {
+    margin-bottom: 0;
+    margin-top: 10px;
+    animation: wfb-slide-down 0.15s ease;
+  }
+
+  .wfb-overlay-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .wfb-overlay-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--wfb-text-muted);
+    letter-spacing: .02em;
+    text-transform: uppercase;
+  }
+
+  /* ── 오버레이 ↓ 접기 버튼 ─────────────────────────────────────────────── */
+  .wfb-collapse-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: var(--wfb-text-muted);
+    cursor: pointer;
+    transition: background var(--wfb-transition), color var(--wfb-transition);
+    outline: none;
+    flex-shrink: 0;
+  }
+  .wfb-collapse-btn:hover         { background: var(--wfb-bg-hover); color: var(--wfb-text); }
+  .wfb-collapse-btn:focus-visible { outline: 2px solid var(--wfb-primary); outline-offset: 2px; }
+
+  /* ── 오버레이 타입 버튼 행 ────────────────────────────────────────────── */
+  .wfb-overlay-types {
+    display: flex;
+    gap: 6px;
+  }
+  .wfb-overlay-type-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 4px;
+    background: var(--wfb-bg-secondary);
+    border: 1.5px solid var(--wfb-border);
+    border-radius: var(--wfb-radius-sm);
+    cursor: pointer;
+    transition: border-color var(--wfb-transition), background var(--wfb-transition), transform var(--wfb-transition);
+    outline: none;
+  }
+  .wfb-overlay-type-btn:hover         { background: var(--wfb-bg-hover); border-color: var(--wfb-primary); transform: translateY(-1px); }
+  .wfb-overlay-type-btn:focus-visible { outline: 2px solid var(--wfb-primary); outline-offset: 2px; }
+  .wfb-overlay-type-emoji { font-size: 18px; line-height: 1; }
+  .wfb-overlay-type-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--wfb-text-muted);
+    font-family: var(--wfb-font);
+    white-space: nowrap;
+  }
 
   /* ── 팝업 래퍼 (.wfb-popup) ─────────────────────────────────────────────── */
   .wfb-popup {

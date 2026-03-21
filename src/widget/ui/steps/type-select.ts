@@ -8,9 +8,9 @@ interface TypeOption {
 }
 
 const TYPE_OPTIONS: readonly TypeOption[] = [
-  { type: 'BUG', emoji: '🐛', name: 'Bug Report', description: "Something isn't working" },
-  { type: 'FEATURE', emoji: '✨', name: 'Feature Request', description: 'Suggest an improvement' },
-  { type: 'GENERAL', emoji: '💬', name: 'General Feedback', description: 'Share your thoughts' },
+  { type: 'BUG', emoji: '🐛', name: '버그 신고', description: '제대로 작동하지 않는 기능' },
+  { type: 'FEATURE', emoji: '✨', name: '기능 제안', description: '개선 아이디어 공유' },
+  { type: 'GENERAL', emoji: '💬', name: '일반 문의', description: '기타 의견 남기기' },
 ] as const;
 
 export function renderTypeSelect(

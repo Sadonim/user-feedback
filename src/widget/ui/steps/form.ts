@@ -15,50 +15,50 @@ const FORM_FIELDS: readonly FormField[] = [
   {
     id: 'wfb-title',
     field: 'title',
-    label: 'Title',
+    label: '제목',
     type: 'input',
     required: true,
-    placeholder: 'Brief summary',
+    placeholder: '간단한 제목을 입력하세요',
     maxLength: 200,
   },
   {
     id: 'wfb-description',
     field: 'description',
-    label: 'Description',
+    label: '내용',
     type: 'textarea',
     required: true,
-    placeholder: 'Describe in detail (at least 10 characters)',
+    placeholder: '자세히 설명해 주세요 (10자 이상)',
     maxLength: 5000,
   },
   {
     id: 'wfb-nickname',
     field: 'nickname',
-    label: 'Nickname',
+    label: '닉네임',
     type: 'input',
     required: true,
-    placeholder: 'Your name',
+    placeholder: '이름 또는 닉네임',
     maxLength: 100,
   },
   {
     id: 'wfb-email',
     field: 'email',
-    label: 'Email',
+    label: '이메일',
     type: 'input',
     inputType: 'email',
     required: false,
-    placeholder: 'Optional — for follow-up',
+    placeholder: '선택 — 답변 수신용',
     maxLength: 255,
   },
 ] as const;
 
-const SUBMIT_BTN_IDLE = 'Submit Feedback';
-const SUBMIT_BTN_LOADING = 'Submitting…';
+const SUBMIT_BTN_IDLE = '피드백 제출';
+const SUBMIT_BTN_LOADING = '제출 중…';
 
 /* WGT-03: text-only labels for the type badge (emoji rendered separately) */
 const TYPE_TEXT: Record<string, string> = {
-  BUG: 'Bug Report',
-  FEATURE: 'Feature Request',
-  GENERAL: 'General',
+  BUG: '버그 신고',
+  FEATURE: '기능 제안',
+  GENERAL: '일반 문의',
 };
 
 const TYPE_EMOJI: Record<string, string> = {
@@ -84,11 +84,11 @@ export function renderForm(
   const backBtn = document.createElement('button');
   backBtn.className = 'wfb-back-btn';
   backBtn.setAttribute('data-wfb-back', '');
-  backBtn.setAttribute('aria-label', 'Go back to type selection');
+  backBtn.setAttribute('aria-label', '유형 선택으로 돌아가기');
   // Visible arrow text is decorative
   const arrowSpan = document.createElement('span');
   arrowSpan.setAttribute('aria-hidden', 'true');
-  arrowSpan.textContent = '← Back';
+  arrowSpan.textContent = '← 돌아가기';
   backBtn.appendChild(arrowSpan);
   backBtn.addEventListener('click', onBack);
 

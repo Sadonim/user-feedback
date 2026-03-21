@@ -1,7 +1,7 @@
 import type { WidgetState } from '../../state';
 
-const COPY_IDLE = 'Copy';
-const COPY_DONE = 'Copied!';
+const COPY_IDLE = '복사';
+const COPY_DONE = '복사됨!';
 const COPY_RESET_MS = 2000;
 
 /** 복사 성공 피드백: 버튼 텍스트를 잠시 변경 후 원복 */
@@ -25,14 +25,14 @@ export function renderSuccess(
 
   const title = document.createElement('h3');
   title.className = 'wfb-success-title';
-  title.textContent = 'Feedback Submitted!';
+  title.textContent = '피드백이 제출되었습니다!';
   /* WGT-04 step 1: tabindex=-1 makes the heading programmatically focusable
      so popup.ts can move focus here before trapFocus is set */
   title.setAttribute('tabindex', '-1');
 
   const desc = document.createElement('p');
   desc.className = 'wfb-success-desc';
-  desc.textContent = 'Your tracking ID:';
+  desc.textContent = '트래킹 ID:';
 
   // 트래킹 ID 래퍼
   const trackingWrapper = document.createElement('div');
@@ -48,7 +48,7 @@ export function renderSuccess(
   copyBtn.className = 'wfb-copy-btn';
   copyBtn.setAttribute('data-wfb-copy', '');
   copyBtn.textContent = COPY_IDLE;
-  copyBtn.setAttribute('aria-label', 'Copy tracking ID');
+  copyBtn.setAttribute('aria-label', '트래킹 ID 복사');
 
   copyBtn.addEventListener('click', () => {
     const id = state.trackingId ?? '';
@@ -59,12 +59,12 @@ export function renderSuccess(
         .catch(() => {
           // [H1] fallback 제거: clipboard API 실패 시 사용자에게 수동 복사 안내.
           // document.body 변이는 Shadow DOM 격리 위반이므로 사용하지 않음.
-          copyBtn.textContent = 'Copy manually';
+          copyBtn.textContent = '직접 복사';
           setTimeout(() => { copyBtn.textContent = COPY_IDLE; }, COPY_RESET_MS);
         });
     } else {
       // [H1] clipboard API 미지원 브라우저: 수동 복사 안내 (document.execCommand 제거)
-      copyBtn.textContent = 'Copy manually';
+      copyBtn.textContent = '직접 복사';
       setTimeout(() => { copyBtn.textContent = COPY_IDLE; }, COPY_RESET_MS);
     }
   });
@@ -75,7 +75,7 @@ export function renderSuccess(
   const closeBtn = document.createElement('button');
   closeBtn.className = 'wfb-close-success-btn';
   closeBtn.setAttribute('data-wfb-close', '');
-  closeBtn.textContent = 'Close';
+  closeBtn.textContent = '닫기';
   closeBtn.addEventListener('click', onClose);
 
   container.append(icon, title, desc, trackingWrapper, closeBtn);

@@ -216,46 +216,54 @@ describe('createTriggerButton (src/widget/ui/button.ts)', () => {
   beforeEach(() => { document.body.innerHTML = ''; });
 
   it('HTMLButtonElement 를 반환해야 한다', () => {
-    expect(createTriggerButton(BASE_CONFIG, vi.fn())).toBeInstanceOf(HTMLButtonElement);
+    expect(createTriggerButton(BASE_CONFIG, vi.fn(), vi.fn())).toBeInstanceOf(HTMLButtonElement);
   });
 
   it('aria-label 이 buttonLabel 값이어야 한다', () => {
-    expect(createTriggerButton(BASE_CONFIG, vi.fn()).getAttribute('aria-label')).toBe('Feedback');
+    expect(createTriggerButton(BASE_CONFIG, vi.fn(), vi.fn()).getAttribute('aria-label')).toBe('Feedback');
   });
 
   it('aria-haspopup="dialog" 가 설정되어야 한다', () => {
-    expect(createTriggerButton(BASE_CONFIG, vi.fn()).getAttribute('aria-haspopup')).toBe('dialog');
+    expect(createTriggerButton(BASE_CONFIG, vi.fn(), vi.fn()).getAttribute('aria-haspopup')).toBe('dialog');
   });
 
   it('초기 aria-expanded="false" 가 설정되어야 한다', () => {
-    expect(createTriggerButton(BASE_CONFIG, vi.fn()).getAttribute('aria-expanded')).toBe('false');
+    expect(createTriggerButton(BASE_CONFIG, vi.fn(), vi.fn()).getAttribute('aria-expanded')).toBe('false');
   });
 
-  it('[C2] buttonLabel 이 textContent 로 삽입되어야 한다 — innerHTML 금지', () => {
+  it('[C2] buttonLabel 이 aria-label 속성으로만 사용되어야 한다 — innerHTML 금지', () => {
     const xss = '<script>alert(1)</script>';
-    const btn = createTriggerButton({ ...BASE_CONFIG, buttonLabel: xss }, vi.fn());
+    const btn = createTriggerButton({ ...BASE_CONFIG, buttonLabel: xss }, vi.fn(), vi.fn());
     document.body.appendChild(btn);
     // innerHTML 이라면 <script> 태그가 DOM 요소로 파싱됨
     expect(btn.querySelector('script')).toBeNull();
-    expect(btn.textContent).toContain(xss);
+    // aria-label 속성으로만 전달 (속성은 HTML 파싱 대상이 아님)
+    expect(btn.getAttribute('aria-label')).toBe(xss);
   });
 
   it('클릭 시 onClick 콜백이 호출되어야 한다', () => {
     const onClick = vi.fn();
-    const btn = createTriggerButton(BASE_CONFIG, onClick);
+    const btn = createTriggerButton(BASE_CONFIG, onClick, vi.fn());
     btn.click();
     expect(onClick).toHaveBeenCalledOnce();
   });
 
+  it('mouseenter 시 onMouseEnter 콜백이 호출되어야 한다', () => {
+    const onMouseEnter = vi.fn();
+    const btn = createTriggerButton(BASE_CONFIG, vi.fn(), onMouseEnter);
+    btn.dispatchEvent(new MouseEvent('mouseenter'));
+    expect(onMouseEnter).toHaveBeenCalledOnce();
+  });
+
   describe('setButtonExpanded()', () => {
     it('true 전달 시 aria-expanded="true" 로 변경해야 한다', () => {
-      const btn = createTriggerButton(BASE_CONFIG, vi.fn());
+      const btn = createTriggerButton(BASE_CONFIG, vi.fn(), vi.fn());
       setButtonExpanded(btn, true);
       expect(btn.getAttribute('aria-expanded')).toBe('true');
     });
 
     it('false 전달 시 aria-expanded="false" 로 변경해야 한다', () => {
-      const btn = createTriggerButton(BASE_CONFIG, vi.fn());
+      const btn = createTriggerButton(BASE_CONFIG, vi.fn(), vi.fn());
       setButtonExpanded(btn, true);
       setButtonExpanded(btn, false);
       expect(btn.getAttribute('aria-expanded')).toBe('false');
@@ -594,11 +602,11 @@ describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
       expect(el.querySelector<HTMLButtonElement>('[data-wfb-submit]')!.disabled).toBe(true);
     });
 
-    it('step=submitting 이면 버튼 텍스트가 "Submitting…" 이어야 한다', () => {
+    it('step=submitting 이면 버튼 텍스트가 로딩 상태 문자열이어야 한다', () => {
       const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
       document.body.appendChild(el);
       updateFormState(el, { ...OPEN_FORM_STATE, step: 'submitting' });
-      expect(el.querySelector<HTMLButtonElement>('[data-wfb-submit]')!.textContent).toMatch(/submitting/i);
+      expect(el.querySelector<HTMLButtonElement>('[data-wfb-submit]')!.textContent).toMatch(/제출 중/);
     });
 
     it('step=form(재활성화) 이면 submit 버튼이 활성화되어야 한다', () => {

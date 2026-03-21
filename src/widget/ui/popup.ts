@@ -129,11 +129,11 @@ function createPopupHeader(onClose: () => void): HTMLElement {
   title.className = 'wfb-popup-title';
   /* WGT-05: id referenced by aria-labelledby on the dialog element */
   title.id = 'wfb-popup-title';
-  title.textContent = 'Send Feedback'; // [C2] textContent 사용
+  title.textContent = '피드백 보내기'; // [C2] textContent 사용
 
   const closeBtn = document.createElement('button');
   closeBtn.className = 'wfb-close-btn';
-  closeBtn.setAttribute('aria-label', 'Close feedback form');
+  closeBtn.setAttribute('aria-label', '피드백 폼 닫기');
 
   // [C2] 닫기 아이콘 SVG — createElementNS 사용
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');

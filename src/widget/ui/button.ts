@@ -24,12 +24,13 @@ function createChatIcon(): SVGElement {
 }
 
 /**
- * 플로팅 트리거 버튼 생성.
+ * 플로팅 트리거 버튼 생성 (원형 아이콘).
  * [C2] innerHTML 전면 금지 — createElement + textContent / createElementNS 전용.
  */
 export function createTriggerButton(
   config: WidgetConfig,
-  onClick: () => void
+  onClick: () => void,
+  onMouseEnter: () => void
 ): HTMLButtonElement {
   const btn = document.createElement('button');
   btn.className = 'wfb-trigger';
@@ -38,14 +39,9 @@ export function createTriggerButton(
   btn.setAttribute('aria-haspopup', 'dialog');
   btn.setAttribute('aria-expanded', 'false');
 
-  // [C2] 모든 동적 값은 textContent로 삽입 (HTML 이스케이프 자동 처리)
-  const label = document.createElement('span');
-  label.className = 'wfb-trigger-label';
-  label.textContent = config.buttonLabel;
-
   btn.appendChild(createChatIcon());
-  btn.appendChild(label);
   btn.addEventListener('click', onClick);
+  btn.addEventListener('mouseenter', onMouseEnter);
 
   return btn;
 }

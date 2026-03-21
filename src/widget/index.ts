@@ -2,6 +2,7 @@ import { parseConfigFromScript } from './config';
 import { createWidgetRoot, setupThemeObserver } from './ui/root';
 import { createTriggerButton, setButtonExpanded } from './ui/button';
 import { createPopup } from './ui/popup';
+import { createOverlay } from './ui/overlay';
 import { INITIAL_STATE, transitions } from './state';
 import type { WidgetState, FormData as WidgetFormData } from './state';
 import { submitFeedback } from './api';
@@ -24,15 +25,36 @@ function init(): (() => void) | null {
 
   let state: WidgetState = INITIAL_STATE;
 
-  const triggerBtn = createTriggerButton(config, () => {
-    dispatch(state.isOpen ? transitions.close(state) : transitions.open(state));
+  const triggerBtn = createTriggerButton(
+    config,
+    // click: 오버레이 토글 (팝업이 열려있으면 팝업 닫기)
+    () => {
+      if (state.isOpen) {
+        dispatch(transitions.close(state));
+      } else if (state.isOverlayOpen) {
+        dispatch(transitions.closeOverlay(state));
+      } else {
+        dispatch(transitions.openOverlay(state));
+      }
+    },
+    // mouseenter: 아무것도 열려있지 않으면 오버레이 표시
+    () => {
+      if (!state.isOpen && !state.isOverlayOpen) {
+        dispatch(transitions.openOverlay(state));
+      }
+    }
+  );
+
+  const overlay = createOverlay({
+    onCollapse: () => dispatch(transitions.closeOverlay(state)),
+    onSelectType: (type) => dispatch(transitions.selectTypeFromOverlay(state, type)),
   });
 
   // [H1][H2][H3][H4] shadow 전달, destroy 반환받음
   const popup = createPopup(shadow, {
     onClose: () => dispatch(transitions.close(state)),
     onSelectType: (type) => dispatch(transitions.selectType(state, type)),
-    onBackToType: () => dispatch(transitions.backToType(state)),
+    onBackToType: () => dispatch(transitions.backToOverlay(state)),
     // [H4] field: keyof WidgetFormData — as any 없음
     onFormChange: (field: keyof WidgetFormData, value: string) =>
       dispatch(transitions.updateForm(state, { [field]: value })),
@@ -56,7 +78,8 @@ function init(): (() => void) | null {
 
   const render = (): void => {
     popup.update(state, triggerBtn);
-    setButtonExpanded(triggerBtn, state.isOpen);
+    overlay.update(state.isOverlayOpen);
+    setButtonExpanded(triggerBtn, state.isOpen || state.isOverlayOpen);
   };
 
   const dispatch = (nextState: WidgetState): void => {
@@ -65,6 +88,7 @@ function init(): (() => void) | null {
   };
 
   container.appendChild(popup.el);
+  container.appendChild(overlay.el);
   container.appendChild(triggerBtn);
   document.body.appendChild(host);
 
