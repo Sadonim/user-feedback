@@ -40,7 +40,7 @@ function makeSuccessState(overrides: Partial<WidgetState> = {}): WidgetState {
 describe('Widget renderForm — accessibility attributes', () => {
   it('WGT-01: back button has aria-label describing its purpose', () => {
     const state = makeFormState();
-    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn());
+    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn(), vi.fn());
 
     const backBtn = container.querySelector<HTMLButtonElement>('[data-wfb-back]');
     expect(backBtn).not.toBeNull();
@@ -48,14 +48,14 @@ describe('Widget renderForm — accessibility attributes', () => {
     // Must have aria-label to override the raw "← Back" text content
     const ariaLabel = backBtn?.getAttribute('aria-label');
     expect(ariaLabel).not.toBeNull();
-    expect(ariaLabel?.toLowerCase()).toMatch(/back|return|go back/);
+    expect(ariaLabel).toMatch(/back|return|go back|돌아가기/i);
     // ariaLabel should NOT start with the unicode arrow character only
     expect(ariaLabel).not.toBe('←');
   });
 
   it('WGT-01: back button aria-label does not expose raw Unicode arrow to AT', () => {
     const state = makeFormState();
-    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn());
+    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn(), vi.fn());
 
     const backBtn = container.querySelector<HTMLButtonElement>('[data-wfb-back]');
     const ariaLabel = backBtn?.getAttribute('aria-label') ?? backBtn?.textContent ?? '';
@@ -64,40 +64,35 @@ describe('Widget renderForm — accessibility attributes', () => {
     expect(ariaLabel.trim()).not.toBe('← Back');
   });
 
-  it('WGT-03: type badge renders emoji in a separate aria-hidden span', () => {
+  it('WGT-03: type badge renders text-only label (이모지 없음)', () => {
     const state = makeFormState({ selectedType: 'BUG' });
-    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn());
+    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn(), vi.fn());
 
     const badge = container.querySelector('.wfb-form-type-badge');
     expect(badge).not.toBeNull();
-
-    // The badge should have an aria-hidden child for the emoji
-    const hiddenEmoji = badge?.querySelector('[aria-hidden="true"]');
-    expect(hiddenEmoji).not.toBeNull();
+    expect(badge?.textContent).toMatch(/버그/i);
   });
 
-  it('WGT-03: type badge text (non-emoji) is visible to screen readers', () => {
+  it('WGT-03: type badge text is visible to screen readers', () => {
     const state = makeFormState({ selectedType: 'BUG' });
-    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn());
+    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn(), vi.fn());
 
     const badge = container.querySelector('.wfb-form-type-badge');
-    // Should have a text node or span that contains the label without emoji
     const textContent = badge?.textContent ?? '';
-    expect(textContent.toLowerCase()).toMatch(/bug report|bug/);
+    expect(textContent).toMatch(/bug report|bug|버그/i);
   });
 
-  it('WGT-03: FEATURE type badge has emoji in aria-hidden span', () => {
+  it('WGT-03: FEATURE type badge shows 기능 제안 text', () => {
     const state = makeFormState({ selectedType: 'FEATURE' });
-    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn());
+    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn(), vi.fn());
 
     const badge = container.querySelector('.wfb-form-type-badge');
-    const hiddenEmoji = badge?.querySelector('[aria-hidden="true"]');
-    expect(hiddenEmoji).not.toBeNull();
+    expect(badge?.textContent).toMatch(/기능/i);
   });
 
-  it('all form inputs have associated <label> elements', () => {
+  it('all form inputs have aria-label or associated <label> elements', () => {
     const state = makeFormState();
-    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn());
+    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn(), vi.fn());
 
     const inputs = container.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
       'input, textarea'
@@ -105,29 +100,28 @@ describe('Widget renderForm — accessibility attributes', () => {
     expect(inputs.length).toBeGreaterThan(0);
 
     inputs.forEach((input) => {
+      const hasAriaLabel = input.getAttribute('aria-label') !== null;
       const inputId = input.id;
-      if (inputId) {
-        const label = container.querySelector(`label[for="${inputId}"]`);
-        expect(label).not.toBeNull();
-      }
+      const hasLabel = inputId ? container.querySelector(`label[for="${inputId}"]`) !== null : false;
+      expect(hasAriaLabel || hasLabel).toBe(true);
     });
   });
 
   it('submit button exists with correct initial state', () => {
     const state = makeFormState();
-    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn());
+    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn(), vi.fn());
 
     const submitBtn = container.querySelector<HTMLButtonElement>('[data-wfb-submit]');
     expect(submitBtn).not.toBeNull();
     expect(submitBtn?.disabled).toBe(false);
-    expect(submitBtn?.textContent).toMatch(/submit/i);
+    expect(submitBtn?.textContent).toMatch(/submit|제출/i);
   });
 });
 
 describe('Widget updateFormState — aria-busy during submitting', () => {
   it('WGT-02: submit button gets aria-busy="true" during submitting step', () => {
     const state = makeFormState({ step: 'form' });
-    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn());
+    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn(), vi.fn());
 
     // Update to submitting state
     const submittingState = makeFormState({ step: 'submitting' });
@@ -139,7 +133,7 @@ describe('Widget updateFormState — aria-busy during submitting', () => {
 
   it('WGT-02: submit button has aria-busy="false" (or absent) in idle step', () => {
     const state = makeFormState({ step: 'form' });
-    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn());
+    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn(), vi.fn());
 
     updateFormState(container, state);
 
@@ -150,12 +144,12 @@ describe('Widget updateFormState — aria-busy during submitting', () => {
 
   it('WGT-02: submit button text changes to loading text during submitting', () => {
     const state = makeFormState({ step: 'form' });
-    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn());
+    const container = renderForm(state, vi.fn(), vi.fn(), vi.fn(), vi.fn());
 
     updateFormState(container, makeFormState({ step: 'submitting' }));
 
     const submitBtn = container.querySelector<HTMLButtonElement>('[data-wfb-submit]');
-    expect(submitBtn?.textContent).toMatch(/submitting/i);
+    expect(submitBtn?.textContent).toMatch(/submitting|제출 중/i);
   });
 });
 
@@ -186,7 +180,7 @@ describe('Widget renderSuccess — accessibility attributes', () => {
     const copyBtn = container.querySelector<HTMLButtonElement>('[data-wfb-copy]');
     expect(copyBtn).not.toBeNull();
     const ariaLabel = copyBtn?.getAttribute('aria-label');
-    expect(ariaLabel?.toLowerCase()).toMatch(/copy/);
+    expect(ariaLabel).toMatch(/copy|복사/i);
   });
 
   it('close button exists and is keyboard operable', () => {
@@ -236,7 +230,7 @@ describe('Widget createPopup — accessibility attributes', () => {
 
     const titleEl = el.querySelector(`#${labelledBy}`);
     expect(titleEl).not.toBeNull();
-    expect(titleEl?.textContent?.toLowerCase()).toMatch(/feedback/);
+    expect(titleEl?.textContent).toMatch(/feedback|피드백/i);
   });
 
   it('popup has role="dialog"', () => {
@@ -250,15 +244,20 @@ describe('Widget createPopup — accessibility attributes', () => {
   });
 
   it('close button in header has accessible aria-label', () => {
-    const { el } = createPopup(shadow, callbacks);
+    const triggerBtn = document.createElement('button');
+    const { el, update } = createPopup(shadow, callbacks);
+    // 닫기 버튼은 각 step 내부에 렌더링되므로 update() 호출 후 조회
+    update({ ...INITIAL_STATE, isOpen: true, step: 'type' }, triggerBtn);
     const closeBtn = el.querySelector<HTMLButtonElement>('.wfb-close-btn');
     expect(closeBtn).not.toBeNull();
     const ariaLabel = closeBtn?.getAttribute('aria-label');
-    expect(ariaLabel?.toLowerCase()).toMatch(/close/);
+    expect(ariaLabel).toMatch(/close|닫기/i);
   });
 
   it('close button SVG icon has aria-hidden="true"', () => {
-    const { el } = createPopup(shadow, callbacks);
+    const triggerBtn = document.createElement('button');
+    const { el, update } = createPopup(shadow, callbacks);
+    update({ ...INITIAL_STATE, isOpen: true, step: 'type' }, triggerBtn);
     const svg = el.querySelector('.wfb-close-btn svg');
     expect(svg?.getAttribute('aria-hidden')).toBe('true');
   });

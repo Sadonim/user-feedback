@@ -61,7 +61,7 @@ export function TicketDetailView({ ticket: initialTicket }: TicketDetailViewProp
               <CardTitle>내용</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="whitespace-pre-wrap text-sm">{ticket.description}</p>
+              <p className="whitespace-pre-wrap text-sm">{ticket.description || ticket.title}</p>
             </CardContent>
           </Card>
 

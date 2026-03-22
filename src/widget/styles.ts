@@ -74,30 +74,110 @@ export const WIDGET_CSS = `
     align-items: flex-start;
   }
 
-  /* ── 플로팅 트리거 버튼 ──────────────────────────────────────────────────── */
+  /* ── 플로팅 트리거 버튼 (원형 아이콘) ──────────────────────────────────── */
   .wfb-trigger {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
     background: var(--wfb-primary);
     color: var(--wfb-primary-text);
     border: none;
-    border-radius: 9999px;
-    font-family: var(--wfb-font);
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: .01em;
+    border-radius: 50%;
     cursor: pointer;
     box-shadow: 0 4px 14px rgba(79,70,229,.35);
     transition: background var(--wfb-transition), transform var(--wfb-transition), box-shadow var(--wfb-transition);
     outline: none;
-    white-space: nowrap;
+    flex-shrink: 0;
   }
-  .wfb-trigger:hover  { background: var(--wfb-primary-hover); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(79,70,229,.45); }
+  .wfb-trigger:hover  { background: var(--wfb-primary-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79,70,229,.45); }
   .wfb-trigger:active { transform: translateY(0); }
   .wfb-trigger:focus-visible { outline: 2px solid var(--wfb-primary); outline-offset: 3px; }
-  .wfb-trigger-label  { font-family: var(--wfb-font); }
+
+  /* ── 미니 오버레이 (.wfb-overlay) ────────────────────────────────────── */
+  .wfb-overlay {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 220px;
+    background: var(--wfb-bg);
+    border: 1px solid var(--wfb-border);
+    border-radius: var(--wfb-radius);
+    box-shadow: var(--wfb-shadow);
+    padding: 12px;
+    margin-bottom: 10px;
+    font-family: var(--wfb-font);
+    animation: wfb-slide-up 0.15s ease;
+  }
+  :host([data-position^="top"]) .wfb-overlay {
+    margin-bottom: 0;
+    margin-top: 10px;
+    animation: wfb-slide-down 0.15s ease;
+  }
+
+  .wfb-overlay-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .wfb-overlay-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--wfb-text-muted);
+    letter-spacing: .02em;
+    text-transform: uppercase;
+  }
+
+  /* ── 오버레이 ↓ 접기 버튼 ─────────────────────────────────────────────── */
+  .wfb-collapse-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: var(--wfb-text-muted);
+    cursor: pointer;
+    transition: background var(--wfb-transition), color var(--wfb-transition);
+    outline: none;
+    flex-shrink: 0;
+  }
+  .wfb-collapse-btn:hover         { background: var(--wfb-bg-hover); color: var(--wfb-text); }
+  .wfb-collapse-btn:focus-visible { outline: 2px solid var(--wfb-primary); outline-offset: 2px; }
+
+  /* ── 오버레이 타입 버튼 행 ────────────────────────────────────────────── */
+  .wfb-overlay-types {
+    display: flex;
+    gap: 6px;
+  }
+  .wfb-overlay-type-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 4px;
+    background: var(--wfb-bg-secondary);
+    border: 1.5px solid var(--wfb-border);
+    border-radius: var(--wfb-radius-sm);
+    cursor: pointer;
+    transition: border-color var(--wfb-transition), background var(--wfb-transition), transform var(--wfb-transition);
+    outline: none;
+  }
+  .wfb-overlay-type-btn:hover         { background: var(--wfb-bg-hover); border-color: var(--wfb-primary); transform: translateY(-1px); }
+  .wfb-overlay-type-btn:focus-visible { outline: 2px solid var(--wfb-primary); outline-offset: 2px; }
+  .wfb-overlay-type-icon { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; color: var(--wfb-text-muted); transition: color var(--wfb-transition); }
+  .wfb-overlay-type-btn:hover .wfb-overlay-type-icon { color: var(--wfb-primary); }
+  .wfb-overlay-type-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--wfb-text-muted);
+    font-family: var(--wfb-font);
+    white-space: nowrap;
+  }
 
   /* ── 팝업 래퍼 (.wfb-popup) ─────────────────────────────────────────────── */
   .wfb-popup {
@@ -122,22 +202,36 @@ export const WIDGET_CSS = `
   @keyframes wfb-slide-up   { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
   @keyframes wfb-slide-down { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
 
-  /* ── 팝업 헤더 (.wfb-popup-header) ─────────────────────────────────────── */
-  .wfb-popup-header {
+  /* ── 접근성 숨김 (.wfb-visually-hidden) ─────────────────────────────────── */
+  .wfb-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ── 공통 step 헤더 (.wfb-step-header) ──────────────────────────────────── */
+  .wfb-step-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 14px 16px;
+    padding: 12px 14px;
     border-bottom: 1px solid var(--wfb-border);
-    background: var(--wfb-bg);
-    flex-shrink: 0;
+    gap: 8px;
   }
-  .wfb-popup-title {
+  .wfb-step-title {
+    flex: 1;
     font-family: var(--wfb-font);
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--wfb-text);
   }
+
+  /* ── 닫기 버튼 (.wfb-close-btn) ─────────────────────────────────────────── */
   .wfb-close-btn {
     display: flex;
     align-items: center;
@@ -158,15 +252,20 @@ export const WIDGET_CSS = `
   /* ── 팝업 콘텐츠 영역 (.wfb-popup-content) ──────────────────────────────── */
   .wfb-popup-content {
     overflow-y: auto;
-    max-height: 480px;
+    max-height: 520px;
   }
 
   /* ── Step 1: 타입 선택 (.wfb-step-type) ─────────────────────────────────── */
   .wfb-step-type {
     display: flex;
     flex-direction: column;
+    gap: 0;
+  }
+  .wfb-step-type .wfb-type-cards {
+    display: flex;
+    flex-direction: column;
     gap: 8px;
-    padding: 16px;
+    padding: 14px;
   }
   .wfb-type-card {
     display: flex;
@@ -195,14 +294,12 @@ export const WIDGET_CSS = `
   .wfb-form {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 16px;
   }
-  .wfb-form-header {
+  .wfb-form-fields {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 4px;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px;
   }
   .wfb-back-btn {
     display: inline-flex;

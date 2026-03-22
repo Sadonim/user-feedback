@@ -157,23 +157,26 @@ GET    /api/v1/status            # Health check
 ### Research
 - `/search-first` — Search for existing solutions before implementing utilities
 
-## Design References
+## Product UX Decisions
 
-Use these as UI/UX inspiration:
+> UI standards (colors, typography, spacing, components, accessibility) follow `~/.claude/rules/common/design-system.md`.
+> This section contains **feature, flow, and layout decisions specific to this project only**.
+
+### Open Source Inspiration (기능 아이디어 참고용)
 - **FeedbackFin** (github.com/rowyio/feedbackfin) — Lightweight widget pattern, data-attribute init, floating UI positioning
 - **Fider** (github.com/getfider/fider) — Mature feedback platform UI, voting, roadmap
 - **Quackback** (github.com/QuackbackIO/quackback) — shadcn/ui components, REST API, activity timelines
 - **Ticketfy** (github.com/Pymmdrza/ticketfy) — Dark theme admin dashboard, RBAC, analytics
 
-### Widget Design Principles
+### Widget Product Decisions
 - One-click feedback button (floating, bottom-right default)
 - 3-step flow: select type → write feedback → submit (with optional nickname for anonymous)
 - Instant confirmation with ticket tracking ID
-- Respect system dark/light mode preference
+- Dark/light mode: system auto-detection (`prefers-color-scheme`) — implementation follows design-system.md §8
 
-### Admin Dashboard Principles
-- Kanban or list view for tickets
-- Quick status change (dropdown or drag)
+### Admin Dashboard Product Decisions
+- List view for tickets (Kanban to be considered after Phase 5)
+- Quick status change (dropdown)
 - Filter by type, status, date
 - Stats cards at top (open count, avg response time)
 

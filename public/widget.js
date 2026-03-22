@@ -56,30 +56,110 @@
     align-items: flex-start;
   }
 
-  /* ── 플로팅 트리거 버튼 ──────────────────────────────────────────────────── */
+  /* ── 플로팅 트리거 버튼 (원형 아이콘) ──────────────────────────────────── */
   .wfb-trigger {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
     background: var(--wfb-primary);
     color: var(--wfb-primary-text);
     border: none;
-    border-radius: 9999px;
-    font-family: var(--wfb-font);
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: .01em;
+    border-radius: 50%;
     cursor: pointer;
     box-shadow: 0 4px 14px rgba(79,70,229,.35);
     transition: background var(--wfb-transition), transform var(--wfb-transition), box-shadow var(--wfb-transition);
     outline: none;
-    white-space: nowrap;
+    flex-shrink: 0;
   }
-  .wfb-trigger:hover  { background: var(--wfb-primary-hover); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(79,70,229,.45); }
+  .wfb-trigger:hover  { background: var(--wfb-primary-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79,70,229,.45); }
   .wfb-trigger:active { transform: translateY(0); }
   .wfb-trigger:focus-visible { outline: 2px solid var(--wfb-primary); outline-offset: 3px; }
-  .wfb-trigger-label  { font-family: var(--wfb-font); }
+
+  /* ── 미니 오버레이 (.wfb-overlay) ────────────────────────────────────── */
+  .wfb-overlay {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 220px;
+    background: var(--wfb-bg);
+    border: 1px solid var(--wfb-border);
+    border-radius: var(--wfb-radius);
+    box-shadow: var(--wfb-shadow);
+    padding: 12px;
+    margin-bottom: 10px;
+    font-family: var(--wfb-font);
+    animation: wfb-slide-up 0.15s ease;
+  }
+  :host([data-position^="top"]) .wfb-overlay {
+    margin-bottom: 0;
+    margin-top: 10px;
+    animation: wfb-slide-down 0.15s ease;
+  }
+
+  .wfb-overlay-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .wfb-overlay-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--wfb-text-muted);
+    letter-spacing: .02em;
+    text-transform: uppercase;
+  }
+
+  /* ── 오버레이 ↓ 접기 버튼 ─────────────────────────────────────────────── */
+  .wfb-collapse-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: var(--wfb-text-muted);
+    cursor: pointer;
+    transition: background var(--wfb-transition), color var(--wfb-transition);
+    outline: none;
+    flex-shrink: 0;
+  }
+  .wfb-collapse-btn:hover         { background: var(--wfb-bg-hover); color: var(--wfb-text); }
+  .wfb-collapse-btn:focus-visible { outline: 2px solid var(--wfb-primary); outline-offset: 2px; }
+
+  /* ── 오버레이 타입 버튼 행 ────────────────────────────────────────────── */
+  .wfb-overlay-types {
+    display: flex;
+    gap: 6px;
+  }
+  .wfb-overlay-type-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 4px;
+    background: var(--wfb-bg-secondary);
+    border: 1.5px solid var(--wfb-border);
+    border-radius: var(--wfb-radius-sm);
+    cursor: pointer;
+    transition: border-color var(--wfb-transition), background var(--wfb-transition), transform var(--wfb-transition);
+    outline: none;
+  }
+  .wfb-overlay-type-btn:hover         { background: var(--wfb-bg-hover); border-color: var(--wfb-primary); transform: translateY(-1px); }
+  .wfb-overlay-type-btn:focus-visible { outline: 2px solid var(--wfb-primary); outline-offset: 2px; }
+  .wfb-overlay-type-icon { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; color: var(--wfb-text-muted); transition: color var(--wfb-transition); }
+  .wfb-overlay-type-btn:hover .wfb-overlay-type-icon { color: var(--wfb-primary); }
+  .wfb-overlay-type-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--wfb-text-muted);
+    font-family: var(--wfb-font);
+    white-space: nowrap;
+  }
 
   /* ── 팝업 래퍼 (.wfb-popup) ─────────────────────────────────────────────── */
   .wfb-popup {
@@ -104,22 +184,36 @@
   @keyframes wfb-slide-up   { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
   @keyframes wfb-slide-down { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
 
-  /* ── 팝업 헤더 (.wfb-popup-header) ─────────────────────────────────────── */
-  .wfb-popup-header {
+  /* ── 접근성 숨김 (.wfb-visually-hidden) ─────────────────────────────────── */
+  .wfb-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ── 공통 step 헤더 (.wfb-step-header) ──────────────────────────────────── */
+  .wfb-step-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 14px 16px;
+    padding: 12px 14px;
     border-bottom: 1px solid var(--wfb-border);
-    background: var(--wfb-bg);
-    flex-shrink: 0;
+    gap: 8px;
   }
-  .wfb-popup-title {
+  .wfb-step-title {
+    flex: 1;
     font-family: var(--wfb-font);
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--wfb-text);
   }
+
+  /* ── 닫기 버튼 (.wfb-close-btn) ─────────────────────────────────────────── */
   .wfb-close-btn {
     display: flex;
     align-items: center;
@@ -140,15 +234,20 @@
   /* ── 팝업 콘텐츠 영역 (.wfb-popup-content) ──────────────────────────────── */
   .wfb-popup-content {
     overflow-y: auto;
-    max-height: 480px;
+    max-height: 520px;
   }
 
   /* ── Step 1: 타입 선택 (.wfb-step-type) ─────────────────────────────────── */
   .wfb-step-type {
     display: flex;
     flex-direction: column;
+    gap: 0;
+  }
+  .wfb-step-type .wfb-type-cards {
+    display: flex;
+    flex-direction: column;
     gap: 8px;
-    padding: 16px;
+    padding: 14px;
   }
   .wfb-type-card {
     display: flex;
@@ -177,14 +276,12 @@
   .wfb-form {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 16px;
   }
-  .wfb-form-header {
+  .wfb-form-fields {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 4px;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px;
   }
   .wfb-back-btn {
     display: inline-flex;
@@ -357,4 +454,4 @@
     position: fixed;
     z-index: ${e.zIndex};
     ${s[e.position]??s[`bottom-right`]}
-  `,t.style.setProperty(`--wfb-accent`,e.buttonColor);let n=t.attachShadow({mode:`open`}),r=document.createElement(`style`);r.textContent=o,n.appendChild(r);let i=document.createElement(`div`);return i.className=`wfb-wrap`,n.appendChild(i),{host:t,shadow:n,container:i}}function l(e,t){if(t!==`auto`)return e.setAttribute(`data-theme`,t),()=>{};if(typeof window.matchMedia!=`function`)return e.setAttribute(`data-theme`,`light`),()=>{};let n=window.matchMedia(`(prefers-color-scheme: dark)`),r=t=>{e.setAttribute(`data-theme`,t?`dark`:`light`)},i=e=>r(e.matches);return r(n.matches),n.addEventListener(`change`,i),()=>n.removeEventListener(`change`,i)}function u(){let e=document.createElementNS(`http://www.w3.org/2000/svg`,`svg`);e.setAttribute(`width`,`18`),e.setAttribute(`height`,`18`),e.setAttribute(`viewBox`,`0 0 24 24`),e.setAttribute(`fill`,`none`),e.setAttribute(`stroke`,`currentColor`),e.setAttribute(`stroke-width`,`2`),e.setAttribute(`stroke-linecap`,`round`),e.setAttribute(`stroke-linejoin`,`round`),e.setAttribute(`aria-hidden`,`true`),e.setAttribute(`focusable`,`false`);let t=document.createElementNS(`http://www.w3.org/2000/svg`,`path`);return t.setAttribute(`d`,`M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z`),e.appendChild(t),e}function d(e,t){let n=document.createElement(`button`);n.className=`wfb-trigger`,n.setAttribute(`type`,`button`),n.setAttribute(`aria-label`,e.buttonLabel),n.setAttribute(`aria-haspopup`,`dialog`),n.setAttribute(`aria-expanded`,`false`);let r=document.createElement(`span`);return r.className=`wfb-trigger-label`,r.textContent=e.buttonLabel,n.appendChild(u()),n.appendChild(r),n.addEventListener(`click`,t),n}function f(e,t){e.setAttribute(`aria-expanded`,t?`true`:`false`)}var p=[`button:not([disabled])`,`input:not([disabled])`,`textarea:not([disabled])`,`select:not([disabled])`,`[tabindex]:not([tabindex="-1"])`].join(`, `);function m(e){let t=()=>Array.from(e.querySelectorAll(p));t()[0]?.focus();let n=n=>{if(n.key!==`Tab`)return;let r=t();if(r.length===0)return;let i=r[0],a=r[r.length-1],o=e.getRootNode().activeElement;n.shiftKey?o===i&&(n.preventDefault(),a.focus()):o===a&&(n.preventDefault(),i.focus())};return e.addEventListener(`keydown`,n),()=>e.removeEventListener(`keydown`,n)}var h=[{type:`BUG`,emoji:`🐛`,name:`Bug Report`,description:`Something isn't working`},{type:`FEATURE`,emoji:`✨`,name:`Feature Request`,description:`Suggest an improvement`},{type:`GENERAL`,emoji:`💬`,name:`General Feedback`,description:`Share your thoughts`}];function g(e){let t=document.createElement(`div`);return t.className=`wfb-step-type`,h.forEach(n=>{let r=document.createElement(`div`);r.className=`wfb-type-card`,r.setAttribute(`role`,`button`),r.setAttribute(`tabindex`,`0`),r.setAttribute(`aria-pressed`,`false`),r.setAttribute(`data-type`,n.type),r.setAttribute(`aria-label`,`${n.name}: ${n.description}`);let i=document.createElement(`span`);i.className=`wfb-type-emoji`,i.setAttribute(`aria-hidden`,`true`),i.textContent=n.emoji;let a=document.createElement(`div`);a.className=`wfb-type-info`;let o=document.createElement(`span`);o.className=`wfb-type-name`,o.textContent=n.name;let s=document.createElement(`span`);s.className=`wfb-type-desc`,s.textContent=n.description,a.append(o,s),r.append(i,a);let c=()=>{r.setAttribute(`aria-pressed`,`true`),e(n.type)};r.addEventListener(`click`,c),r.addEventListener(`keydown`,e=>{(e.key===`Enter`||e.key===` `)&&(e.preventDefault(),c())}),t.appendChild(r)}),t}var _=[{id:`wfb-title`,field:`title`,label:`Title`,type:`input`,required:!0,placeholder:`Brief summary`,maxLength:200},{id:`wfb-description`,field:`description`,label:`Description`,type:`textarea`,required:!0,placeholder:`Describe in detail (at least 10 characters)`,maxLength:5e3},{id:`wfb-nickname`,field:`nickname`,label:`Nickname`,type:`input`,required:!0,placeholder:`Your name`,maxLength:100},{id:`wfb-email`,field:`email`,label:`Email`,type:`input`,inputType:`email`,required:!1,placeholder:`Optional — for follow-up`,maxLength:255}],v=`Submit Feedback`,y=`Submitting…`,b={BUG:`🐛 Bug Report`,FEATURE:`✨ Feature Request`,GENERAL:`💬 General`};function x(e,t,n,r){let i=document.createElement(`div`);i.className=`wfb-form`;let a=document.createElement(`div`);a.className=`wfb-form-header`;let o=document.createElement(`button`);o.className=`wfb-back-btn`,o.setAttribute(`data-wfb-back`,``),o.textContent=`← Back`,o.addEventListener(`click`,t);let s=document.createElement(`span`);s.className=`wfb-form-type-badge`,s.textContent=b[e.selectedType??``]??``,a.append(o,s),i.appendChild(a);let c=document.createElement(`div`);c.className=`wfb-error-banner`,c.setAttribute(`role`,`alert`),c.setAttribute(`data-wfb-error`,``),c.style.display=e.errorMessage?`block`:`none`,c.textContent=e.errorMessage??``,i.appendChild(c),_.forEach(t=>{let r=document.createElement(`div`);r.className=`wfb-field`;let a=document.createElement(`label`);if(a.className=`wfb-label`,a.setAttribute(`for`,t.id),a.textContent=t.label,t.required){let e=document.createElement(`span`);e.className=`wfb-required`,e.setAttribute(`aria-hidden`,`true`),e.textContent=` *`,a.appendChild(e)}let o;if(t.type===`textarea`){let r=document.createElement(`textarea`);r.className=`wfb-textarea`,r.id=t.id,r.placeholder=t.placeholder,r.maxLength=t.maxLength,r.required=t.required,r.setAttribute(`data-field`,t.field),r.value=e.formData[t.field],r.addEventListener(`input`,()=>n(t.field,r.value)),o=r}else{let r=document.createElement(`input`);r.className=`wfb-input`,r.id=t.id,r.type=t.inputType??`text`,r.placeholder=t.placeholder,r.maxLength=t.maxLength,r.required=t.required,r.setAttribute(`data-field`,t.field),r.value=e.formData[t.field],r.addEventListener(`input`,()=>n(t.field,r.value)),o=r}r.append(a,o),i.appendChild(r)});let l=document.createElement(`button`);return l.className=`wfb-submit-btn`,l.setAttribute(`data-wfb-submit`,``),l.disabled=e.step===`submitting`,l.textContent=e.step===`submitting`?y:v,l.addEventListener(`click`,r),i.appendChild(l),i}function S(e,t){let n=e.querySelector(`[data-wfb-error]`);n&&(n.textContent=t.errorMessage??``,n.style.display=t.errorMessage?`block`:`none`);let r=e.querySelector(`[data-wfb-submit]`);r&&(r.disabled=t.step===`submitting`,r.textContent=t.step===`submitting`?y:v)}var C=`Copy`,w=`Copied!`,T=2e3;function E(e){e.textContent=w,setTimeout(()=>{e.textContent=C},T)}function D(e,t){let n=document.createElement(`div`);n.className=`wfb-success`;let r=document.createElement(`span`);r.className=`wfb-success-icon`,r.setAttribute(`aria-hidden`,`true`),r.textContent=`✅`;let i=document.createElement(`h3`);i.className=`wfb-success-title`,i.textContent=`Feedback Submitted!`;let a=document.createElement(`p`);a.className=`wfb-success-desc`,a.textContent=`Your tracking ID:`;let o=document.createElement(`div`);o.className=`wfb-tracking-wrapper`;let s=document.createElement(`code`);s.className=`wfb-tracking-id`,s.textContent=e.trackingId??``;let c=document.createElement(`button`);c.className=`wfb-copy-btn`,c.setAttribute(`data-wfb-copy`,``),c.textContent=C,c.setAttribute(`aria-label`,`Copy tracking ID`),c.addEventListener(`click`,()=>{let t=e.trackingId??``;navigator.clipboard?navigator.clipboard.writeText(t).then(()=>E(c)).catch(()=>{c.textContent=`Copy manually`,setTimeout(()=>{c.textContent=C},T)}):(c.textContent=`Copy manually`,setTimeout(()=>{c.textContent=C},T))}),o.append(s,c);let l=document.createElement(`button`);return l.className=`wfb-close-success-btn`,l.setAttribute(`data-wfb-close`,``),l.textContent=`Close`,l.addEventListener(`click`,t),n.append(r,i,a,o,l),n}function O(e,t){let n=document.createElement(`div`);n.className=`wfb-popup`,n.setAttribute(`role`,`dialog`),n.setAttribute(`aria-modal`,`true`),n.setAttribute(`aria-label`,`Submit Feedback`),n.style.display=`none`;let r=k(t.onClose);n.appendChild(r);let i=document.createElement(`div`);i.className=`wfb-popup-content`,n.appendChild(i);let a=new AbortController,o=null,s=null;return e.addEventListener(`keydown`,e=>{let n=e;n.key===`Escape`&&(n.stopPropagation(),t.onClose())},{signal:a.signal}),{el:n,update:(e,r)=>{let a=n.style.display!==`none`;if(n.style.display=e.isOpen?`flex`:`none`,a&&!e.isOpen){o?.(),o=null,r.focus(),s=null;return}if(e.isOpen)if(e.step!==s){switch(i.textContent=``,s=e.step,e.step){case`type`:i.appendChild(g(t.onSelectType));break;case`form`:case`submitting`:i.appendChild(x(e,t.onBackToType,t.onFormChange,t.onSubmit));break;case`success`:i.appendChild(D(e,t.onClose));break}o?.(),o=m(n)}else (e.step===`form`||e.step===`submitting`)&&S(i,e)},destroy:()=>{o?.(),a.abort()}}}function k(e){let t=document.createElement(`div`);t.className=`wfb-popup-header`;let n=document.createElement(`span`);n.className=`wfb-popup-title`,n.textContent=`Send Feedback`;let r=document.createElement(`button`);r.className=`wfb-close-btn`,r.setAttribute(`aria-label`,`Close feedback form`);let i=document.createElementNS(`http://www.w3.org/2000/svg`,`svg`);i.setAttribute(`width`,`16`),i.setAttribute(`height`,`16`),i.setAttribute(`viewBox`,`0 0 24 24`),i.setAttribute(`fill`,`none`),i.setAttribute(`stroke`,`currentColor`),i.setAttribute(`stroke-width`,`2`),i.setAttribute(`aria-hidden`,`true`);let a=document.createElementNS(`http://www.w3.org/2000/svg`,`line`);a.setAttribute(`x1`,`18`),a.setAttribute(`y1`,`6`),a.setAttribute(`x2`,`6`),a.setAttribute(`y2`,`18`);let o=document.createElementNS(`http://www.w3.org/2000/svg`,`line`);return o.setAttribute(`x1`,`6`),o.setAttribute(`y1`,`6`),o.setAttribute(`x2`,`18`),o.setAttribute(`y2`,`18`),i.append(a,o),r.appendChild(i),r.addEventListener(`click`,e),t.append(n,r),t}var A={isOpen:!1,step:`type`,selectedType:null,formData:{title:``,description:``,nickname:``,email:``},trackingId:null,errorMessage:null},j={open:e=>({...e,isOpen:!0,step:`type`}),close:e=>({...A}),selectType:(e,t)=>({...e,selectedType:t,step:`form`}),backToType:e=>({...e,step:`type`,selectedType:null,errorMessage:null}),updateForm:(e,t)=>({...e,formData:{...e.formData,...t}}),submit:e=>({...e,step:`submitting`,errorMessage:null}),submitSuccess:(e,t)=>({...e,step:`success`,trackingId:t}),submitError:(e,t)=>({...e,step:`form`,errorMessage:t})};async function M(e,t,n){let r=n.email.trim(),i={type:t,title:n.title.trim(),description:n.description.trim(),nickname:n.nickname.trim(),...r?{email:r}:{}},a;try{a=await fetch(`${e}/api/v1/feedback`,{method:`POST`,headers:{"Content-Type":`application/json`},body:JSON.stringify(i)})}catch{throw{message:`Network error. Please check your connection.`,statusCode:0}}let o=await a.json().catch(()=>null);if(!a.ok||!o?.success)throw{message:o?.error??`Request failed (HTTP ${a.status})`,statusCode:a.status};return{trackingId:o.data.trackingId,status:o.data.status}}var N=document.currentScript;function P(){if(document.querySelector(`[data-ufb-widget]`))return null;let e=a(N);if(!e)return null;let{host:t,shadow:n,container:r}=c(e),i=l(t,e.theme),o=A,s=d(e,()=>{m(o.isOpen?j.close(o):j.open(o))}),u=O(n,{onClose:()=>m(j.close(o)),onSelectType:e=>m(j.selectType(o,e)),onBackToType:()=>m(j.backToType(o)),onFormChange:(e,t)=>m(j.updateForm(o,{[e]:t})),onSubmit:async()=>{if(o.selectedType){m(j.submit(o));try{let t=await M(e.apiUrl,o.selectedType,o.formData);m(j.submitSuccess(o,t.trackingId))}catch(e){let t=e?.message??`Submission failed. Try again.`;m(j.submitError(o,t))}}}}),p=()=>{u.update(o,s),f(s,o.isOpen)},m=e=>{o=e,p()};return r.appendChild(u.el),r.appendChild(s),document.body.appendChild(t),p(),function(){u.destroy(),i(),t.remove()}}var F=null;document.readyState===`loading`?document.addEventListener(`DOMContentLoaded`,()=>{F=P()}):F=P(),window.UserFeedbackWidget={destroy:()=>F?.()}})();
+  `,t.style.setProperty(`--wfb-accent`,e.buttonColor);let n=t.attachShadow({mode:`open`}),r=document.createElement(`style`);r.textContent=o,n.appendChild(r);let i=document.createElement(`div`);return i.className=`wfb-wrap`,n.appendChild(i),{host:t,shadow:n,container:i}}function l(e,t){if(t!==`auto`)return e.setAttribute(`data-theme`,t),()=>{};if(typeof window.matchMedia!=`function`)return e.setAttribute(`data-theme`,`light`),()=>{};let n=window.matchMedia(`(prefers-color-scheme: dark)`),r=t=>{e.setAttribute(`data-theme`,t?`dark`:`light`)},i=e=>r(e.matches);return r(n.matches),n.addEventListener(`change`,i),()=>n.removeEventListener(`change`,i)}function u(){let e=document.createElementNS(`http://www.w3.org/2000/svg`,`svg`);e.setAttribute(`width`,`18`),e.setAttribute(`height`,`18`),e.setAttribute(`viewBox`,`0 0 24 24`),e.setAttribute(`fill`,`none`),e.setAttribute(`stroke`,`currentColor`),e.setAttribute(`stroke-width`,`2`),e.setAttribute(`stroke-linecap`,`round`),e.setAttribute(`stroke-linejoin`,`round`),e.setAttribute(`aria-hidden`,`true`),e.setAttribute(`focusable`,`false`);let t=document.createElementNS(`http://www.w3.org/2000/svg`,`path`);return t.setAttribute(`d`,`M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z`),e.appendChild(t),e}function d(e,t,n){let r=document.createElement(`button`);return r.className=`wfb-trigger`,r.setAttribute(`type`,`button`),r.setAttribute(`aria-label`,e.buttonLabel),r.setAttribute(`aria-haspopup`,`dialog`),r.setAttribute(`aria-expanded`,`false`),r.appendChild(u()),r.addEventListener(`click`,t),r.addEventListener(`mouseenter`,n),r}function f(e,t){e.setAttribute(`aria-expanded`,t?`true`:`false`)}var p=[`button:not([disabled])`,`input:not([disabled])`,`textarea:not([disabled])`,`select:not([disabled])`,`[tabindex]:not([tabindex="-1"])`].join(`, `);function m(e){let t=()=>Array.from(e.querySelectorAll(p));t()[0]?.focus();let n=n=>{if(n.key!==`Tab`)return;let r=t();if(r.length===0)return;let i=r[0],a=r[r.length-1],o=e.getRootNode().activeElement;n.shiftKey?o===i&&(n.preventDefault(),a.focus()):o===a&&(n.preventDefault(),i.focus())};return e.addEventListener(`keydown`,n),()=>e.removeEventListener(`keydown`,n)}var h=[{type:`BUG`,emoji:`🐛`,name:`버그 신고`,description:`제대로 작동하지 않는 기능`},{type:`FEATURE`,emoji:`✨`,name:`기능 제안`,description:`개선 아이디어 공유`},{type:`GENERAL`,emoji:`💬`,name:`일반 문의`,description:`기타 의견 남기기`}];function g(e,t){let n=document.createElement(`div`);n.className=`wfb-step-type`;let r=document.createElement(`div`);r.className=`wfb-step-header`;let i=document.createElement(`span`);i.className=`wfb-step-title`,i.textContent=`피드백 보내기`,r.append(i,k(t)),n.appendChild(r);let a=document.createElement(`div`);return a.className=`wfb-type-cards`,h.forEach(t=>{let n=document.createElement(`div`);n.className=`wfb-type-card`,n.setAttribute(`role`,`button`),n.setAttribute(`tabindex`,`0`),n.setAttribute(`aria-pressed`,`false`),n.setAttribute(`data-type`,t.type),n.setAttribute(`aria-label`,`${t.name}: ${t.description}`);let r=document.createElement(`span`);r.className=`wfb-type-emoji`,r.setAttribute(`aria-hidden`,`true`),r.textContent=t.emoji;let i=document.createElement(`div`);i.className=`wfb-type-info`;let o=document.createElement(`span`);o.className=`wfb-type-name`,o.textContent=t.name;let s=document.createElement(`span`);s.className=`wfb-type-desc`,s.textContent=t.description,i.append(o,s),n.append(r,i);let c=()=>{n.setAttribute(`aria-pressed`,`true`),e(t.type)};n.addEventListener(`click`,c),n.addEventListener(`keydown`,e=>{(e.key===`Enter`||e.key===` `)&&(e.preventDefault(),c())}),a.appendChild(n)}),n.appendChild(a),n}var _={BUG:`겪고 계신 증상을 설명해주세요`,FEATURE:`어떤 기능이 있으면 좋을지 알려주세요`,GENERAL:`궁금한 점을 편하게 남겨주세요`},v=`피드백 제출`,y=`제출 중…`,b={BUG:`버그 신고`,FEATURE:`기능 제안`,GENERAL:`일반 문의`};function x(e,t,n,r,i){let a=document.createElement(`div`);a.className=`wfb-form`;let o=document.createElement(`div`);o.className=`wfb-step-header`;let s=document.createElement(`button`);s.className=`wfb-back-btn`,s.setAttribute(`data-wfb-back`,``),s.setAttribute(`aria-label`,`유형 선택으로 돌아가기`);let c=document.createElement(`span`);c.setAttribute(`aria-hidden`,`true`),c.textContent=`← 돌아가기`,s.appendChild(c),s.addEventListener(`click`,t);let l=e.selectedType??``,u=document.createElement(`span`);u.className=`wfb-form-type-badge`,u.textContent=b[l]??l,o.append(s,u,k(i)),a.appendChild(o);let d=document.createElement(`div`);d.className=`wfb-form-fields`;let f=document.createElement(`div`);f.className=`wfb-error-banner`,f.setAttribute(`role`,`alert`),f.setAttribute(`data-wfb-error`,``),f.style.display=e.errorMessage?`block`:`none`,f.textContent=e.errorMessage??``,d.appendChild(f);let p=document.createElement(`input`);p.className=`wfb-input`,p.id=`wfb-nickname`,p.type=`text`,p.placeholder=`닉네임`,p.maxLength=100,p.required=!0,p.setAttribute(`data-field`,`nickname`),p.setAttribute(`aria-label`,`닉네임`),p.value=e.formData.nickname,p.addEventListener(`input`,()=>n(`nickname`,p.value)),d.appendChild(p);let m=_[l]??`내용을 입력해주세요`,h=document.createElement(`textarea`);h.className=`wfb-textarea`,h.id=`wfb-content`,h.placeholder=m,h.maxLength=5e3,h.required=!0,h.setAttribute(`data-field`,`content`),h.setAttribute(`aria-label`,m),h.value=e.formData.content,h.addEventListener(`input`,()=>n(`content`,h.value)),d.appendChild(h);let g=document.createElement(`button`);return g.className=`wfb-submit-btn`,g.setAttribute(`data-wfb-submit`,``),g.setAttribute(`aria-busy`,e.step===`submitting`?`true`:`false`),g.disabled=e.step===`submitting`,g.textContent=e.step===`submitting`?y:v,g.addEventListener(`click`,r),d.appendChild(g),a.appendChild(d),a}function S(e,t){let n=e.querySelector(`[data-wfb-error]`);n&&(n.textContent=t.errorMessage??``,n.style.display=t.errorMessage?`block`:`none`);let r=e.querySelector(`[data-wfb-submit]`);r&&(r.disabled=t.step===`submitting`,r.textContent=t.step===`submitting`?y:v,r.setAttribute(`aria-busy`,t.step===`submitting`?`true`:`false`))}var C=`복사`,w=`복사됨!`,T=2e3;function E(e){e.textContent=w,setTimeout(()=>{e.textContent=C},T)}function D(e,t){let n=document.createElement(`div`);n.className=`wfb-success`;let r=document.createElement(`span`);r.className=`wfb-success-icon`,r.setAttribute(`aria-hidden`,`true`),r.textContent=`✅`;let i=document.createElement(`h3`);i.className=`wfb-success-title`,i.textContent=`피드백이 제출되었습니다!`,i.setAttribute(`tabindex`,`-1`);let a=document.createElement(`p`);a.className=`wfb-success-desc`,a.textContent=`트래킹 ID:`;let o=document.createElement(`div`);o.className=`wfb-tracking-wrapper`;let s=document.createElement(`code`);s.className=`wfb-tracking-id`,s.textContent=e.trackingId??``;let c=document.createElement(`button`);c.className=`wfb-copy-btn`,c.setAttribute(`data-wfb-copy`,``),c.textContent=C,c.setAttribute(`aria-label`,`트래킹 ID 복사`),c.addEventListener(`click`,()=>{let t=e.trackingId??``;navigator.clipboard?navigator.clipboard.writeText(t).then(()=>E(c)).catch(()=>{c.textContent=`직접 복사`,setTimeout(()=>{c.textContent=C},T)}):(c.textContent=`직접 복사`,setTimeout(()=>{c.textContent=C},T))}),o.append(s,c);let l=document.createElement(`button`);return l.className=`wfb-close-success-btn`,l.setAttribute(`data-wfb-close`,``),l.textContent=`닫기`,l.addEventListener(`click`,t),n.append(r,i,a,o,l),n}function O(e,t){let n=document.createElement(`div`);n.className=`wfb-popup`,n.setAttribute(`role`,`dialog`),n.setAttribute(`aria-modal`,`true`),n.setAttribute(`aria-labelledby`,`wfb-popup-title`),n.style.display=`none`;let r=document.createElement(`span`);r.id=`wfb-popup-title`,r.className=`wfb-visually-hidden`,r.textContent=`피드백 보내기`,n.appendChild(r);let i=document.createElement(`div`);i.className=`wfb-popup-content`,n.appendChild(i);let a=new AbortController,o=null,s=null;return e.addEventListener(`keydown`,e=>{let n=e;n.key===`Escape`&&(n.stopPropagation(),t.onClose())},{signal:a.signal}),{el:n,update:(e,r)=>{let a=n.style.display!==`none`;if(n.style.display=e.isOpen?`flex`:`none`,a&&!e.isOpen){o?.(),o=null,r.focus(),s=null;return}if(e.isOpen)if(e.step!==s){switch(i.textContent=``,s=e.step,e.step){case`type`:i.appendChild(g(t.onSelectType,t.onClose));break;case`form`:case`submitting`:i.appendChild(x(e,t.onBackToType,t.onFormChange,t.onSubmit,t.onClose));break;case`success`:i.appendChild(D(e,t.onClose)),requestAnimationFrame(()=>{i.querySelector(`.wfb-success-title`)?.focus()});break}o?.(),o=m(n)}else (e.step===`form`||e.step===`submitting`)&&S(i,e)},destroy:()=>{o?.(),a.abort()}}}function k(e,t=`피드백 폼 닫기`){let n=document.createElement(`button`);n.className=`wfb-close-btn`,n.setAttribute(`aria-label`,t);let r=document.createElementNS(`http://www.w3.org/2000/svg`,`svg`);r.setAttribute(`width`,`16`),r.setAttribute(`height`,`16`),r.setAttribute(`viewBox`,`0 0 24 24`),r.setAttribute(`fill`,`none`),r.setAttribute(`stroke`,`currentColor`),r.setAttribute(`stroke-width`,`2`),r.setAttribute(`aria-hidden`,`true`);let i=document.createElementNS(`http://www.w3.org/2000/svg`,`line`);i.setAttribute(`x1`,`18`),i.setAttribute(`y1`,`6`),i.setAttribute(`x2`,`6`),i.setAttribute(`y2`,`18`);let a=document.createElementNS(`http://www.w3.org/2000/svg`,`line`);return a.setAttribute(`x1`,`6`),a.setAttribute(`y1`,`6`),a.setAttribute(`x2`,`18`),a.setAttribute(`y2`,`18`),r.append(i,a),n.appendChild(r),n.addEventListener(`click`,e),n}var A=[{type:`BUG`,createIcon:P,label:`버그`},{type:`FEATURE`,createIcon:F,label:`기능 제안`},{type:`GENERAL`,createIcon:I,label:`문의`}];function j(e){let t=document.createElement(`div`);t.className=`wfb-overlay`,t.setAttribute(`role`,`menu`),t.setAttribute(`aria-label`,`피드백 유형 선택`),t.style.display=`none`;let n=document.createElement(`div`);n.className=`wfb-overlay-header`;let r=document.createElement(`span`);r.className=`wfb-overlay-title`,r.textContent=`어떤 피드백인가요?`;let i=document.createElement(`button`);i.className=`wfb-collapse-btn`,i.setAttribute(`type`,`button`),i.setAttribute(`aria-label`,`오버레이 닫기`),i.appendChild(L()),i.addEventListener(`click`,e.onCollapse),n.append(r,i);let a=document.createElement(`div`);a.className=`wfb-overlay-types`;for(let t of A){let n=document.createElement(`button`);n.className=`wfb-overlay-type-btn`,n.setAttribute(`type`,`button`),n.setAttribute(`role`,`menuitem`),n.setAttribute(`aria-label`,t.label);let r=document.createElement(`span`);r.className=`wfb-overlay-type-icon`,r.setAttribute(`aria-hidden`,`true`),r.appendChild(t.createIcon());let i=document.createElement(`span`);i.className=`wfb-overlay-type-label`,i.textContent=t.label,n.append(r,i),n.addEventListener(`click`,()=>e.onSelectType(t.type)),a.appendChild(n)}return t.append(n,a),{el:t,update:e=>{t.style.display=e?`flex`:`none`}}}function M(e){return document.createElementNS(`http://www.w3.org/2000/svg`,e)}function N(e){let t=M(`svg`);return t.setAttribute(`width`,`28`),t.setAttribute(`height`,`28`),t.setAttribute(`viewBox`,e),t.setAttribute(`fill`,`none`),t.setAttribute(`aria-hidden`,`true`),t}function P(){let e=N(`0 0 256 256`);e.setAttribute(`fill`,`currentColor`);let t=M(`path`);return t.setAttribute(`d`,`M144,92a12,12,0,1,1,12,12A12,12,0,0,1,144,92ZM100,80a12,12,0,1,0,12,12A12,12,0,0,0,100,80Zm116,64A87.76,87.76,0,0,1,213,167l22.24,9.72A8,8,0,0,1,232,192a7.89,7.89,0,0,1-3.2-.67L207.38,182a88,88,0,0,1-158.76,0L27.2,191.33A7.89,7.89,0,0,1,24,192a8,8,0,0,1-3.2-15.33L43,167A87.76,87.76,0,0,1,40,144v-8H16a8,8,0,0,1,0-16H40v-8a87.76,87.76,0,0,1,3-23L20.8,79.33a8,8,0,1,1,6.4-14.66L48.62,74a88,88,0,0,1,158.76,0l21.42-9.36a8,8,0,0,1,6.4,14.66L213,89.05a87.76,87.76,0,0,1,3,23v8h24a8,8,0,0,1,0,16H216ZM56,120H200v-8a72,72,0,0,0-144,0Zm64,95.54V136H56v8A72.08,72.08,0,0,0,120,215.54ZM200,144v-8H136v79.54A72.08,72.08,0,0,0,200,144Z`),e.appendChild(t),e}function F(){let e=N(`0 0 256 256`);e.setAttribute(`fill`,`currentColor`);let t=M(`path`);return t.setAttribute(`d`,`M176,232a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h80A8,8,0,0,1,176,232Zm40-128a87.55,87.55,0,0,1-33.64,69.21A16.24,16.24,0,0,0,176,186v6a16,16,0,0,1-16,16H96a16,16,0,0,1-16-16v-6a16,16,0,0,0-6.23-12.66A87.59,87.59,0,0,1,40,104.49C39.74,56.83,78.26,17.14,125.88,16A88,88,0,0,1,216,104Zm-16,0a72,72,0,0,0-73.74-72c-39,.92-70.47,33.39-70.26,72.39a71.65,71.65,0,0,0,27.64,56.3A32,32,0,0,1,96,186v6h64v-6a32.15,32.15,0,0,1,12.47-25.35A71.65,71.65,0,0,0,200,104Zm-16.11-9.34a57.6,57.6,0,0,0-46.56-46.55,8,8,0,0,0-2.66,15.78c16.57,2.79,30.63,16.85,33.44,33.45A8,8,0,0,0,176,104a9,9,0,0,0,1.35-.11A8,8,0,0,0,183.89,94.66Z`),e.appendChild(t),e}function I(){let e=N(`0 0 256 256`);e.setAttribute(`fill`,`currentColor`);let t=M(`path`);return t.setAttribute(`d`,`M168,112a8,8,0,0,1-8,8H96a8,8,0,0,1,0-16h64A8,8,0,0,1,168,112Zm-8,24H96a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16Zm72-8A104,104,0,0,1,79.12,219.82L45.07,231.17a16,16,0,0,1-20.24-20.24l11.35-34.05A104,104,0,1,1,232,128Zm-16,0A88,88,0,1,0,51.81,172.06a8,8,0,0,1,.66,6.54L40,216,77.4,203.53a7.85,7.85,0,0,1,2.53-.42,8,8,0,0,1,4,1.08A88,88,0,0,0,216,128Z`),e.appendChild(t),e}function L(){let e=document.createElementNS(`http://www.w3.org/2000/svg`,`svg`);e.setAttribute(`width`,`14`),e.setAttribute(`height`,`14`),e.setAttribute(`viewBox`,`0 0 24 24`),e.setAttribute(`fill`,`none`),e.setAttribute(`stroke`,`currentColor`),e.setAttribute(`stroke-width`,`2.5`),e.setAttribute(`stroke-linecap`,`round`),e.setAttribute(`stroke-linejoin`,`round`),e.setAttribute(`aria-hidden`,`true`);let t=document.createElementNS(`http://www.w3.org/2000/svg`,`polyline`);return t.setAttribute(`points`,`6 9 12 15 18 9`),e.appendChild(t),e}var R={isOpen:!1,isOverlayOpen:!1,step:`type`,selectedType:null,formData:{content:``,nickname:``},trackingId:null,errorMessage:null},z={open:e=>({...e,isOpen:!0,isOverlayOpen:!1,step:`type`}),close:e=>({...R}),openOverlay:e=>({...e,isOverlayOpen:!0}),closeOverlay:e=>({...e,isOverlayOpen:!1}),selectTypeFromOverlay:(e,t)=>({...e,isOverlayOpen:!1,isOpen:!0,selectedType:t,step:`form`}),backToOverlay:e=>({...R,isOverlayOpen:!0}),selectType:(e,t)=>({...e,selectedType:t,step:`form`}),backToType:e=>({...e,step:`type`,selectedType:null,errorMessage:null}),updateForm:(e,t)=>({...e,formData:{...e.formData,...t}}),submit:e=>({...e,step:`submitting`,errorMessage:null}),submitSuccess:(e,t)=>({...e,step:`success`,trackingId:t}),submitError:(e,t)=>({...e,step:`form`,errorMessage:t})};async function B(e,t,n){let r={type:t,content:n.content.trim(),nickname:n.nickname.trim()},i;try{i=await fetch(`${e}/api/v1/feedback`,{method:`POST`,headers:{"Content-Type":`application/json`},body:JSON.stringify(r)})}catch{throw{message:`Network error. Please check your connection.`,statusCode:0}}let a=await i.json().catch(()=>null);if(!i.ok||!a?.success)throw{message:a?.error??`Request failed (HTTP ${i.status})`,statusCode:i.status};return{trackingId:a.data.trackingId,status:a.data.status}}var V=document.currentScript;function H(){if(document.querySelector(`[data-ufb-widget]`))return null;let e=a(V);if(!e)return null;let{host:t,shadow:n,container:r}=c(e),i=l(t,e.theme),o=R,s=d(e,()=>{o.isOpen?h(z.close(o)):o.isOverlayOpen?h(z.closeOverlay(o)):h(z.openOverlay(o))},()=>{!o.isOpen&&!o.isOverlayOpen&&h(z.openOverlay(o))}),u=j({onCollapse:()=>h(z.closeOverlay(o)),onSelectType:e=>h(z.selectTypeFromOverlay(o,e))}),p=O(n,{onClose:()=>h(z.close(o)),onSelectType:e=>h(z.selectType(o,e)),onBackToType:()=>h(z.backToOverlay(o)),onFormChange:(e,t)=>h(z.updateForm(o,{[e]:t})),onSubmit:async()=>{if(o.selectedType){h(z.submit(o));try{let t=await B(e.apiUrl,o.selectedType,o.formData);h(z.submitSuccess(o,t.trackingId))}catch(e){let t=e?.message??`Submission failed. Try again.`;h(z.submitError(o,t))}}}}),m=()=>{p.update(o,s),u.update(o.isOverlayOpen),f(s,o.isOpen||o.isOverlayOpen)},h=e=>{o=e,m()};return r.appendChild(p.el),r.appendChild(u.el),r.appendChild(s),document.body.appendChild(t),m(),function(){p.destroy(),i(),t.remove()}}var U=null;document.readyState===`loading`?document.addEventListener(`DOMContentLoaded`,()=>{U=H()}):U=H(),window.UserFeedbackWidget={destroy:()=>U?.()}})();

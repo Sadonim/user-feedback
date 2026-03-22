@@ -216,46 +216,54 @@ describe('createTriggerButton (src/widget/ui/button.ts)', () => {
   beforeEach(() => { document.body.innerHTML = ''; });
 
   it('HTMLButtonElement 를 반환해야 한다', () => {
-    expect(createTriggerButton(BASE_CONFIG, vi.fn())).toBeInstanceOf(HTMLButtonElement);
+    expect(createTriggerButton(BASE_CONFIG, vi.fn(), vi.fn())).toBeInstanceOf(HTMLButtonElement);
   });
 
   it('aria-label 이 buttonLabel 값이어야 한다', () => {
-    expect(createTriggerButton(BASE_CONFIG, vi.fn()).getAttribute('aria-label')).toBe('Feedback');
+    expect(createTriggerButton(BASE_CONFIG, vi.fn(), vi.fn()).getAttribute('aria-label')).toBe('Feedback');
   });
 
   it('aria-haspopup="dialog" 가 설정되어야 한다', () => {
-    expect(createTriggerButton(BASE_CONFIG, vi.fn()).getAttribute('aria-haspopup')).toBe('dialog');
+    expect(createTriggerButton(BASE_CONFIG, vi.fn(), vi.fn()).getAttribute('aria-haspopup')).toBe('dialog');
   });
 
   it('초기 aria-expanded="false" 가 설정되어야 한다', () => {
-    expect(createTriggerButton(BASE_CONFIG, vi.fn()).getAttribute('aria-expanded')).toBe('false');
+    expect(createTriggerButton(BASE_CONFIG, vi.fn(), vi.fn()).getAttribute('aria-expanded')).toBe('false');
   });
 
-  it('[C2] buttonLabel 이 textContent 로 삽입되어야 한다 — innerHTML 금지', () => {
+  it('[C2] buttonLabel 이 aria-label 속성으로만 사용되어야 한다 — innerHTML 금지', () => {
     const xss = '<script>alert(1)</script>';
-    const btn = createTriggerButton({ ...BASE_CONFIG, buttonLabel: xss }, vi.fn());
+    const btn = createTriggerButton({ ...BASE_CONFIG, buttonLabel: xss }, vi.fn(), vi.fn());
     document.body.appendChild(btn);
     // innerHTML 이라면 <script> 태그가 DOM 요소로 파싱됨
     expect(btn.querySelector('script')).toBeNull();
-    expect(btn.textContent).toContain(xss);
+    // aria-label 속성으로만 전달 (속성은 HTML 파싱 대상이 아님)
+    expect(btn.getAttribute('aria-label')).toBe(xss);
   });
 
   it('클릭 시 onClick 콜백이 호출되어야 한다', () => {
     const onClick = vi.fn();
-    const btn = createTriggerButton(BASE_CONFIG, onClick);
+    const btn = createTriggerButton(BASE_CONFIG, onClick, vi.fn());
     btn.click();
     expect(onClick).toHaveBeenCalledOnce();
   });
 
+  it('mouseenter 시 onMouseEnter 콜백이 호출되어야 한다', () => {
+    const onMouseEnter = vi.fn();
+    const btn = createTriggerButton(BASE_CONFIG, vi.fn(), onMouseEnter);
+    btn.dispatchEvent(new MouseEvent('mouseenter'));
+    expect(onMouseEnter).toHaveBeenCalledOnce();
+  });
+
   describe('setButtonExpanded()', () => {
     it('true 전달 시 aria-expanded="true" 로 변경해야 한다', () => {
-      const btn = createTriggerButton(BASE_CONFIG, vi.fn());
+      const btn = createTriggerButton(BASE_CONFIG, vi.fn(), vi.fn());
       setButtonExpanded(btn, true);
       expect(btn.getAttribute('aria-expanded')).toBe('true');
     });
 
     it('false 전달 시 aria-expanded="false" 로 변경해야 한다', () => {
-      const btn = createTriggerButton(BASE_CONFIG, vi.fn());
+      const btn = createTriggerButton(BASE_CONFIG, vi.fn(), vi.fn());
       setButtonExpanded(btn, true);
       setButtonExpanded(btn, false);
       expect(btn.getAttribute('aria-expanded')).toBe('false');
@@ -325,16 +333,16 @@ describe('createPopup (src/widget/ui/popup.ts)', () => {
       expect(handle.el.querySelectorAll('[data-type]').length).toBe(3);
     });
 
-    it('step=form 이면 title input 이 렌더링되어야 한다', () => {
+    it('step=form 이면 content textarea 가 렌더링되어야 한다', () => {
       const { handle, triggerBtn } = setupPopup();
       handle.update(OPEN_FORM_STATE, triggerBtn);
-      expect(handle.el.querySelector('[data-field="title"]')).not.toBeNull();
+      expect(handle.el.querySelector('[data-field="content"]')).not.toBeNull();
     });
 
-    it('step=form 이면 description textarea 가 렌더링되어야 한다', () => {
+    it('step=form 이면 nickname input 이 렌더링되어야 한다', () => {
       const { handle, triggerBtn } = setupPopup();
       handle.update(OPEN_FORM_STATE, triggerBtn);
-      expect(handle.el.querySelector('[data-field="description"]')).not.toBeNull();
+      expect(handle.el.querySelector('[data-field="nickname"]')).not.toBeNull();
     });
 
     it('step=success 이면 trackingId 가 .wfb-tracking-id 에 표시되어야 한다', () => {
@@ -477,45 +485,32 @@ describe('renderTypeSelect (src/widget/ui/steps/type-select.ts)', () => {
 describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
   beforeEach(() => { document.body.innerHTML = ''; });
 
-  it('title input (data-field="title") 이 있어야 한다', () => {
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+  it('content textarea (data-field="content") 이 있어야 한다', () => {
+    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
-    expect(el.querySelector('[data-field="title"]')).not.toBeNull();
-  });
-
-  it('description textarea (data-field="description") 이 있어야 한다', () => {
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
-    document.body.appendChild(el);
-    expect(el.querySelector('[data-field="description"]')).not.toBeNull();
+    expect(el.querySelector('[data-field="content"]')).not.toBeNull();
   });
 
   it('nickname input (data-field="nickname") 이 있어야 한다', () => {
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
     expect(el.querySelector('[data-field="nickname"]')).not.toBeNull();
   });
 
-  it('email input (data-field="email") 이 있어야 한다 (선택 필드)', () => {
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+  it('email 필드가 없어야 한다 (제거됨)', () => {
+    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
-    expect(el.querySelector('[data-field="email"]')).not.toBeNull();
-  });
-
-  it('email input type="email" 이어야 한다', () => {
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
-    document.body.appendChild(el);
-    const emailInput = el.querySelector<HTMLInputElement>('[data-field="email"]');
-    expect(emailInput!.type).toBe('email');
+    expect(el.querySelector('[data-field="email"]')).toBeNull();
   });
 
   it('submit 버튼에 data-wfb-submit 속성이 있어야 한다', () => {
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
     expect(el.querySelector('[data-wfb-submit]')).not.toBeNull();
   });
 
   it('에러 배너에 data-wfb-error 속성과 role="alert" 가 있어야 한다', () => {
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
     const banner = el.querySelector('[data-wfb-error]');
     expect(banner).not.toBeNull();
@@ -523,7 +518,7 @@ describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
   });
 
   it('초기 에러 배너는 숨겨져 있어야 한다 (errorMessage=null)', () => {
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
     const banner = el.querySelector<HTMLElement>('[data-wfb-error]');
     expect(banner!.style.display).toBe('none');
@@ -531,7 +526,7 @@ describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
 
   it('errorMessage 있으면 배너가 초기 렌더링 시 표시되어야 한다', () => {
     const stateWithError = { ...OPEN_FORM_STATE, errorMessage: '서버 오류' };
-    const el = renderForm(stateWithError, vi.fn(), vi.fn(), vi.fn());
+    const el = renderForm(stateWithError, vi.fn(), vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
     const banner = el.querySelector<HTMLElement>('[data-wfb-error]');
     expect(banner!.style.display).not.toBe('none');
@@ -541,7 +536,7 @@ describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
   // ── [RED] 설계 스펙 data-wfb-back 속성 ──────────────────────────────
   // 현재 구현은 class="wfb-back-btn" 사용 → data-wfb-back 미존재 → RED
   it('[RED] 뒤로가기 버튼에 data-wfb-back 속성이 있어야 한다', () => {
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+    const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
     // 현재 구현은 class="wfb-back-btn" 만 사용하므로 실패 예상
     expect(el.querySelector('[data-wfb-back]')).not.toBeNull();
@@ -549,7 +544,7 @@ describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
 
   it('뒤로가기 버튼 클릭 시 onBack 이 호출되어야 한다', () => {
     const onBack = vi.fn();
-    const el = renderForm(OPEN_FORM_STATE, onBack, vi.fn(), vi.fn());
+    const el = renderForm(OPEN_FORM_STATE, onBack, vi.fn(), vi.fn(), vi.fn());
     document.body.appendChild(el);
     // class 기반으로도 동작 확인 (구현에 따라 클릭 이벤트가 연결되어 있음)
     const backBtn = el.querySelector<HTMLElement>('.wfb-back-btn');
@@ -559,19 +554,19 @@ describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
 
   it('input 변경 시 onFormChange(field, value) 가 호출되어야 한다 [H4]', () => {
     const onFormChange = vi.fn();
-    const el = renderForm(OPEN_FORM_STATE, vi.fn(), onFormChange, vi.fn());
+    const el = renderForm(OPEN_FORM_STATE, vi.fn(), onFormChange, vi.fn(), vi.fn());
     document.body.appendChild(el);
-    const titleInput = el.querySelector<HTMLInputElement>('[data-field="title"]');
+    const contentInput = el.querySelector<HTMLTextAreaElement>('[data-field="content"]');
     // jsdom 에서는 직접 value 설정 후 input 이벤트 발생이 가장 신뢰성 높음
-    titleInput!.value = 'new title';
-    titleInput!.dispatchEvent(new Event('input', { bubbles: true }));
-    expect(onFormChange).toHaveBeenCalledWith('title', 'new title');
+    contentInput!.value = '새 내용';
+    contentInput!.dispatchEvent(new Event('input', { bubbles: true }));
+    expect(onFormChange).toHaveBeenCalledWith('content', '새 내용');
   });
 
   // ── updateFormState() [M3] ───────────────────────────────────────────
   describe('updateFormState() [M3 — DOM 재빌드 없이 속성만 업데이트]', () => {
     it('errorMessage 표시 시 배너 텍스트가 설정되어야 한다', () => {
-      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
       document.body.appendChild(el);
       updateFormState(el, { ...OPEN_FORM_STATE, errorMessage: '제출 실패' });
       const banner = el.querySelector<HTMLElement>('[data-wfb-error]');
@@ -580,7 +575,7 @@ describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
     });
 
     it('errorMessage=null 이면 배너가 숨겨져야 한다', () => {
-      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
       document.body.appendChild(el);
       updateFormState(el, { ...OPEN_FORM_STATE, errorMessage: '오류' });
       updateFormState(el, { ...OPEN_FORM_STATE, errorMessage: null });
@@ -588,21 +583,21 @@ describe('renderForm & updateFormState (src/widget/ui/steps/form.ts)', () => {
     });
 
     it('step=submitting 이면 submit 버튼이 disabled 되어야 한다', () => {
-      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
       document.body.appendChild(el);
       updateFormState(el, { ...OPEN_FORM_STATE, step: 'submitting' });
       expect(el.querySelector<HTMLButtonElement>('[data-wfb-submit]')!.disabled).toBe(true);
     });
 
-    it('step=submitting 이면 버튼 텍스트가 "Submitting…" 이어야 한다', () => {
-      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+    it('step=submitting 이면 버튼 텍스트가 로딩 상태 문자열이어야 한다', () => {
+      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
       document.body.appendChild(el);
       updateFormState(el, { ...OPEN_FORM_STATE, step: 'submitting' });
-      expect(el.querySelector<HTMLButtonElement>('[data-wfb-submit]')!.textContent).toMatch(/submitting/i);
+      expect(el.querySelector<HTMLButtonElement>('[data-wfb-submit]')!.textContent).toMatch(/제출 중/);
     });
 
     it('step=form(재활성화) 이면 submit 버튼이 활성화되어야 한다', () => {
-      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn());
+      const el = renderForm(OPEN_FORM_STATE, vi.fn(), vi.fn(), vi.fn(), vi.fn());
       document.body.appendChild(el);
       updateFormState(el, { ...OPEN_FORM_STATE, step: 'submitting' });
       updateFormState(el, { ...OPEN_FORM_STATE, step: 'form' });

@@ -5,31 +5,26 @@ describe('submitFeedbackSchema', () => {
   it('should accept valid input with all fields provided correctly', () => {
     const result = submitFeedbackSchema.safeParse({
       type: 'BUG',
-      title: 'Test bug',
-      description: 'This is a test bug description',
+      content: '위젯 버튼이 클릭되지 않습니다.',
       nickname: 'testuser',
-      email: 'test@example.com'
     })
     expect(result.success).toBe(true)
   })
 
-  it('should accept valid input when email is omitted', () => {
+  it('should accept valid input when type is FEATURE', () => {
     const result = submitFeedbackSchema.safeParse({
-      type: 'BUG',
-      title: 'Test bug',
-      description: 'This is a test bug description',
-      nickname: 'testuser'
+      type: 'FEATURE',
+      content: '다크모드를 추가해주세요.',
+      nickname: 'alice',
     })
     expect(result.success).toBe(true)
   })
 
-  it('should accept valid input when email is empty string', () => {
+  it('should accept valid input when type is GENERAL', () => {
     const result = submitFeedbackSchema.safeParse({
-      type: 'BUG',
-      title: 'Test bug',
-      description: 'This is a test bug description',
-      nickname: 'testuser',
-      email: ''
+      type: 'GENERAL',
+      content: '사용 방법이 궁금합니다.',
+      nickname: 'bob',
     })
     expect(result.success).toBe(true)
   })
@@ -37,49 +32,26 @@ describe('submitFeedbackSchema', () => {
   it('should reject invalid type not in enum', () => {
     const result = submitFeedbackSchema.safeParse({
       type: 'UNKNOWN',
-      title: 'Test bug',
-      description: 'This is a test bug description',
-      nickname: 'testuser'
+      content: '테스트 내용입니다.',
+      nickname: 'testuser',
     })
     expect(result.success).toBe(false)
   })
 
-  it('should reject empty title', () => {
+  it('should reject empty content', () => {
     const result = submitFeedbackSchema.safeParse({
       type: 'BUG',
-      title: '',
-      description: 'This is a test bug description',
-      nickname: 'testuser'
+      content: '',
+      nickname: 'testuser',
     })
     expect(result.success).toBe(false)
   })
 
-  it('should reject title exceeding 200 characters', () => {
+  it('should reject content exceeding 5000 characters', () => {
     const result = submitFeedbackSchema.safeParse({
       type: 'BUG',
-      title: 'a'.repeat(201),
-      description: 'This is a test bug description',
-      nickname: 'testuser'
-    })
-    expect(result.success).toBe(false)
-  })
-
-  it('should reject description shorter than 10 characters', () => {
-    const result = submitFeedbackSchema.safeParse({
-      type: 'BUG',
-      title: 'Test bug',
-      description: 'Short',
-      nickname: 'testuser'
-    })
-    expect(result.success).toBe(false)
-  })
-
-  it('should reject description exceeding 5000 characters', () => {
-    const result = submitFeedbackSchema.safeParse({
-      type: 'BUG',
-      title: 'Test bug',
-      description: 'a'.repeat(5001),
-      nickname: 'testuser'
+      content: 'a'.repeat(5001),
+      nickname: 'testuser',
     })
     expect(result.success).toBe(false)
   })
@@ -87,22 +59,39 @@ describe('submitFeedbackSchema', () => {
   it('should reject empty nickname', () => {
     const result = submitFeedbackSchema.safeParse({
       type: 'BUG',
-      title: 'Test bug',
-      description: 'This is a test bug description',
-      nickname: ''
+      content: '테스트 내용입니다.',
+      nickname: '',
     })
     expect(result.success).toBe(false)
   })
 
-  it('should reject invalid email format', () => {
+  it('should reject nickname exceeding 100 characters', () => {
     const result = submitFeedbackSchema.safeParse({
       type: 'BUG',
-      title: 'Test bug',
-      description: 'This is a test bug description',
-      nickname: 'testuser',
-      email: 'not-an-email'
+      content: '테스트 내용입니다.',
+      nickname: 'a'.repeat(101),
     })
     expect(result.success).toBe(false)
+  })
+
+  it('should trim whitespace from content', () => {
+    const result = submitFeedbackSchema.safeParse({
+      type: 'BUG',
+      content: '  앞뒤 공백  ',
+      nickname: 'testuser',
+    })
+    expect(result.success).toBe(true)
+    if (result.success) expect(result.data.content).toBe('앞뒤 공백')
+  })
+
+  it('should trim whitespace from nickname', () => {
+    const result = submitFeedbackSchema.safeParse({
+      type: 'BUG',
+      content: '테스트 내용입니다.',
+      nickname: '  alice  ',
+    })
+    expect(result.success).toBe(true)
+    if (result.success) expect(result.data.nickname).toBe('alice')
   })
 })
 

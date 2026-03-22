@@ -2,10 +2,8 @@ import type { FeedbackType, FormData } from './state';
 
 export interface FeedbackSubmitPayload {
   readonly type: FeedbackType;
-  readonly title: string;
-  readonly description: string;
+  readonly content: string;
   readonly nickname: string;
-  readonly email?: string;
 }
 
 export interface FeedbackSubmitResult {
@@ -23,13 +21,10 @@ export async function submitFeedback(
   type: FeedbackType,
   formData: FormData
 ): Promise<FeedbackSubmitResult> {
-  const email = formData.email.trim();
   const payload: FeedbackSubmitPayload = {
     type,
-    title: formData.title.trim(),
-    description: formData.description.trim(),
+    content: formData.content.trim(),
     nickname: formData.nickname.trim(),
-    ...(email ? { email } : {}),
   };
 
   let response: Response;

@@ -56,7 +56,7 @@ export interface AssigneeInfo {
 }
 
 export interface FeedbackDetail extends FeedbackSummary {
-  description: string;
+  description: string | null;
   email: string | null;
   priority: Priority | null;
   assigneeId?: string | null;     // Phase 5-2: aligns type with Prisma runtime data

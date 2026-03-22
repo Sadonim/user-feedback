@@ -1,4 +1,5 @@
 import type { WidgetState, FormData as WidgetFormData } from '../../state';
+import { createCloseBtn } from '../popup';
 
 interface FormField {
   readonly id: string;
@@ -11,103 +12,57 @@ interface FormField {
   readonly maxLength: number;
 }
 
-const FORM_FIELDS: readonly FormField[] = [
-  {
-    id: 'wfb-title',
-    field: 'title',
-    label: 'Title',
-    type: 'input',
-    required: true,
-    placeholder: 'Brief summary',
-    maxLength: 200,
-  },
-  {
-    id: 'wfb-description',
-    field: 'description',
-    label: 'Description',
-    type: 'textarea',
-    required: true,
-    placeholder: 'Describe in detail (at least 10 characters)',
-    maxLength: 5000,
-  },
-  {
-    id: 'wfb-nickname',
-    field: 'nickname',
-    label: 'Nickname',
-    type: 'input',
-    required: true,
-    placeholder: 'Your name',
-    maxLength: 100,
-  },
-  {
-    id: 'wfb-email',
-    field: 'email',
-    label: 'Email',
-    type: 'input',
-    inputType: 'email',
-    required: false,
-    placeholder: 'Optional — for follow-up',
-    maxLength: 255,
-  },
-] as const;
-
-const SUBMIT_BTN_IDLE = 'Submit Feedback';
-const SUBMIT_BTN_LOADING = 'Submitting…';
-
-/* WGT-03: text-only labels for the type badge (emoji rendered separately) */
-const TYPE_TEXT: Record<string, string> = {
-  BUG: 'Bug Report',
-  FEATURE: 'Feature Request',
-  GENERAL: 'General',
+const CONTENT_PLACEHOLDER: Record<string, string> = {
+  BUG:     '겪고 계신 증상을 설명해주세요',
+  FEATURE: '어떤 기능이 있으면 좋을지 알려주세요',
+  GENERAL: '궁금한 점을 편하게 남겨주세요',
 };
 
-const TYPE_EMOJI: Record<string, string> = {
-  BUG: '🐛',
-  FEATURE: '✨',
-  GENERAL: '💬',
+const SUBMIT_BTN_IDLE = '피드백 제출';
+const SUBMIT_BTN_LOADING = '제출 중…';
+
+/* WGT-03: text-only labels for the type badge */
+const TYPE_TEXT: Record<string, string> = {
+  BUG: '버그 신고',
+  FEATURE: '기능 제안',
+  GENERAL: '일반 문의',
 };
 
 export function renderForm(
   state: WidgetState,
   onBack: () => void,
   onFieldChange: (field: keyof WidgetFormData, value: string) => void,
-  onSubmit: () => void
+  onSubmit: () => void,
+  onClose: () => void
 ): HTMLElement {
   const container = document.createElement('div');
   container.className = 'wfb-form';
 
-  // 헤더: 뒤로가기 + 타입 배지
+  // 헤더: [← 돌아가기] [버그 신고] [×] — 한 줄
   const header = document.createElement('div');
-  header.className = 'wfb-form-header';
+  header.className = 'wfb-step-header';
 
-  /* WGT-01: accessible back button — aria-label replaces raw arrow announcement */
   const backBtn = document.createElement('button');
   backBtn.className = 'wfb-back-btn';
   backBtn.setAttribute('data-wfb-back', '');
-  backBtn.setAttribute('aria-label', 'Go back to type selection');
-  // Visible arrow text is decorative
+  backBtn.setAttribute('aria-label', '유형 선택으로 돌아가기');
   const arrowSpan = document.createElement('span');
   arrowSpan.setAttribute('aria-hidden', 'true');
-  arrowSpan.textContent = '← Back';
+  arrowSpan.textContent = '← 돌아가기';
   backBtn.appendChild(arrowSpan);
   backBtn.addEventListener('click', onBack);
 
-  /* WGT-03: type badge — emoji in aria-hidden span, text in separate span */
+  const selectedType = state.selectedType ?? '';
   const typeBadge = document.createElement('span');
   typeBadge.className = 'wfb-form-type-badge';
-  const selectedType = state.selectedType ?? '';
-  if (selectedType) {
-    const emojiSpan = document.createElement('span');
-    emojiSpan.setAttribute('aria-hidden', 'true');
-    emojiSpan.textContent = (TYPE_EMOJI[selectedType] ?? '') + ' ';
-    const textSpan = document.createElement('span');
-    textSpan.textContent = TYPE_TEXT[selectedType] ?? selectedType;
-    typeBadge.appendChild(emojiSpan);
-    typeBadge.appendChild(textSpan);
-  }
+  typeBadge.textContent = TYPE_TEXT[selectedType] ?? selectedType;
 
-  header.append(backBtn, typeBadge);
+  header.append(backBtn, typeBadge, createCloseBtn(onClose));
   container.appendChild(header);
+
+  // 필드 영역 (패딩 분리)
+  const fields = document.createElement('div');
+  fields.className = 'wfb-form-fields';
 
   // 에러 배너
   const errorBanner = document.createElement('div');
@@ -116,67 +71,47 @@ export function renderForm(
   errorBanner.setAttribute('data-wfb-error', '');
   errorBanner.style.display = state.errorMessage ? 'block' : 'none';
   errorBanner.textContent = state.errorMessage ?? '';
-  container.appendChild(errorBanner);
+  fields.appendChild(errorBanner);
 
-  // 폼 필드
-  FORM_FIELDS.forEach((fieldDef) => {
-    const fieldWrapper = document.createElement('div');
-    fieldWrapper.className = 'wfb-field';
+  // 닉네임 input
+  const nicknameInput = document.createElement('input');
+  nicknameInput.className = 'wfb-input';
+  nicknameInput.id = 'wfb-nickname';
+  nicknameInput.type = 'text';
+  nicknameInput.placeholder = '닉네임';
+  nicknameInput.maxLength = 100;
+  nicknameInput.required = true;
+  nicknameInput.setAttribute('data-field', 'nickname');
+  nicknameInput.setAttribute('aria-label', '닉네임');
+  nicknameInput.value = state.formData.nickname;
+  nicknameInput.addEventListener('input', () => onFieldChange('nickname', nicknameInput.value));
+  fields.appendChild(nicknameInput);
 
-    const label = document.createElement('label');
-    label.className = 'wfb-label';
-    label.setAttribute('for', fieldDef.id);
-    label.textContent = fieldDef.label;
-
-    if (fieldDef.required) {
-      const req = document.createElement('span');
-      req.className = 'wfb-required';
-      req.setAttribute('aria-hidden', 'true');
-      req.textContent = ' *';
-      label.appendChild(req);
-    }
-
-    let inputEl: HTMLInputElement | HTMLTextAreaElement;
-
-    if (fieldDef.type === 'textarea') {
-      const ta = document.createElement('textarea');
-      ta.className = 'wfb-textarea';
-      ta.id = fieldDef.id;
-      ta.placeholder = fieldDef.placeholder;
-      ta.maxLength = fieldDef.maxLength;
-      ta.required = fieldDef.required;
-      ta.setAttribute('data-field', fieldDef.field);
-      ta.value = state.formData[fieldDef.field];
-      ta.addEventListener('input', () => onFieldChange(fieldDef.field, ta.value));
-      inputEl = ta;
-    } else {
-      const inp = document.createElement('input');
-      inp.className = 'wfb-input';
-      inp.id = fieldDef.id;
-      inp.type = fieldDef.inputType ?? 'text';
-      inp.placeholder = fieldDef.placeholder;
-      inp.maxLength = fieldDef.maxLength;
-      inp.required = fieldDef.required;
-      inp.setAttribute('data-field', fieldDef.field);
-      inp.value = state.formData[fieldDef.field];
-      inp.addEventListener('input', () => onFieldChange(fieldDef.field, inp.value));
-      inputEl = inp;
-    }
-
-    fieldWrapper.append(label, inputEl);
-    container.appendChild(fieldWrapper);
-  });
+  // 내용 textarea
+  const contentPlaceholder = CONTENT_PLACEHOLDER[selectedType] ?? '내용을 입력해주세요';
+  const contentArea = document.createElement('textarea');
+  contentArea.className = 'wfb-textarea';
+  contentArea.id = 'wfb-content';
+  contentArea.placeholder = contentPlaceholder;
+  contentArea.maxLength = 5000;
+  contentArea.required = true;
+  contentArea.setAttribute('data-field', 'content');
+  contentArea.setAttribute('aria-label', contentPlaceholder);
+  contentArea.value = state.formData.content;
+  contentArea.addEventListener('input', () => onFieldChange('content', contentArea.value));
+  fields.appendChild(contentArea);
 
   // 제출 버튼
   const submitBtn = document.createElement('button');
   submitBtn.className = 'wfb-submit-btn';
   submitBtn.setAttribute('data-wfb-submit', '');
-  /* WGT-02: initial aria-busy state */
   submitBtn.setAttribute('aria-busy', state.step === 'submitting' ? 'true' : 'false');
   submitBtn.disabled = state.step === 'submitting';
   submitBtn.textContent = state.step === 'submitting' ? SUBMIT_BTN_LOADING : SUBMIT_BTN_IDLE;
   submitBtn.addEventListener('click', onSubmit);
-  container.appendChild(submitBtn);
+  fields.appendChild(submitBtn);
+
+  container.appendChild(fields);
 
   return container;
 }
@@ -201,7 +136,6 @@ export function updateFormState(
   if (submitBtn) {
     submitBtn.disabled = state.step === 'submitting';
     submitBtn.textContent = state.step === 'submitting' ? SUBMIT_BTN_LOADING : SUBMIT_BTN_IDLE;
-    /* WGT-02: aria-busy reflects submitting state without relying on text change alone */
     submitBtn.setAttribute('aria-busy', state.step === 'submitting' ? 'true' : 'false');
   }
 }

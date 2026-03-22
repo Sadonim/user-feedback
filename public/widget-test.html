@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Widget Test</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+    }
+    .page {
+      max-width: 800px;
+      margin: 60px auto;
+      padding: 40px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.08);
+    }
+    h1 { font-size: 24px; margin-bottom: 8px; }
+    p  { color: #6b7280; line-height: 1.6; }
+    .controls {
+      margin-top: 32px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .controls label { font-size: 13px; font-weight: 500; color: #374151; }
+    .controls select, .controls input {
+      margin-left: 6px;
+      padding: 4px 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .reload-btn {
+      padding: 6px 14px;
+      background: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .reload-btn:hover { background: #4338ca; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>Widget Test Page</h1>
+    <p>우측 하단 위젯을 확인하세요. <code>widget:dev</code> 가 실행 중이면 소스 변경 후 새로고침으로 반영됩니다.</p>
+
+    <div class="controls">
+      <label>Position
+        <select id="ctrl-position">
+          <option value="bottom-right" selected>bottom-right</option>
+          <option value="bottom-left">bottom-left</option>
+          <option value="top-right">top-right</option>
+          <option value="top-left">top-left</option>
+        </select>
+      </label>
+      <label>Theme
+        <select id="ctrl-theme">
+          <option value="auto" selected>auto</option>
+          <option value="light">light</option>
+          <option value="dark">dark</option>
+        </select>
+      </label>
+      <label>Color
+        <input id="ctrl-color" type="color" value="#4F46E5" />
+      </label>
+      <button class="reload-btn" onclick="reloadWidget()">위젯 재적용</button>
+    </div>
+  </div>
+
+  <script>
+    function reloadWidget() {
+      if (window.UserFeedbackWidget?.destroy) { window.UserFeedbackWidget.destroy(); }
+      const existing = document.querySelector('[data-ufb-widget]');
+      if (existing) existing.remove();
+
+      const position = document.getElementById('ctrl-position').value;
+      const theme    = document.getElementById('ctrl-theme').value;
+      const color    = document.getElementById('ctrl-color').value;
+
+      const s = document.createElement('script');
+      s.src = '/widget.js?t=' + Date.now();
+      s.setAttribute('data-api-url', 'http://localhost:3000');
+      s.setAttribute('data-position', position);
+      s.setAttribute('data-theme', theme);
+      s.setAttribute('data-button-color', color);
+      document.body.appendChild(s);
+    }
+
+    reloadWidget();
+  </script>
+</body>
+</html>

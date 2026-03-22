@@ -9,8 +9,7 @@ import { NextRequest } from 'next/server';
 
 const VALID_BODY = {
   type: 'BUG',
-  title: 'CORS test feedback',
-  description: 'Testing CORS headers from external origin.',
+  content: 'CORS test feedback',
   nickname: 'cors-tester',
 };
 

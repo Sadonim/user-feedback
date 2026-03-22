@@ -35,10 +35,8 @@ describe('INITIAL_STATE (src/widget/state.ts)', () => {
 
   it('formData 가 빈 문자열로 초기화되어야 한다', () => {
     expect(INITIAL_STATE.formData).toEqual({
-      title: '',
-      description: '',
+      content: '',
       nickname: '',
-      email: '',
     });
   });
 
@@ -89,7 +87,7 @@ describe('transitions (src/widget/state.ts)', () => {
       const dirty: WidgetState = {
         ...INITIAL_STATE,
         isOpen: true,
-        formData: { title: 'crash', description: 'desc', nickname: 'bob', email: 'b@c.com' },
+        formData: { content: '테스트 내용', nickname: 'bob' },
       };
       expect(transitions.close(dirty).formData).toEqual(INITIAL_STATE.formData);
     });
@@ -182,45 +180,38 @@ describe('transitions (src/widget/state.ts)', () => {
 
   // ── updateForm() ────────────────────────────────────────────────────────
   describe('transitions.updateForm()', () => {
-    it('title 만 업데이트해야 한다', () => {
-      const next = transitions.updateForm(INITIAL_STATE, { title: 'New title' });
-      expect(next.formData.title).toBe('New title');
-      expect(next.formData.description).toBe('');
+    it('content 만 업데이트해야 한다', () => {
+      const next = transitions.updateForm(INITIAL_STATE, { content: '새 내용' });
+      expect(next.formData.content).toBe('새 내용');
       expect(next.formData.nickname).toBe('');
     });
 
     it('여러 필드를 동시에 업데이트해야 한다', () => {
-      const next = transitions.updateForm(INITIAL_STATE, { title: 'T', nickname: 'Alice' });
-      expect(next.formData.title).toBe('T');
+      const next = transitions.updateForm(INITIAL_STATE, { content: '내용', nickname: 'Alice' });
+      expect(next.formData.content).toBe('내용');
       expect(next.formData.nickname).toBe('Alice');
-      expect(next.formData.description).toBe('');
-    });
-
-    it('email 필드도 업데이트해야 한다', () => {
-      const next = transitions.updateForm(INITIAL_STATE, { email: 'a@b.com' });
-      expect(next.formData.email).toBe('a@b.com');
     });
 
     it('원본 formData 를 변경하지 않아야 한다', () => {
       const originalRef = INITIAL_STATE.formData;
-      transitions.updateForm(INITIAL_STATE, { title: 'changed' });
+      transitions.updateForm(INITIAL_STATE, { content: 'changed' });
       expect(INITIAL_STATE.formData).toBe(originalRef);
-      expect(INITIAL_STATE.formData.title).toBe('');
+      expect(INITIAL_STATE.formData.content).toBe('');
     });
 
     it('새 formData 객체를 반환해야 한다', () => {
-      const next = transitions.updateForm(INITIAL_STATE, { title: 'x' });
+      const next = transitions.updateForm(INITIAL_STATE, { content: 'x' });
       expect(next.formData).not.toBe(INITIAL_STATE.formData);
     });
 
     it('새 state 객체를 반환해야 한다', () => {
-      const next = transitions.updateForm(INITIAL_STATE, { title: 'x' });
+      const next = transitions.updateForm(INITIAL_STATE, { content: 'x' });
       expect(next).not.toBe(INITIAL_STATE);
     });
 
     it('step 등 나머지 상태는 유지해야 한다', () => {
       const inForm: WidgetState = { ...INITIAL_STATE, step: 'form', selectedType: 'BUG' };
-      const next = transitions.updateForm(inForm, { title: 'x' });
+      const next = transitions.updateForm(inForm, { content: 'x' });
       expect(next.step).toBe('form');
       expect(next.selectedType).toBe('BUG');
     });
@@ -335,11 +326,10 @@ describe('transitions (src/widget/state.ts)', () => {
       expect(s.step).toBe('form');
 
       s = transitions.updateForm(s, {
-        title: 'Button crash',
-        description: 'Clicking submit causes an exception.',
+        content: 'Button crash\nClicking submit causes an exception.',
         nickname: 'alice',
       });
-      expect(s.formData.title).toBe('Button crash');
+      expect(s.formData.content).toBe('Button crash\nClicking submit causes an exception.');
 
       s = transitions.submit(s);
       expect(s.step).toBe('submitting');
@@ -357,10 +347,8 @@ describe('transitions (src/widget/state.ts)', () => {
         step: 'form',
         selectedType: 'FEATURE',
         formData: {
-          title: 'Dark mode',
-          description: 'Please add dark mode support for the dashboard.',
+          content: 'Dark mode\nPlease add dark mode support for the dashboard.',
           nickname: 'carol',
-          email: '',
         },
       };
 
@@ -386,14 +374,14 @@ describe('transitions (src/widget/state.ts)', () => {
 
       s = transitions.open(s);
       s = transitions.selectType(s, 'BUG');
-      s = transitions.updateForm(s, { title: 'test', nickname: 'bob' });
+      s = transitions.updateForm(s, { content: 'test', nickname: 'bob' });
 
       s = transitions.close(s);
       expect(s).toEqual(INITIAL_STATE);
 
       // 다시 열면 이전 데이터 없어야 함
       s = transitions.open(s);
-      expect(s.formData.title).toBe('');
+      expect(s.formData.content).toBe('');
       expect(s.selectedType).toBeNull();
       expect(s.step).toBe('type');
     });
