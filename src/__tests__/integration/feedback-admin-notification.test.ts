@@ -46,13 +46,13 @@ afterEach(async () => {
     where: { title: { contains: TEST_TAG } },
   });
 });
+// Note: title is auto-generated from content's first line in the route handler
 
 // ── Valid submission body ─────────────────────────────────────────────────
 function validBody(overrides: Record<string, unknown> = {}) {
   return {
     type: 'BUG',
-    title: `[${TEST_TAG}] Admin notification test`,
-    description: 'Minimum ten characters here',
+    content: `[${TEST_TAG}] Admin notification test`,
     nickname: 'test-user',
     ...overrides,
   };
@@ -102,9 +102,10 @@ describe('POST /api/v1/feedback — admin notifications', () => {
     expect(call.type).toBe('FEATURE');
   });
 
-  it('calls notifyAdminNewFeedback with correct title', async () => {
+  it('calls notifyAdminNewFeedback with correct title (auto-generated from content first line)', async () => {
     const { POST } = await importHandlers();
-    const expectedTitle = `[${TEST_TAG}] Admin notification test`;
+    // title is truncated to 50 chars from first line of content
+    const expectedTitle = `[${TEST_TAG}] Admin notification test`.slice(0, 50);
 
     await POST(makePostRequest(validBody()));
 
@@ -133,9 +134,9 @@ describe('POST /api/v1/feedback — admin notifications', () => {
   it('does NOT call notifyAdminNewFeedback on invalid body (validation failure)', async () => {
     const { POST } = await importHandlers();
 
-    // Missing required `description` field
+    // Missing required `content` field
     const res = await POST(
-      makePostRequest({ type: 'BUG', title: `[${TEST_TAG}] bad`, nickname: 'tester' })
+      makePostRequest({ type: 'BUG', nickname: 'tester' })
     );
 
     expect(res.status).toBe(400);

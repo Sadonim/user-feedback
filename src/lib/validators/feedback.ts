@@ -4,14 +4,14 @@ export const submitFeedbackSchema = z.object({
   type: z.enum(["BUG", "FEATURE", "GENERAL"]),
   content: z
     .string()
+    .trim()
     .min(1, "내용을 입력해주세요")
-    .max(5000, "5000자 이하로 입력해주세요")
-    .trim(),
+    .max(5000, "5000자 이하로 입력해주세요"),
   nickname: z
     .string()
+    .trim()
     .min(1, "닉네임을 입력해주세요")
-    .max(100, "닉네임은 100자 이하로 입력해주세요")
-    .trim(),
+    .max(100, "닉네임은 100자 이하로 입력해주세요"),
 });
 
 export const trackingIdSchema = z.object({

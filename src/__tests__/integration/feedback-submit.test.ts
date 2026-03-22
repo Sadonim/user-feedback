@@ -74,8 +74,7 @@ function makeOptionsRequest(origin = 'http://localhost:3000') {
 // ── 유효한 피드백 바디 팩토리 ───────────────────────────────────────────────
 const validBody = (overrides: Record<string, unknown> = {}) => ({
   type: 'BUG',
-  title: `${TEST_TAG} Submit button crash`,
-  description: 'Clicking submit causes an unhandled exception in the form.',
+  content: `${TEST_TAG} Submit button crash`,
   nickname: 'tester-alice',
   ...overrides,
 });
@@ -130,7 +129,7 @@ describe('POST /api/v1/feedback — 성공 케이스', () => {
     mock.mockResolvedValue(true);
     const { POST } = await importHandlers();
 
-    const res = await POST(makePostRequest(validBody({ type: 'FEATURE', title: `${TEST_TAG} Dark mode request` })));
+    const res = await POST(makePostRequest(validBody({ type: 'FEATURE', content: `${TEST_TAG} Dark mode request` })));
     expect(res.status).toBe(201);
     const body = await res.json();
     if (body.data?.trackingId) createdTrackingIds.push(body.data.trackingId);
@@ -141,40 +140,18 @@ describe('POST /api/v1/feedback — 성공 케이스', () => {
     mock.mockResolvedValue(true);
     const { POST } = await importHandlers();
 
-    const res = await POST(makePostRequest(validBody({ type: 'GENERAL', title: `${TEST_TAG} Question about billing` })));
+    const res = await POST(makePostRequest(validBody({ type: 'GENERAL', content: `${TEST_TAG} Question about billing` })));
     expect(res.status).toBe(201);
     const body = await res.json();
     if (body.data?.trackingId) createdTrackingIds.push(body.data.trackingId);
   });
 
-  it('이메일 포함 제출이 가능해야 한다', async () => {
+  it('content에 줄바꿈이 있어도 제출이 가능해야 한다 (multiline)', async () => {
     const mock = await getRateLimitMock();
     mock.mockResolvedValue(true);
     const { POST } = await importHandlers();
 
-    const res = await POST(makePostRequest(validBody({ email: 'tester@example.com' })));
-    expect(res.status).toBe(201);
-    const body = await res.json();
-    if (body.data?.trackingId) createdTrackingIds.push(body.data.trackingId);
-  });
-
-  it('이메일 없이도 제출이 가능해야 한다 (선택 필드)', async () => {
-    const mock = await getRateLimitMock();
-    mock.mockResolvedValue(true);
-    const { POST } = await importHandlers();
-
-    const res = await POST(makePostRequest(validBody({ email: undefined })));
-    expect(res.status).toBe(201);
-    const body = await res.json();
-    if (body.data?.trackingId) createdTrackingIds.push(body.data.trackingId);
-  });
-
-  it('빈 문자열 이메일도 제출이 가능해야 한다 (optional or empty)', async () => {
-    const mock = await getRateLimitMock();
-    mock.mockResolvedValue(true);
-    const { POST } = await importHandlers();
-
-    const res = await POST(makePostRequest(validBody({ email: '' })));
+    const res = await POST(makePostRequest(validBody({ content: `${TEST_TAG} Title line\nDetail description here` })));
     expect(res.status).toBe(201);
     const body = await res.json();
     if (body.data?.trackingId) createdTrackingIds.push(body.data.trackingId);
@@ -248,34 +225,27 @@ describe('POST /api/v1/feedback — 유효성 검사 실패', () => {
     return resBody;
   };
 
-  it('title이 없으면 400을 반환해야 한다', async () => {
-    const { error } = await expectBadRequest(validBody({ title: '' }));
-    expect(error).toMatch(/required|title/i);
+  it('content가 없으면 400을 반환해야 한다', async () => {
+    const { error } = await expectBadRequest(validBody({ content: '' }));
+    expect(error).toMatch(/내용|content/i);
   });
 
-  it('description이 10자 미만이면 400을 반환해야 한다', async () => {
-    await expectBadRequest(validBody({ description: 'short' }));
+  it('content가 공백만 있으면 400을 반환해야 한다 (trim 적용)', async () => {
+    const { error } = await expectBadRequest(validBody({ content: '   ' }));
+    expect(error).toMatch(/내용|content/i);
   });
 
   it('nickname이 없으면 400을 반환해야 한다', async () => {
     const { error } = await expectBadRequest(validBody({ nickname: '' }));
-    expect(error).toMatch(/required|nickname/i);
+    expect(error).toMatch(/닉네임|nickname/i);
   });
 
   it('유효하지 않은 type이면 400을 반환해야 한다', async () => {
     await expectBadRequest(validBody({ type: 'COMPLAINT' }));
   });
 
-  it('이메일 형식이 잘못되면 400을 반환해야 한다', async () => {
-    await expectBadRequest(validBody({ email: 'not-an-email' }));
-  });
-
-  it('title이 200자를 초과하면 400을 반환해야 한다', async () => {
-    await expectBadRequest(validBody({ title: 'a'.repeat(201) }));
-  });
-
-  it('description이 5000자를 초과하면 400을 반환해야 한다', async () => {
-    await expectBadRequest(validBody({ description: 'a'.repeat(5001) }));
+  it('content가 5000자를 초과하면 400을 반환해야 한다', async () => {
+    await expectBadRequest(validBody({ content: 'a'.repeat(5001) }));
   });
 
   it('필수 필드가 모두 없으면 400을 반환해야 한다', async () => {
